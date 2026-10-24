@@ -14,8 +14,6 @@ complexity:
     thresholdInClasses: 30
     thresholdInObjects: 30
     thresholdInEnums: 30
-  ReturnCount:
-    max: 6
 
 style:
   MagicNumber:

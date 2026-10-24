@@ -148,6 +148,7 @@ internal class GameSession(
      * @return true when the board actually changed — an invalid swipe or a tap
      *         while paused returns false and costs nothing (no spawn, no score).
      */
+    @Suppress("ReturnCount")
     fun move(direction: Direction): Boolean {
         if (paused) return false
         if (showWinDialog || showGameOverDialog) return false

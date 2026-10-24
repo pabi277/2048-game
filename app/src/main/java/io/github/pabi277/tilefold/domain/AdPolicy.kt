@@ -52,6 +52,7 @@ object AdPolicy {
      * @param isAdFree when true, never
      * @param hasConsent when false, never
      */
+    @Suppress("ReturnCount")
     fun canShowInterstitial(
         status: GameStatus,
         state: InterstitialState,
