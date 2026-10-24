@@ -111,6 +111,27 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      # Failing test names and messages, readable from the API.
+      - name: Summarise test failures as annotations
+        if: failure()
+        shell: bash
+        run: |
+          python3 - <<'PYEOF'
+          import glob
+          import xml.etree.ElementTree as ET
+
+          count = 0
+          for path in glob.glob("app/build/test-results/testDebugUnitTest/*.xml"):
+              root = ET.parse(path).getroot()
+              for case in root.iter("testcase"):
+                  for failure in list(case.iter("failure")) + list(case.iter("error")):
+                      message = " ".join((failure.get("message") or "").split())[:400]
+                      detail = " ".join((failure.text or "").split())[:600]
+                      print(f"::error file={path}::{case.get('classname')}#{case.get('name')}: {message} | {detail}")
+                      count += 1
+          print(f"annotated {count} failing tests")
+          PYEOF
+
       - name: Upload screenshot renders (no-device UI evidence)
         if: always()
         uses: actions/upload-artifact@v4
