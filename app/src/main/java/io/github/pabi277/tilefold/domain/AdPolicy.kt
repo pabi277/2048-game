@@ -52,7 +52,7 @@ object AdPolicy {
      * @param isAdFree when true, never
      * @param hasConsent when false, never
      */
-        @Suppress("ReturnCount", "ktlint:standard:function-signature")
+    @Suppress("ReturnCount", "ktlint:standard:function-signature")
     fun canShowInterstitial(
         status: GameStatus,
         state: InterstitialState,

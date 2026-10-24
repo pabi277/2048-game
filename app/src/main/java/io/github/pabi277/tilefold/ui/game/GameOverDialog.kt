@@ -23,8 +23,8 @@ import io.github.pabi277.tilefold.R
 import io.github.pabi277.tilefold.ui.components.PrimaryButton
 import io.github.pabi277.tilefold.ui.components.SecondaryButton
 import io.github.pabi277.tilefold.ui.components.TextAction
-import io.github.pabi277.tilefold.ui.icons.TilefoldIcons
 import androidx.compose.ui.text.font.FontWeight
+import io.github.pabi277.tilefold.ui.icons.TilefoldIcons
 import io.github.pabi277.tilefold.ui.theme.Corners
 import io.github.pabi277.tilefold.ui.theme.TextCaps
 import io.github.pabi277.tilefold.ui.theme.TilefoldThemeDefaults

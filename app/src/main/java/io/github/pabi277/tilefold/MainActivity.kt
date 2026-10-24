@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import io.github.pabi277.tilefold.data.AppContainer
 import io.github.pabi277.tilefold.domain.DailyChallenge
+import io.github.pabi277.tilefold.domain.Stats
 import io.github.pabi277.tilefold.ui.game.GameRoute
 import io.github.pabi277.tilefold.ui.stats.StatsScreen
 import io.github.pabi277.tilefold.ui.theme.TilefoldTheme
@@ -67,7 +68,7 @@ class MainActivity : ComponentActivity() {
 
                         else -> {
                             StatsScreen(
-                                stats = io.github.pabi277.tilefold.domain.Stats(),
+                                stats = Stats(),
                                 modifier = Modifier.weight(1f),
                             )
                         }
