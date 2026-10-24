@@ -14,6 +14,8 @@ import io.github.pabi277.tilefold.domain.Board
 import io.github.pabi277.tilefold.domain.Game
 import io.github.pabi277.tilefold.domain.GameSnapshot
 import io.github.pabi277.tilefold.domain.GameStatus
+import com.google.common.truth.Truth
+import io.github.pabi277.tilefold.domain.Stats
 import io.github.pabi277.tilefold.ui.theme.TilefoldTheme
 import org.junit.Rule
 import org.junit.Test
@@ -35,7 +37,8 @@ class GameDialogTest {
         rule.setContent {
             TilefoldTheme {
                 val session = remember { GameSession(seed = 1L, initialGame = winGame) }
-                GameContent(session = session, actions = session.actions(), reducedMotion = true)
+                val actions = session.actions()
+                GameContent(session = session, actions = actions, reducedMotion = true)
             }
         }
 
@@ -52,7 +55,8 @@ class GameDialogTest {
         rule.setContent {
             TilefoldTheme {
                 val session = remember { GameSession(seed = 1L, initialGame = winGame) }
-                GameContent(session = session, actions = session.actions(), reducedMotion = true)
+                val actions = session.actions()
+                GameContent(session = session, actions = actions, reducedMotion = true)
             }
         }
 
@@ -67,12 +71,13 @@ class GameDialogTest {
 
         rule.setContent {
             TilefoldTheme {
-                val stats = io.github.pabi277.tilefold.domain.Stats(bestScore = 2000)
+                val stats = Stats(bestScore = 2000)
                 val session =
                     remember {
                         GameSession(seed = 1L, initialGame = overGame, initialStats = stats)
                     }
-                GameContent(session = session, actions = session.actions(), reducedMotion = true)
+                val actions = session.actions()
+                GameContent(session = session, actions = actions, reducedMotion = true)
             }
         }
 
@@ -102,7 +107,8 @@ class GameDialogTest {
         rule.setContent {
             TilefoldTheme {
                 val session = remember { GameSession(seed = 1L, initialGame = deadGame) }
-                GameContent(session = session, actions = session.actions(), reducedMotion = true)
+                val actions = session.actions()
+                GameContent(session = session, actions = actions, reducedMotion = true)
             }
         }
 
@@ -137,7 +143,8 @@ class GameDialogTest {
             TilefoldTheme {
                 val session = remember { GameSession(seed = 20261024L) }
                 val state = session.screenState.copy(showRestartConfirm = true)
-                GameScreen(state = state, actions = session.actions(), reducedMotion = true)
+                val actions = session.actions()
+                GameScreen(state = state, actions = actions, reducedMotion = true)
             }
         }
 
@@ -150,7 +157,8 @@ class GameDialogTest {
         rule.setContent {
             TilefoldTheme {
                 val session = remember { GameSession(seed = 1L).apply { setStorageError(true) } }
-                GameScreen(state = session.screenState, actions = session.actions(), reducedMotion = true)
+                val actions = session.actions()
+                GameScreen(state = session.screenState, actions = actions, reducedMotion = true)
             }
         }
 
@@ -202,5 +210,6 @@ class GameDialogTest {
         return Game.restore(snapshot)
     }
 
-    private fun assertThat(value: Boolean) = com.google.common.truth.Truth.assertThat(value)
+    private fun assertThat(value: Boolean) =
+        Truth.assertThat(value)
 }

@@ -311,7 +311,10 @@ class GameScreenScreenshotTest {
         )
     }
 
-    private fun gameStatus(winDialog: Boolean, gameOverDialog: Boolean): GameStatus =
+    private fun gameStatus(
+        winDialog: Boolean,
+        gameOverDialog: Boolean,
+    ): GameStatus =
         when {
             winDialog -> GameStatus.WON
             gameOverDialog -> GameStatus.GAME_OVER

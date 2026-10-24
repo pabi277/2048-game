@@ -84,6 +84,7 @@ class AdPolicyTest {
     @Suppress("UnusedPrivateProperty")
     fun `policy says no then fake service not called`() {
         var called = false
+
         @Suppress("UnusedVariable")
         val fake =
             object : AdService {
