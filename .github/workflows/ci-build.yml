@@ -81,8 +81,10 @@ jobs:
           set +e
           for log in gradle-check.log gradle-assemble.log; do
             [ -f "$log" ] || continue
-            grep -nE '^(e: |FAILURE:|\* What went wrong:|> Task .* FAILED|Caused by: |Could not |Execution failed)' "$log" \
-              | head -30 \
+            # The lines after "What went wrong" carry the actual cause.
+            grep -nE -A 18 '^\* What went wrong:' "$log" | head -40 \
+              | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
+            grep -nE '^e: |^> Task .* FAILED' "$log" | head -15 \
               | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
           done
 
