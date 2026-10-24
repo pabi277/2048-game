@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -35,6 +37,8 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.PointerInputScope
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -127,12 +131,17 @@ internal fun GameScreen(
     val keyHandler: (KeyEvent) -> Boolean = { event ->
         handleKey(event.type, event.key, actions.onMove)
     }
+    val swipeThreshold = with(LocalDensity.current) { SwipeAxis.MIN_DRAG_DP.dp.toPx() }
+    val currentOnMove by rememberUpdatedState(actions.onMove)
 
     Box(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+                .background(MaterialTheme.colorScheme.background)
+                .pointerInput(swipeThreshold) {
+                    swipeDetector(swipeThreshold) { currentOnMove(it) }
+                },
     ) {
         Column(
             modifier =
@@ -143,6 +152,7 @@ internal fun GameScreen(
                     .focusRequester(focusRequester)
                     .onPreviewKeyEvent(keyHandler)
                     .focusable(),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TitleRow(onHome = actions.onHome, onRestart = actions.onRestart, tint = textPrimary)
             ScoreRow(score = animatedScore, best = state.best)
@@ -175,7 +185,10 @@ internal fun GameScreen(
             if (state.padVisible) {
                 DirectionPad(
                     onMove = actions.onMove,
-                    modifier = Modifier.padding(top = Dimens.SameRowGap),
+                    modifier =
+                        Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = Dimens.SameRowGap),
                 )
             }
             Spacer(Modifier.height(Dimens.SameRowGap))
@@ -357,6 +370,27 @@ private fun ScoreBox(
             modifier = Modifier.testTag(tag),
         )
     }
+}
+
+/** Reads one swipe per gesture anywhere on the screen, not just the board. */
+private suspend fun PointerInputScope.swipeDetector(
+    threshold: Float,
+    onMove: (Direction) -> Unit,
+) {
+    var totalX = 0f
+    var totalY = 0f
+    detectDragGestures(
+        onDragStart = {
+            totalX = 0f
+            totalY = 0f
+        },
+        onDragEnd = { SwipeAxis.direction(totalX, totalY, threshold)?.let(onMove) },
+        onDrag = { change, drag ->
+            change.consume()
+            totalX += drag.x
+            totalY += drag.y
+        },
+    )
 }
 
 /**
