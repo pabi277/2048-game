@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -12,12 +13,12 @@ plugins {
 
 android {
     namespace = "io.github.pabi277.tilefold"
-    compileSdk = libs.versions.compileSdk.get().toInt()
+    compileSdk = Integer.parseInt(libs.versions.compileSdk.get())
 
     defaultConfig {
         applicationId = "io.github.pabi277.tilefold"
-        minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.targetSdk.get().toInt()
+        minSdk = Integer.parseInt(libs.versions.minSdk.get())
+        targetSdk = Integer.parseInt(libs.versions.targetSdk.get())
         versionCode = 1
         versionName = "0.1.0-phase0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -102,7 +103,7 @@ detekt {
 
 // Findings go to a text report as well as HTML, so CI can annotate exact
 // file:line positions without a log download.
-tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+tasks.withType<Detekt> {
     reports {
         txt.required.set(true)
         txt.outputLocation.set(file("build/reports/detekt/detekt.txt"))

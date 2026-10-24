@@ -12,8 +12,9 @@ import org.junit.Test
  * fail before an unreadable combination reaches a screenshot.
  */
 class ContrastTest {
-    private fun ratio(foreground: Color, background: Color): Double =
-        Contrast.contrastRatio(foreground.value.toLong(), background.value.toLong())
+    private fun ratio(foreground: Color, background: Color): Double {
+        return Contrast.contrastRatio(foreground.value.toLong(), background.value.toLong())
+    }
 
     @Test
     fun `black on white is the maximum ratio`() {
