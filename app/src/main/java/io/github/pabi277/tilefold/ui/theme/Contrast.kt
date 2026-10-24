@@ -22,8 +22,10 @@ internal object Contrast {
         green: Double,
         blue: Double,
     ): Double {
-        fun channel(value: Double): Double =
-            if (value <= 0.03928) value / 12.92 else ((value + 0.055) / 1.055).pow(2.4)
+        fun channel(value: Double): Double {
+            if (value <= 0.03928) return value / 12.92
+            return ((value + 0.055) / 1.055).pow(2.4)
+        }
 
         return 0.2126 * channel(red) + 0.7152 * channel(green) + 0.0722 * channel(blue)
     }

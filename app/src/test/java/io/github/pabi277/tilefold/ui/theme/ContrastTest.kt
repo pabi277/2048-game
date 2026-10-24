@@ -12,9 +12,8 @@ import org.junit.Test
  * fail before an unreadable combination reaches a screenshot.
  */
 class ContrastTest {
-    private fun luminanceOf(
-        color: Color,
-    ): Double = Contrast.relativeLuminance(color.red.toDouble(), color.green.toDouble(), color.blue.toDouble())
+    private fun luminanceOf(color: Color): Double =
+        Contrast.relativeLuminance(color.red.toDouble(), color.green.toDouble(), color.blue.toDouble())
 
     private fun ratio(
         foreground: Color,
