@@ -2,6 +2,8 @@
 
 package io.github.pabi277.tilefold.ui.home
 
+import android.content.res.Configuration
+import android.os.LocaleList
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -9,8 +11,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.Density
-import android.content.res.Configuration
-import android.os.LocaleList
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.pabi277.tilefold.ui.theme.TilefoldTheme
@@ -19,7 +19,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
-import java.util.Locale
 
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -33,7 +32,11 @@ class HomeScreenScreenshotTest {
         composeRule.setContent {
             TilefoldTheme(darkTheme = false) {
                 HomeScreen(
-                    state = HomeState(hasSavedGame = false, bestScore = 12480, isEmpty = false),
+                    state = HomeState(
+                        hasSavedGame = false,
+                        bestScore = 12480,
+                        isEmpty = false,
+                    ),
                     onNewGame = {},
                     onContinue = {},
                     onDaily = {},
@@ -51,7 +54,12 @@ class HomeScreenScreenshotTest {
         composeRule.setContent {
             TilefoldTheme(darkTheme = false) {
                 HomeScreen(
-                    state = HomeState(hasSavedGame = true, savedScore = 8412, savedHighestTile = 512, bestScore = 12480),
+                    state = HomeState(
+                        hasSavedGame = true,
+                        savedScore = 8412,
+                        savedHighestTile = 512,
+                        bestScore = 12480,
+                    ),
                     onNewGame = {},
                     onContinue = {},
                     onDaily = {},
@@ -69,7 +77,12 @@ class HomeScreenScreenshotTest {
         composeRule.setContent {
             TilefoldTheme(darkTheme = false) {
                 HomeScreen(
-                    state = HomeState(dailyCompleted = true, dailyStreak = 4, todaysScore = 1620, bestScore = 12480),
+                    state = HomeState(
+                        dailyCompleted = true,
+                        dailyStreak = 4,
+                        todaysScore = 1620,
+                        bestScore = 12480,
+                    ),
                     onNewGame = {},
                     onContinue = {},
                     onDaily = {},
@@ -105,7 +118,11 @@ class HomeScreenScreenshotTest {
         composeRule.setContent {
             TilefoldTheme(darkTheme = false) {
                 HomeScreen(
-                    state = HomeState(hasSavedGame = false, bestScore = 12480, storageError = true),
+                    state = HomeState(
+                        hasSavedGame = false,
+                        bestScore = 12480,
+                        storageError = true,
+                    ),
                     onNewGame = {},
                     onContinue = {},
                     onDaily = {},
@@ -152,7 +169,11 @@ class HomeScreenScreenshotTest {
             ) {
                 TilefoldTheme(darkTheme = false) {
                     HomeScreen(
-                        state = HomeState(hasSavedGame = false, bestScore = 12480, isEmpty = false),
+                        state = HomeState(
+                            hasSavedGame = false,
+                            bestScore = 12480,
+                            isEmpty = false,
+                        ),
                         onNewGame = {},
                         onContinue = {},
                         onDaily = {},
@@ -180,7 +201,11 @@ class HomeScreenScreenshotTest {
             ) {
                 TilefoldTheme(darkTheme = false) {
                     HomeScreen(
-                        state = HomeState(hasSavedGame = false, bestScore = 12480, isEmpty = false),
+                        state = HomeState(
+                            hasSavedGame = false,
+                            bestScore = 12480,
+                            isEmpty = false,
+                        ),
                         onNewGame = {},
                         onContinue = {},
                         onDaily = {},

@@ -2,14 +2,14 @@
 
 package io.github.pabi277.tilefold.ui.settings
 
+import android.content.res.Configuration
+import android.os.LocaleList
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.Density
-import android.content.res.Configuration
-import android.os.LocaleList
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.takahirom.roborazzi.captureRoboImage
 import io.github.pabi277.tilefold.domain.Language
