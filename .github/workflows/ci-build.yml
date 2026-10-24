@@ -121,7 +121,7 @@ jobs:
           import xml.etree.ElementTree as ET
 
           count = 0
-          for path in glob.glob("app/build/test-results/testDebugUnitTest/*.xml"):
+          for path in glob.glob("app/build/test-results/test*UnitTest/*.xml"):
               root = ET.parse(path).getroot()
               for case in root.iter("testcase"):
                   for failure in list(case.iter("failure")) + list(case.iter("error")):

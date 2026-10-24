@@ -155,3 +155,9 @@ dependencies {
 tasks.named("check") {
     dependsOn("testDebugUnitTest", "lintDebug", "detekt", "ktlintCheck")
 }
+
+// The release-variant unit test is not part of the per-phase gate: it would
+// duplicate the debug run, and its host activity comes from the debug-only
+// ui-test-manifest (fast-quality-no-device.md §2 — release work belongs to the
+// release lane on main, not to every phase push).
+tasks.matching { it.name == "testReleaseUnitTest" }.configureEach { enabled = false }
