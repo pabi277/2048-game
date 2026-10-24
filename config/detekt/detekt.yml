@@ -1,0 +1,25 @@
+# Tilefold — detekt overrides on top of the default config.
+# Only deviations live here; everything else is detekt's default ruleset.
+build:
+  maxIssues: 0
+
+complexity:
+  LongParameterList:
+    functionThreshold: 8
+    constructorThreshold: 8
+  TooManyFunctions:
+    thresholdInFiles: 20
+
+style:
+  MagicNumber:
+    # Design tokens and test fixtures legitimately use literals.
+    ignoreNumbers: ["-1", "0", "1", "2", "4", "8", "16", "90", "100", "255", "2048"]
+    ignoreAnnotated: ["Composable", "Preview"]
+  MaxLineLength:
+    maxLineLength: 120
+  ReturnCount:
+    max: 4
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ["Composable"]

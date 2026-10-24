@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Board, stats and settings ride along in Auto Backup until a phase
+     decides otherwise; nothing sensitive is stored. -->
+<full-backup-content>
+    <include domain="file" path="datastore/" />
+</full-backup-content>

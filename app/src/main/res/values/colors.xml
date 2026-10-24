@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Seed-derived, provisional until the UI reference is approved (phase 0-D).
+         Source of truth for values: docs/UI-REFERENCE.md tokens. -->
+    <color name="seed_primary">#B4552F</color>
+    <color name="seed_surface">#FAF6EF</color>
+    <color name="seed_surface_dark">#161311</color>
+</resources>

@@ -116,25 +116,56 @@
   button tick); no third-party audio assets, so no new licence surface. If a cue
   cannot be generated cleanly, the feature ships silent rather than borrowed.
 
+- **2026-10-24 — Phase 0 CI does not use `android-actions/setup-android`** —
+  it failed on the current runner image (run 40061789029, step 4) and is
+  Node-20-deprecated. The runner image already ships the Android SDK; the
+  workflow accepts licences and lets AGP install a missing platform. Reversible.
+- **2026-10-24 — Per-phase gate is the debug variant** — `./gradlew check` =
+  `testDebugUnitTest` + `lintDebug` + `detekt` + `ktlintCheck`;
+  `testReleaseUnitTest` is disabled because it duplicates the debug run and
+  needs the debug-only `ui-test-manifest` to host Compose (evidence: run
+  40063984300). Release artefacts are the release lane's job on `main`.
+- **2026-10-24 — Screenshots are renders, not goldens, until 0-D** — Roborazzi
+  renders light/dark and CI asserts PNGs exist and uploads them. Pixel-diff
+  goldens need frozen tokens, so they start at 0-D and from then on a visual
+  diff fails the build. Reversible only by approving goldens.
+- **2026-10-24 — Lint severity** — `abortOnError = true`,
+  `warningsAsErrors = false` in phase 0; warnings become errors in the
+  release-prep phase once the UI surface is stable.
+- **2026-10-24 — CI is self-diagnosing** — Gradle output is teed to
+  `gradle-*.log`, and detekt/ktlint/JUnit results are emitted as check-run
+  annotations, because this environment cannot download run logs or artifacts
+  (blob storage refuses connections). Helps every later chat, not just this one.
+- **2026-10-24 — `Color.value` is not an ARGB int** — the packed layout is
+  `(argb shl 32) or colorspaceId`; the contrast helper therefore takes 0..1
+  channels. Recorded so nobody reintroduces bit-fiddling (evidence: run
+  40063585285 reported 1.0 for every pair).
+
 ## Third-party licences (everything shipped, per reuse-first §3)
 
-Planned at plan time; **versions are pinned and confirmed at Phase 0**, and this
-table is updated from the real dependency graph (`AboutLibraries`) with the
-shipped licence of each entry.
+Pinned and shipped in phase 0 (versions read from the artefacts / maintained
+samples on 2026-10-24; the dependency graph is the source of truth):
 
-- Planned — Kotlin / AndroidX (Compose, DataStore, Navigation, Lifecycle,
-  Activity) — Apache-2.0 — DEPEND (platform).
-- Planned — kotlinx.serialization — Apache-2.0 — DEPEND (save encoding).
-- Planned — Roborazzi — Apache-2.0 — DEPEND (test only).
-- Planned — Robolectric — Apache-2.0 — DEPEND (test only).
-- Planned — Truth, Turbine, kotlinx-coroutines-test — Apache-2.0 — DEPEND (test only).
-- Planned — detekt (Apache-2.0) / ktlint (MIT) — DEPEND (CI only).
-- Planned — AboutLibraries — Apache-2.0 — DEPEND (credits screen).
-- Planned — Lucide icons (adapted paths) — ISC — ADAPT, notice in credits.
-- Planned — Roboto — Apache-2.0 — DEPEND/ADAPT (font).
-- Planned — Google Mobile Ads SDK — proprietary SDK, Play policy-bound —
-  DEPEND (Phase 5 only, test IDs until the live-unit GATE).
-- Planned — Play Billing Library — proprietary SDK — DEPEND (Phase 5 only).
+- Kotlin 2.2.20, kotlin-stdlib — Apache-2.0 — DEPEND
+- AndroidX: core-ktx 1.17.0, activity-compose 1.10.1, lifecycle 2.9.3,
+  Compose BOM 2025.09.01 (compose ui / foundation / material3),
+  datastore (from phase 3) — Apache-2.0 — DEPEND
+- kotlinx-serialization-json 1.8.0 — Apache-2.0 — DEPEND (save encoding, phase 3)
+- Roborazzi 1.77.0 — Apache-2.0 — DEPEND (test only)
+- Robolectric 4.16 — Apache-2.0 — DEPEND (test only)
+- Truth 1.4.4, Turbine 1.2.0, kotlinx-coroutines-test 1.10.1 — Apache-2.0 —
+  DEPEND (test only)
+- androidx.test core 1.6.1, ext-junit 1.2.1 — Apache-2.0 — DEPEND (test only)
+- detekt 1.23.8 — Apache-2.0 — DEPEND (CI only)
+- ktlint-gradle 14.2.0 (MIT) + ktlint engine 1.8.0 (MIT) — DEPEND (CI only)
+- Android Gradle Plugin 8.13.0, Gradle 8.14.3 — Apache-2.0 — DEPEND (build only)
+- Roboto — Apache-2.0 — DEPEND (Android system font, nothing bundled)
+- Planned, not yet shipped: AboutLibraries (Apache-2.0, phase 6), Lucide icons
+  adapted as `ImageVector` (ISC, phase 2), Google Mobile Ads SDK and Play
+  Billing Library (proprietary, phase 5, behind a GATE).
+- Rejected for this phase: material-color-utilities (not needed while the palette
+  is a proposal), Paparazzi (Roborazzi chosen), mockk (hand-written fakes),
+  Hilt/Koin (manual `AppContainer`).
 
 ## Open (not plan-chat questions — later gates or factual reads)
 

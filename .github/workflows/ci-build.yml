@@ -1,0 +1,278 @@
+# SPDX-License-Identifier: MIT
+# Adapted from AppFlow @57597b3332ad578614a0d9d5609f9cf8a278ee8a templates/ci-build.yml.
+#
+# Phase 0 additions to the template, all of them the no-device quality gate:
+#   * `check` task = host unit tests + Robolectric + screenshot renders + lint +
+#     detekt + ktlint, so one command proves the phase;
+#   * screenshot PNGs and lint/detekt/test reports are uploaded for the owner;
+#   * CI runs the same Gradle tasks a developer runs locally (no emulator, ever).
+#
+# Signing secrets are referenced by NAME only — never committed, never printed:
+#   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS,
+#   ANDROID_KEY_PASSWORD
+name: Android CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: No-device gate, debug build, progress APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      # The ubuntu runner image already ships the Android SDK. The separate
+      # setup-android action is not used: it is Node-20-deprecated and fails on
+      # the current runner image (run 40061789029, step 4). Accept the licences
+      # so AGP can install any missing platform/build-tools itself.
+      - name: Verify Android SDK and accept licences
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "Using Android SDK at $SDK"
+          ls "$SDK"
+          if [ -x "$SDK/cmdline-tools/latest/bin/sdkmanager" ]; then
+            yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+            "$SDK/cmdline-tools/latest/bin/sdkmanager" --list_installed | tail -20 || true
+          fi
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+
+      - name: Host tests, lint, detekt, ktlint
+        shell: bash
+        run: |
+          set -o pipefail
+          chmod +x ./gradlew
+          ./gradlew --no-daemon --stacktrace --console=plain check 2>&1 | tee gradle-check.log
+
+      - name: Build debug APK
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --stacktrace --console=plain assembleDebug 2>&1 | tee gradle-assemble.log
+
+      # Gradle's own failure lines, surfaced as check-run annotations so a
+      # failure is readable from the API without downloading a log bundle.
+      - name: Summarise Gradle failures as annotations
+        if: failure()
+        shell: bash
+        run: |
+          set +e
+          # ktlint findings (main and test source sets).
+          if [ -d app/build/reports/ktlint ]; then
+            find app/build/reports/ktlint -name '*.txt' | while IFS= read -r report; do
+              head -20 "$report" \
+                | while IFS= read -r line; do echo "::error file=${report}::${line}"; done
+            done
+          fi
+          # detekt prints a summary only; its findings live in the text report.
+          if [ -f app/build/reports/detekt/detekt.txt ]; then
+            head -60 app/build/reports/detekt/detekt.txt \
+              | while IFS= read -r line; do echo "::error file=detekt.txt::${line}"; done
+          fi
+          for log in gradle-check.log gradle-assemble.log; do
+            [ -f "$log" ] || continue
+            # The lines after "What went wrong" carry the actual cause.
+            grep -nE -A 18 '^\* What went wrong:' "$log" | head -40 \
+              | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
+            grep -nE '^e: |^> Task .* FAILED' "$log" | head -15 \
+              | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
+            # detekt / ktlint findings: <path>.kt:<line>:<col>: <message> [Rule]
+            grep -nE '\.kt:[0-9]+:[0-9]+: ' "$log" | head -40 \
+              | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
+          done
+
+      # The screenshot lane is only real if it produced images: fail loudly
+      # instead of uploading an empty artifact and calling it done.
+      - name: Verify screenshot renders were produced
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=$(find app/build -name '*.png' | wc -l)
+          echo "::notice::screenshot PNGs produced: $count"
+          find app/build -name '*.png' | head -20
+          if [ "$count" -lt 1 ]; then
+            echo "::error::No screenshot PNGs were produced by the test task"
+            exit 1
+          fi
+
+      - name: Upload progress APK (the downloadable result of this phase)
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-progress-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      # Failing test names and messages, readable from the API.
+      - name: Summarise test failures as annotations
+        if: failure()
+        shell: bash
+        run: |
+          python3 - <<'PYEOF'
+          import glob
+          import xml.etree.ElementTree as ET
+
+          count = 0
+          for path in glob.glob("app/build/test-results/test*UnitTest/*.xml"):
+              root = ET.parse(path).getroot()
+              for case in root.iter("testcase"):
+                  for failure in list(case.iter("failure")) + list(case.iter("error")):
+                      message = " ".join((failure.get("message") or "").split())[:400]
+                      detail = " ".join((failure.text or "").split())[:600]
+                      print(f"::error file={path}::{case.get('classname')}#{case.get('name')}: {message} | {detail}")
+                      count += 1
+          print(f"annotated {count} failing tests")
+          PYEOF
+
+      - name: Upload screenshot renders (no-device UI evidence)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-screenshots
+          path: |
+            app/build/roborazzi/**
+            app/build/**/*.png
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload quality-gate reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-gate-reports
+          path: |
+            app/build/reports/tests/**
+            app/build/reports/lint-results-*.html
+            app/build/reports/detekt/**
+            gradle-*.log
+          if-no-files-found: warn
+          retention-days: 14
+
+  # The release lane needs the keystore, which only the owner can add. Until
+  # those secrets exist this job reports the fact and skips, so a main push is
+  # never red for a missing secret that release work has not reached yet. Once
+  # all four are present the lane runs and still fails hard on any problem.
+  signing-ready:
+    name: Check release signing secrets
+    needs: test
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+    steps:
+      - id: check
+        name: Report whether the four signing secrets are present
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=""
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            if [[ -z "${!name:-}" ]]; then
+              missing="$missing $name"
+            fi
+          done
+          if [[ -n "$missing" ]]; then
+            echo "::notice::Release signing not configured (missing:$missing) — signed lane skipped; debug progress APK above is the phase result."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "All four signing secrets present."
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  signed-release:
+    name: Signed release AAB and APK
+    needs: [test, signing-ready]
+    if: needs.signing-ready.outputs.configured == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      # The ubuntu runner image already ships the Android SDK. The separate
+      # setup-android action is not used: it is Node-20-deprecated and fails on
+      # the current runner image (run 40061789029, step 4). Accept the licences
+      # so AGP can install any missing platform/build-tools itself.
+      - name: Verify Android SDK and accept licences
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "Using Android SDK at $SDK"
+          ls "$SDK"
+          if [ -x "$SDK/cmdline-tools/latest/bin/sdkmanager" ]; then
+            yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+            "$SDK/cmdline-tools/latest/bin/sdkmanager" --list_installed | tail -20 || true
+          fi
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+
+      - name: Prepare signing key on runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error::Missing required Actions secret: $name"
+              exit 1
+            fi
+          done
+          KEYSTORE_PATH="$RUNNER_TEMP/release-upload.jks"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
+          test -s "$KEYSTORE_PATH"
+          chmod 600 "$KEYSTORE_PATH"
+          echo "ANDROID_KEYSTORE_PATH=$KEYSTORE_PATH" >> "$GITHUB_ENV"
+
+      - name: Build signed release AAB and APK
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --no-daemon --stacktrace bundleRelease assembleRelease
+
+      - name: Upload signed release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-android-release
+          path: |
+            app/build/outputs/bundle/release/*.aab
+            app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 14

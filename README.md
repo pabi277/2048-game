@@ -2,17 +2,14 @@
 
 # Tilefold (working name)
 
-Playbook pin: AppFlow @ `57597b3332ad578614a0d9d5609f9cf8a278ee8a` (pinned 2026-10-24).
-The frozen `templates/` + `knowledge/` snapshot and the required provenance line
-are added in phase 0.1, before any app code.
+Bootstrapped from AppFlow @ 57597b3332ad578614a0d9d5609f9cf8a278ee8a on 2026-10-24
 
 An offline 4×4 sliding-merge number puzzle for Android: slide tiles, merge equal
 numbers, race to 2048 without losing your board or your train of thought.
 
-> **Status: plan approved 2026-10-24, not built.** This repository currently
-> holds the plan documents and the app's operating manual only. Gradle skeleton,
-> CI, the playbook snapshot and all app code arrive in phase 0. Nothing below
-> claims a shipped feature.
+> **Status: phase 0 in progress.** The plan is approved (2026-10-24) and the
+> playbook snapshot is frozen in this repo. The Gradle skeleton, CI and the first
+> (hello-screen) build land in phase 0; nothing below claims a shipped feature.
 
 ## What it does (v1 scope — planned)
 

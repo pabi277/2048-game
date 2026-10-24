@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tilefold</string>
+
+    <!-- Hello screen (phase 0). Full copy lands with the approved reference. -->
+    <string name="hello_title">Tilefold</string>
+    <string name="hello_tagline">Slide. Merge. Breathe.</string>
+    <string name="hello_phase">Phase 0 · foundation build</string>
+    <string name="hello_footer">No banners · No ads during play · Offline</string>
+</resources>
