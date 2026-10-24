@@ -136,6 +136,122 @@ class GameScreenScreenshotTest {
         composeRule.onRoot().captureRoboImage("src/test/screenshots/game-pad.png")
     }
 
+    @Test
+    fun gameStorageError() {
+        composeRule.setContent {
+            TilefoldTheme(darkTheme = false) {
+                Screen(
+                    board = MID,
+                    score = 8412,
+                    best = 12480,
+                    hintVisible = false,
+                    canUndo = true,
+                    storageError = true,
+                )
+            }
+        }
+
+        composeRule.onRoot().captureRoboImage("src/test/screenshots/game-storage-error.png")
+    }
+
+    @Test
+    fun win() {
+        composeRule.setContent {
+            TilefoldTheme(darkTheme = false) {
+                ScreenWithDialog(
+                    board = WIN,
+                    score = 21044,
+                    best = 21044,
+                    winDialog = true,
+                )
+            }
+        }
+
+        composeRule.onRoot().captureRoboImage("src/test/screenshots/win.png")
+    }
+
+    @Test
+    fun winDarkLarge() {
+        composeRule.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale = 2.0f)) {
+                TilefoldTheme(darkTheme = true) {
+                    ScreenWithDialog(
+                        board = WIN,
+                        score = 21044,
+                        best = 21044,
+                        winDialog = true,
+                    )
+                }
+            }
+        }
+
+        composeRule.onRoot().captureRoboImage("src/test/screenshots/win-dark-large.png")
+    }
+
+    @Test
+    fun gameOver() {
+        composeRule.setContent {
+            TilefoldTheme(darkTheme = false) {
+                ScreenWithDialog(
+                    board = OVER,
+                    score = 3120,
+                    best = 3120,
+                    gameOverDialog = true,
+                    isNewBest = true,
+                )
+            }
+        }
+
+        composeRule.onRoot().captureRoboImage("src/test/screenshots/game-over.png")
+    }
+
+    @Test
+    fun gameOverDarkLarge() {
+        composeRule.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale = 2.0f)) {
+                TilefoldTheme(darkTheme = true) {
+                    ScreenWithDialog(
+                        board = OVER,
+                        score = 3120,
+                        best = 12480,
+                        gameOverDialog = true,
+                        isNewBest = false,
+                    )
+                }
+            }
+        }
+
+        composeRule.onRoot().captureRoboImage("src/test/screenshots/game-over-dark-large.png")
+    }
+
+    @Test
+    fun confirmRestart() {
+        composeRule.setContent {
+            TilefoldTheme(darkTheme = false) {
+                GameScreen(
+                    state =
+                        GameScreenState(
+                            scene = BoardScene.still(MID),
+                            score = 8412,
+                            best = 12480,
+                            status = GameStatus.PLAYING,
+                            canUndo = true,
+                            hintVisible = false,
+                            padVisible = false,
+                            dimmed = true,
+                            showRestartConfirm = true,
+                        ),
+                    actions = NO_ACTIONS,
+                    reducedMotion = true,
+                )
+            }
+        }
+
+        composeRule.onRoot().captureRoboImage("src/test/screenshots/confirm-restart.png")
+    }
+
     @Composable
     private fun Screen(
         board: Board,
@@ -145,6 +261,7 @@ class GameScreenScreenshotTest {
         canUndo: Boolean,
         dimmed: Boolean = false,
         padVisible: Boolean = false,
+        storageError: Boolean = false,
     ) {
         GameScreen(
             state =
@@ -157,6 +274,37 @@ class GameScreenScreenshotTest {
                     hintVisible = hintVisible,
                     padVisible = padVisible,
                     dimmed = dimmed,
+                    storageError = storageError,
+                ),
+            actions = NO_ACTIONS,
+            reducedMotion = true,
+        )
+    }
+
+    @Composable
+    private fun ScreenWithDialog(
+        board: Board,
+        score: Int,
+        best: Int,
+        winDialog: Boolean = false,
+        gameOverDialog: Boolean = false,
+        isNewBest: Boolean = false,
+    ) {
+        GameScreen(
+            state =
+                GameScreenState(
+                    scene = BoardScene.still(board),
+                    score = score,
+                    best = best,
+                    status = if (winDialog) GameStatus.WON else if (gameOverDialog) GameStatus.GAME_OVER else GameStatus.PLAYING,
+                    canUndo = true,
+                    hintVisible = false,
+                    padVisible = false,
+                    dimmed = true,
+                    winDialogVisible = winDialog,
+                    gameOverDialogVisible = gameOverDialog,
+                    isNewBest = isNewBest,
+                    canEarnUndo = false,
                 ),
             actions = NO_ACTIONS,
             reducedMotion = true,
@@ -190,6 +338,22 @@ class GameScreenScreenshotTest {
                 listOf(32, 64, 128, 256),
                 listOf(512, 1024, 2, 0),
                 listOf(0, 8, 32, 64),
+            )
+
+        val WIN =
+            Board.rows(
+                listOf(2048, 1024, 512, 256),
+                listOf(4, 8, 16, 32),
+                listOf(2, 4, 8, 16),
+                listOf(0, 2, 0, 4),
+            )
+
+        val OVER =
+            Board.rows(
+                listOf(2, 4, 8, 16),
+                listOf(16, 8, 4, 2),
+                listOf(2, 4, 8, 16),
+                listOf(16, 8, 4, 2),
             )
     }
 }

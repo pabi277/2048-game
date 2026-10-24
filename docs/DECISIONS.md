@@ -250,6 +250,12 @@
   the reference, and the Compose side gets the same rule (`fillMaxSize` inside a
   square cell) written down before phase 2 draws a tile.
 
+- **2026-10-24 — Persistence is DataStore Preferences + SaveCodec** — `GameSaveRepository` debounces ≤250 ms and saves on `ON_STOP`; `StatsRepository` mirrors it for `Stats`. `SaveCodec` already proved board/score/RNG/keep-playing round-trip; `StatsCodec` adds the same guarantees for stats (schemaVersion 1, defensive `decode → null`). Corrupt payload → storage banner, never a crash or half-board. Reversible only with a version bump + decode test.
+- **2026-10-24 — Undo allowance is a domain rule, not a UI limit** — `UndoAllowance` (1 free, rewarded +1 max 3, `canUndo`/`canEarnMore`) lives in `domain/` and the session checks it before `Game.undo()`. Undo is allowed after game-over (verified request in research). Reversible only with a GATE (it changes the monetisation promise).
+- **2026-10-24 — Ad Policy is pure Kotlin and host-testable** — `AdPolicy.canShowRewardedUndo` and `canShowInterstitial` (1 per 3 game-overs, ≥120 s, never ad-free/without consent/on win) are pure functions; `AdService` is only touched after the policy says yes (`policy says no ⇒ no SDK call` proved by `AdPolicyTest`). Test ad units only until the owner's live-unit GATE.
+- **2026-10-24 — Daily is UTC epoch-day seeded** — `DailyChallenge.epochDay(millis) = millis / 86_400_000`, `seedFor(epochDay) = epochDay`, `newDailyGame(epochDay) = Game.newGame(seed)`. Same board for everyone, local streak (`lastDailyEpochDay`/`dailyStreak`) and `bestDailyScore` live in `Stats`.
+- **2026-10-24 — Storage error is a banner, not a block** — `GameSaveRepository.loadError`/`StatsRepository.loadError` surface as `InlineBanner` (error tone, `Retry`) on Game and Stats; the game continues with a fresh board/stats. A board is never lost, but a corrupt one is never restored.
+
 ## Third-party licences (everything shipped, per reuse-first §3)
 
 
@@ -259,7 +265,7 @@ samples on 2026-10-24; the dependency graph is the source of truth):
 - Kotlin 2.2.20, kotlin-stdlib — Apache-2.0 — DEPEND
 - AndroidX: core-ktx 1.17.0, activity-compose 1.10.1, lifecycle 2.9.3,
   Compose BOM 2025.09.01 (compose ui / foundation / material3),
-  datastore (from phase 3) — Apache-2.0 — DEPEND
+  datastore-preferences 1.1.1 (from phase 3) — Apache-2.0 — DEPEND
 - kotlinx-serialization-json 1.8.0 — Apache-2.0 — DEPEND (save encoding, phase 3)
 - Roborazzi 1.77.0 — Apache-2.0 — DEPEND (test only)
 - Robolectric 4.16 — Apache-2.0 — DEPEND (test only)
@@ -278,6 +284,7 @@ samples on 2026-10-24; the dependency graph is the source of truth):
   playwright-core 1.64.1 (Apache-2.0) + @sparticuz/chromium 153.0.0 (MIT).
   None of these enter the APK; the licence inventory of the shipped app is
   unchanged by this phase.
+- **Shipped in phase 3 (new licence surface, one item):** AndroidX DataStore Preferences 1.1.1 — Apache-2.0 — DEPEND (save + stats, `data/`).
 - **Shipped in phase 2 (new licence surface, one item):** the Lucide 1.61.0
   glyph set used by the game screen, adapted into `ImageVector`
   (`ui/icons/TilefoldIcons.kt`) — **ISC**, © Lucide Contributors. Nine paths, no

@@ -18,6 +18,47 @@
     <string name="game_direction_pad">Direction pad</string>
     <string name="game_over_chip">Game over</string>
 
+    <!-- Game states (phase 3). -->
+    <string name="game_new">New game</string>
+    <string name="game_undo_last">Undo last move</string>
+    <string name="game_new_best">New best</string>
+    <string name="game_rewarded_undo">Undo · watch a rewarded ad</string>
+    <string name="game_free_undo">1 free undo</string>
+    <string name="game_over_title">Game over</string>
+    <string name="game_over_final_score">Final score</string>
+    <string name="win_title">You made 2048</string>
+    <string name="win_body">Keep going for a higher tile — the board stays.</string>
+    <string name="win_keep_playing">Keep playing</string>
+    <string name="cancel">Cancel</string>
+    <string name="restart_title">Restart this game?</string>
+    <string name="restart_body">Your board and score will be cleared.</string>
+
+    <!-- Banners (phase 3). -->
+    <string name="banner_retry">Retry</string>
+    <string name="banner_save_error">Progress isn\'t saving on this device</string>
+    <string name="banner_save_detail">Playing on is safe.</string>
+    <string name="banner_save_read_error">Couldn\'t read your saved game</string>
+    <string name="banner_save_read_detail">Your last board may be missing.</string>
+    <string name="banner_stats_error">Couldn\'t read your stats</string>
+    <string name="banner_stats_unknown">Blanks below are unknown, not zero.</string>
+
+    <!-- Stats (phase 3). -->
+    <string name="stats_title">Stats</string>
+    <string name="stats_empty_title">No games yet</string>
+    <string name="stats_empty_body">Your first board is one tap away.</string>
+    <string name="stats_games_played">Games played</string>
+    <string name="stats_wins">Wins</string>
+    <string name="stats_best_score">Best score</string>
+    <string name="stats_highest_tile">Highest tile</string>
+    <string name="stats_daily_streak">Daily streak</string>
+    <string name="stats_best_daily">Best daily score</string>
+    <string name="stats_unknown">—</string>
+
+    <!-- Daily (phase 3). -->
+    <string name="daily_title">Daily challenge</string>
+    <string name="daily_done">Played — come back tomorrow</string>
+    <string name="streak_days">%d-day streak</string>
+
     <!-- Pause sheet. -->
     <string name="pause_title">Paused</string>
     <string name="pause_resume">Resume</string>

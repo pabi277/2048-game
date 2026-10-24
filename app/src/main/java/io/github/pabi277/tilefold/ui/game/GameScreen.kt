@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -42,7 +43,9 @@ import androidx.compose.ui.unit.dp
 import io.github.pabi277.tilefold.R
 import io.github.pabi277.tilefold.domain.Direction
 import io.github.pabi277.tilefold.domain.GameStatus
+import io.github.pabi277.tilefold.ui.components.ConfirmDialog
 import io.github.pabi277.tilefold.ui.components.IconAction
+import io.github.pabi277.tilefold.ui.components.InlineBanner
 import io.github.pabi277.tilefold.ui.components.OutlineChip
 import io.github.pabi277.tilefold.ui.components.TextAction
 import io.github.pabi277.tilefold.ui.icons.TilefoldIcons
@@ -66,15 +69,29 @@ internal data class GameScreenState(
     val hintVisible: Boolean,
     val padVisible: Boolean,
     val dimmed: Boolean = false,
+    val winDialogVisible: Boolean = false,
+    val gameOverDialogVisible: Boolean = false,
+    val isNewBest: Boolean = false,
+    val canEarnUndo: Boolean = false,
+    val storageError: Boolean = false,
+    val showRestartConfirm: Boolean = false,
 )
 
 /** Everything the player can do on the game screen. */
 internal class GameActions(
     val onMove: (Direction) -> Unit,
     val onUndo: () -> Unit,
+    val onRewardedUndo: () -> Unit = {},
+    val onKeepPlaying: () -> Unit = {},
+    val onNewGameFromWin: () -> Unit = {},
+    val onNewGameFromGameOver: () -> Unit = {},
+    val onDismissGameOver: () -> Unit = {},
     val onRestart: () -> Unit,
+    val onConfirmRestart: () -> Unit = onRestart,
+    val onDismissRestartConfirm: () -> Unit = {},
     val onHome: () -> Unit,
     val onTogglePad: () -> Unit,
+    val onRetryStorage: () -> Unit = {},
 )
 
 /**
@@ -95,8 +112,6 @@ internal fun GameScreen(
     reducedMotion: Boolean = rememberReducedMotion(),
 ) {
     val focusRequester = remember { FocusRequester() }
-    // Arrow keys need a focused node: the screen owns the focus, so a keyboard
-    // (Chromebook, tablet, desktop-mode phone) can play without touching the pad.
     LaunchedEffect(focusRequester) {
         runCatching { focusRequester.requestFocus() }
     }
@@ -108,51 +123,94 @@ internal fun GameScreen(
             label = "score",
         )
     val textPrimary = MaterialTheme.colorScheme.onBackground
-    // The lambda is held in a val so the modifier chain below stays a plain
-    // chain of calls — a trailing lambda inside a chain is what ktlint's
-    // `chain-method-continuation` rule rejects.
     val keyHandler: (KeyEvent) -> Boolean = { event ->
         handleKey(event.type, event.key, actions.onMove)
     }
 
-    Column(
+    Box(
         modifier =
             modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .safeDrawingPadding()
-                .padding(horizontal = Dimens.ScreenPaddingHorizontal, vertical = Dimens.ScreenPaddingVertical)
-                .focusRequester(focusRequester)
-                .onPreviewKeyEvent(keyHandler)
-                .focusable(),
+                .background(MaterialTheme.colorScheme.background),
     ) {
-        TitleRow(onHome = actions.onHome, onRestart = actions.onRestart, tint = textPrimary)
-        ScoreRow(score = animatedScore, best = state.best)
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .safeDrawingPadding()
+                    .padding(horizontal = Dimens.ScreenPaddingHorizontal, vertical = Dimens.ScreenPaddingVertical)
+                    .focusRequester(focusRequester)
+                    .onPreviewKeyEvent(keyHandler)
+                    .focusable(),
+        ) {
+            TitleRow(onHome = actions.onHome, onRestart = actions.onRestart, tint = textPrimary)
+            ScoreRow(score = animatedScore, best = state.best)
 
-        BoardFrame(
-            scene = state.scene,
-            onMove = actions.onMove,
-            reducedMotion = reducedMotion,
-            dim = state.dimmed,
-            modifier = Modifier.padding(top = Dimens.BoardControlsGap),
-        )
+            if (state.storageError) {
+                InlineBanner(
+                    message = stringResource(R.string.banner_save_error),
+                    detail = stringResource(R.string.banner_save_detail),
+                    onRetry = actions.onRetryStorage,
+                    modifier = Modifier.padding(top = 12.dp),
+                )
+            }
 
-        ControlRow(
-            canUndo = state.canUndo,
-            status = state.status,
-            hintVisible = state.hintVisible,
-            padVisible = state.padVisible,
-            tint = textPrimary,
-            actions = actions,
-        )
-
-        if (state.padVisible) {
-            DirectionPad(
+            BoardFrame(
+                scene = state.scene,
                 onMove = actions.onMove,
-                modifier = Modifier.padding(top = Dimens.SameRowGap),
+                reducedMotion = reducedMotion,
+                dim = state.dimmed,
+                modifier = Modifier.padding(top = Dimens.BoardControlsGap),
+            )
+
+            ControlRow(
+                canUndo = state.canUndo,
+                hintVisible = state.hintVisible,
+                padVisible = state.padVisible,
+                tint = textPrimary,
+                actions = actions,
+            )
+
+            if (state.padVisible) {
+                DirectionPad(
+                    onMove = actions.onMove,
+                    modifier = Modifier.padding(top = Dimens.SameRowGap),
+                )
+            }
+            Spacer(Modifier.height(Dimens.SameRowGap))
+        }
+
+        if (state.winDialogVisible) {
+            WinDialog(
+                score = state.score,
+                best = state.best,
+                onKeepPlaying = actions.onKeepPlaying,
+                onNewGame = actions.onNewGameFromWin,
             )
         }
-        Spacer(Modifier.height(Dimens.SameRowGap))
+        if (state.gameOverDialogVisible) {
+            GameOverDialog(
+                score = state.score,
+                best = state.best,
+                isNewBest = state.isNewBest,
+                canUndo = state.canUndo,
+                canEarnUndo = state.canEarnUndo,
+                onUndo = actions.onUndo,
+                onRewardedUndo = actions.onRewardedUndo,
+                onNewGame = actions.onNewGameFromGameOver,
+                onHome = actions.onHome,
+            )
+        }
+        if (state.showRestartConfirm) {
+            ConfirmDialog(
+                title = stringResource(R.string.restart_title),
+                body = stringResource(R.string.restart_body),
+                confirmLabel = stringResource(R.string.game_restart),
+                dismissLabel = stringResource(R.string.cancel),
+                onConfirm = actions.onConfirmRestart,
+                onDismiss = actions.onDismissRestartConfirm,
+            )
+        }
     }
 }
 
@@ -220,11 +278,10 @@ private fun TitleRow(
     }
 }
 
-/** Undo on the left, the hint or game-over chip in the middle, the pad toggle on the right. */
+/** Undo on the left, the hint in the middle, the pad toggle on the right. */
 @Composable
 private fun ControlRow(
     canUndo: Boolean,
-    status: GameStatus,
     hintVisible: Boolean,
     padVisible: Boolean,
     tint: Color,
@@ -245,29 +302,15 @@ private fun ControlRow(
             icon = TilefoldIcons.Undo2,
             enabled = canUndo,
         )
-        StatusChip(status = status, hintVisible = hintVisible)
+        if (hintVisible) {
+            OutlineChip(stringResource(R.string.game_swipe_hint), Modifier.testTag(HINT_TAG))
+        }
         IconAction(
             icon = TilefoldIcons.ArrowUp,
             label = stringResource(R.string.game_direction_pad),
             onClick = actions.onTogglePad,
             tint = if (padVisible) MaterialTheme.colorScheme.primary else tint,
         )
-    }
-}
-
-/**
- * The "Swipe to merge" hint until the first move, and — until the game-over
- * dialog ships in phase 3 — a quiet "Game over" chip so a finished board is never
- * a silent freeze.
- */
-@Composable
-private fun StatusChip(
-    status: GameStatus,
-    hintVisible: Boolean,
-) {
-    when {
-        status == GameStatus.GAME_OVER -> OutlineChip(stringResource(R.string.game_over_chip))
-        hintVisible -> OutlineChip(stringResource(R.string.game_swipe_hint), Modifier.testTag(HINT_TAG))
     }
 }
 

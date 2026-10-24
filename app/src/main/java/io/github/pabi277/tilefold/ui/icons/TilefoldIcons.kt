@@ -120,6 +120,19 @@ internal object TilefoldIcons {
         )
     }
 
+    /** Lucide `circle-help` — Banner. */
+    val Help: ImageVector by lazy {
+        strokeIcon(
+            name = "circle-help",
+            paths =
+                arrayOf(
+                    "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3",
+                    "M12 17h.01",
+                    "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z",
+                ),
+        )
+    }
+
     /** Lucide `x` — Dismiss. */
     val X: ImageVector by lazy {
         strokeIcon(

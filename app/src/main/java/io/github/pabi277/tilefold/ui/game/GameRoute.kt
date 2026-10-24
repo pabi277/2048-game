@@ -6,16 +6,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import io.github.pabi277.tilefold.data.AppContainer
 import kotlinx.coroutines.delay
-import kotlin.random.Random
+import kotlinx.coroutines.launch
 
 /**
- * The game, wired together: one [GameSession] plus the pause behaviour.
+ * The game, wired together: one [GameSession] plus the pause behaviour and
+ * persistence.
  *
  * Three things live here and nowhere else:
  * - **auto-pause**: the app going to the background pauses the game, so a phone
@@ -24,31 +31,62 @@ import kotlin.random.Random
  *   system back gesture;
  * - **cleanup of absorbed tiles**, so a merge leaves no invisible remnants
  *   behind after its slide finishes.
+ *
+ * Persistence: on every valid move debounced ≤250 ms and on `ON_STOP` immediately,
+ * resuming on launch through [io.github.pabi277.tilefold.domain.SaveCodec].
  */
 @Composable
 fun GameRoute(
     modifier: Modifier = Modifier,
     seed: Long? = null,
+    container: AppContainer? = null,
 ) {
-    // A real game is seeded from the clock; a test passes a seed and gets the
-    // same board every run (`rule.md` §5 — a board is always reproducible).
-    val startSeed = remember(seed) { seed ?: Random.nextLong() }
-    val session = remember(startSeed) { GameSession(startSeed) }
+    val context = LocalContext.current
+    val appContainer = container ?: remember { AppContainer(context.applicationContext) }
+    val scope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    val session = remember(seed, appContainer) {
+        val s = GameSession(seed = seed ?: kotlin.random.Random.nextLong())
+        s.onGameChanged = { game ->
+            appContainer.gameSaveRepository.saveDebounced(scope, game)
+        }
+        s.onStatsChanged = { stats ->
+            scope.launch { appContainer.statsRepository.save(stats) }
+        }
+        s
+    }
+    var isRestoring by remember { mutableStateOf(true) }
     val actions = remember(session) { session.actions() }
     val reducedMotion = rememberReducedMotion()
-    val lifecycleOwner = LocalLifecycleOwner.current
     val leaving = session.scene.leaving
+
+    LaunchedEffect(appContainer) {
+        val restored = appContainer.gameSaveRepository.load()
+        val stats = appContainer.statsRepository.load()
+        if (appContainer.gameSaveRepository.loadError || appContainer.statsRepository.loadError) {
+            session.setStorageError(true)
+        }
+        if (restored != null) {
+            session.restore(restored, stats)
+        } else {
+            session.updateStatsExplicit(stats)
+        }
+        isRestoring = false
+    }
 
     DisposableEffect(lifecycleOwner) {
         val observer =
             LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_STOP) session.pause()
+                if (event == Lifecycle.Event.ON_STOP) {
+                    session.pause()
+                    scope.launch { appContainer.gameSaveRepository.saveNow(session.game) }
+                }
             }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    // A faded-out tile is only needed while its slide runs.
     LaunchedEffect(leaving) {
         if (leaving.isEmpty()) return@LaunchedEffect
         delay((Motion.slide(reducedMotion) + Motion.pop(reducedMotion)).toLong())
@@ -57,12 +95,16 @@ fun GameRoute(
 
     BackHandler(enabled = session.paused) { session.resume() }
 
-    GameContent(
-        session = session,
-        actions = actions,
-        reducedMotion = reducedMotion,
-        modifier = modifier.fillMaxSize(),
-    )
+    if (isRestoring) {
+        Box(modifier = modifier.fillMaxSize())
+    } else {
+        GameContent(
+            session = session,
+            actions = actions,
+            reducedMotion = reducedMotion,
+            modifier = modifier.fillMaxSize(),
+        )
+    }
 }
 
 /**

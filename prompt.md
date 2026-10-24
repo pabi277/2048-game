@@ -147,16 +147,12 @@
 - **`main` is now the source of truth**: it holds phases 0, 0-D, 1 and 2
   (PR #4 merge commit). The phase-1/2 session branch is finished — do not keep
   working on it or re-merge it.
-- Next: **phase 3 — persistence, game states, undo, stats, daily** (parts
-  3.1–3.4), from a **fresh session branch cut from `main`**. The board, the
-  pause sheet and the motion are done; phase 3 adds DataStore save on every
-  valid move + on stop, resume on launch through `SaveCodec`, the corrupt-save
-  fallback with the storage banner, the win/game-over dialogs (replacing
-  `GameSession.releaseWin()` and the `Game over` chip), the undo allowance
-  (1 free, undo after game over, rewarded +1 max 3) behind a host-testable ad
-  `Policy` that never calls an SDK when it says no, and the Stats + Daily
-  screens. `GameSession` is the seam the store plugs into; nothing in `ui/` may
-  re-implement a rule.
+- **Phase 3 🚧 2026-10-24 — persistence, game states, undo, stats, daily — in progress on `arena/8e4a726d-2048-game`** (branch cut from `1145e35`).
+  - 3.1 — DataStore save on every valid move (debounced 250 ms) + on `ON_STOP`, resume on launch through `SaveCodec` with exact board/score/keep-playing/RNG; corrupt-save fallback + `InlineBanner` storage error.
+  - 3.2 — win dialog (`You made 2048` + `Keep playing`) and game-over dialog (`Final score`/`Best`/`New best` chip, `Undo last move`, `New game`, `Home`) replacing `releaseWin()` and the `Game over` chip; restart confirm.
+  - 3.3 — undo allowance (1 free, undo-after-game-over, rewarded +1 max 3) behind pure `AdPolicy` (host-testable, never calls SDK when it says no; test ad units only).
+  - 3.4 — Stats screen (six tiles, empty + storage-error) + Daily Challenge (UTC epoch-day seed, same board for everyone, local streak + best daily score).
+  - Record: `docs/phases/03-save-states.md`; roadmap row 3 → 🚧.
 - Open owner items: the reference screenshot is no longer needed (the reference
   is ours and approved); live ad units only in phase 5 and only after a GATE.
 

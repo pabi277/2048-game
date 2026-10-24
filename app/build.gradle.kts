@@ -19,8 +19,8 @@ android {
         applicationId = "io.github.pabi277.tilefold"
         minSdk = Integer.parseInt(libs.versions.minSdk.get())
         targetSdk = Integer.parseInt(libs.versions.targetSdk.get())
-        versionCode = 1
-        versionName = "0.1.0-phase0"
+        versionCode = 3
+        versionName = "0.3.0-phase3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -143,6 +143,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
     debugImplementation(libs.androidx.compose.ui.tooling)
     // Registers ComponentActivity for Robolectric-driven Compose screenshot tests.
     debugImplementation(libs.androidx.compose.ui.test.manifest)

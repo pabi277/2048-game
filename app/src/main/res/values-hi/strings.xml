@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Brand name stays Latin; product copy is translated. Phase 4 adds the
-         full, reviewed Hindi string set with a parity test. -->
     <string name="app_name">Tilefold</string>
 
     <string name="hello_title">Tilefold</string>
@@ -9,10 +7,6 @@
     <string name="hello_phase">चरण 0 · बुनियादी बिल्ड</string>
     <string name="hello_footer">कोई बैनर नहीं · खेल के दौरान कोई विज्ञापन नहीं · ऑफ़लाइन</string>
 
-    <!-- Game screen (phase 2). Copy is the approved reference's own Hindi
-         wording (`design/reference/src/strings.js`); the four direction labels
-         are the screen-reader names of the pad keys, which the reference draws
-         as icons only. -->
     <string name="game_score">स्कोर</string>
     <string name="game_best">सर्वश्रेष्ठ</string>
     <string name="game_home">होम</string>
@@ -22,12 +16,47 @@
     <string name="game_direction_pad">दिशा पैड</string>
     <string name="game_over_chip">खेल समाप्त</string>
 
-    <!-- Pause sheet. -->
+    <string name="game_new">नया खेल</string>
+    <string name="game_undo_last">पिछली चाल पूर्ववत करें</string>
+    <string name="game_new_best">नया रिकॉर्ड</string>
+    <string name="game_rewarded_undo">पूर्ववत · विज्ञापन देखें</string>
+    <string name="game_free_undo">1 मुफ़्त पूर्ववत</string>
+    <string name="game_over_title">खेल समाप्त</string>
+    <string name="game_over_final_score">अंतिम स्कोर</string>
+    <string name="win_title">आपने 2048 बना लिया!</string>
+    <string name="win_body">ऊँची टाइल के लिए खेलते रहें — बोर्ड वैसा ही रहेगा।</string>
+    <string name="win_keep_playing">खेलते रहें</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="restart_title">यह खेल फिर से शुरू करें?</string>
+    <string name="restart_body">आपका बोर्ड और स्कोर मिट जाएगा।</string>
+
+    <string name="banner_retry">पुनः प्रयास</string>
+    <string name="banner_save_error">इस डिवाइस पर प्रगति सहेजी नहीं जा रही</string>
+    <string name="banner_save_detail">खेलना सुरक्षित है।</string>
+    <string name="banner_save_read_error">आपका सहेजा खेल पढ़ा नहीं जा सका</string>
+    <string name="banner_save_read_detail">आपका पिछला बोर्ड गायब हो सकता है।</string>
+    <string name="banner_stats_error">आपके आँकड़े पढ़े नहीं जा सके</string>
+    <string name="banner_stats_unknown">नीचे दिख रहे खाली स्थान अज्ञात हैं, शून्य नहीं</string>
+
+    <string name="stats_title">आँकड़े</string>
+    <string name="stats_empty_title">अभी कोई खेल नहीं</string>
+    <string name="stats_empty_body">आपका पहला बोर्ड बस एक टैप दूर है।</string>
+    <string name="stats_games_played">खेले गए खेल</string>
+    <string name="stats_wins">जीत</string>
+    <string name="stats_best_score">सर्वश्रेष्ठ स्कोर</string>
+    <string name="stats_highest_tile">सबसे ऊँची टाइल</string>
+    <string name="stats_daily_streak">दैनिक लय</string>
+    <string name="stats_best_daily">सर्वश्रेष्ठ दैनिक स्कोर</string>
+    <string name="stats_unknown">—</string>
+
+    <string name="daily_title">रोज़ाना चुनौती</string>
+    <string name="daily_done">खेल लिया — कल फिर आएँ</string>
+    <string name="streak_days">%d दिन की लय</string>
+
     <string name="pause_title">रुका हुआ</string>
     <string name="pause_resume">जारी रखें</string>
     <string name="pause_meta">स्कोर %1$s · सबसे ऊँची टाइल %2$s</string>
 
-    <!-- Direction keys: the pad labels and the screen-reader names. -->
     <string name="direction_up">ऊपर</string>
     <string name="direction_down">नीचे</string>
     <string name="direction_left">बाएँ</string>
