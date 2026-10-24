@@ -6,6 +6,7 @@ package io.github.pabi277.tilefold.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -188,13 +188,21 @@ internal fun HomeScreen(
                 onClick = onHowToPlay,
                 modifier = Modifier.testTag(HOME_HOW_TO_PLAY_TAG),
             )
-            Text(text = "·", color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = 4.dp))
+            Text(
+                text = "·",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 4.dp),
+            )
             TextAction(
                 label = stringResource(R.string.home_stats),
                 onClick = onStats,
                 modifier = Modifier.testTag(HOME_STATS_TAG),
             )
-            Text(text = "·", color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = 4.dp))
+            Text(
+                text = "·",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 4.dp),
+            )
             TextAction(
                 label = stringResource(R.string.home_settings),
                 onClick = onSettings,
@@ -259,7 +267,11 @@ private fun ResumeCard(
             modifier = Modifier.padding(horizontal = 16.dp),
         )
         Text(
-            text = stringResource(R.string.home_resume_meta, score.toString(), highestTile.toString()),
+            text = stringResource(
+                R.string.home_resume_meta,
+                score.toString(),
+                highestTile.toString(),
+            ),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
