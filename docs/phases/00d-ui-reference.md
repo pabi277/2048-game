@@ -2,7 +2,7 @@
 
 # Phase 0-D — UI reference site + tokens freeze
 
-- Status: 🚧 owner review open (built, presented, **not yet approved**)
+- Status: ✅ approved + frozen 2026-10-24 (owner approval in chat; merged to `main`)
 - Date: 2026-10-24 · Branch: `arena/8c6acb31-2048-game`
 - Provenance: AppFlow @ `57597b3332ad578614a0d9d5609f9cf8a278ee8a` (reference only)
 - CI (reference site, part 0-D.1): run
@@ -215,10 +215,10 @@ and reviewing the new images — never by deleting the test.
 
 - [x] Every screen/state presented in chat — 2026-10-24 (gallery + per-state
       renders + tokens page + the Compose ramp goldens).
-- [ ] Owner corrections applied — round 1 open.
-- [ ] **Owner approves explicitly in chat** — pending. Until these boxes are
-      ticked, tokens are "proposed-frozen" (machine-checked) but **not
-      owner-approved**, and no later UI phase may start.
+- [x] Owner corrections applied — round 1 (Home board still; square tiles).
+- [x] **Owner approved explicitly in chat** — 2026-10-24: *"plan approved you
+      can merge it with main"*. Tokens + mapping frozen; row ✅; later UI phases
+      may start.
 
 ## Next-chat prompt
 
@@ -227,9 +227,9 @@ and reviewing the new images — never by deleting the test.
 
 ## Follow-ups
 
-- On approval: tick the three boxes above, set the approval row in
-  `docs/UI-REFERENCE.md` (date · stack · coverage · freeze sha), flip the roadmap
-  row to ✅, and log the design decision in `docs/DECISIONS.md`.
+- Done on approval: approval row set in `docs/UI-REFERENCE.md` (date · stack ·
+  coverage · freeze sha `e0393be`), roadmap row ✅, design decision logged in
+  `docs/DECISIONS.md`, screen table flipped to ✅.
 - Phase 2 must compare its Compose screenshots against
   `design/reference/screenshots/` and record the comparison here or in its own
   record — differences fixed or logged as deliberate native adaptations.

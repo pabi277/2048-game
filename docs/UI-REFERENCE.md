@@ -8,11 +8,12 @@
 > `knowledge/web-ui-references.md`). The reference's code is never copied into
 > the app — only tokens, measurements and the component inventory cross over.
 >
-> **Status: reference site BUILT and PRESENTED for review (phase 0-D,
-> 2026-10-24). Tokens are NOT frozen yet — they freeze only on the owner's
-> explicit approval in chat.** Every value below is what the site actually
-> renders (`design/reference/src/design.js`); `npm run verify` fails if this
-> file and the site disagree, and if any tile numeral loses contrast.
+> **Status: ✅ APPROVED AND FROZEN — 2026-10-24, owner approval in chat after
+> review round 1.** Every value below is what the site renders
+> (`design/reference/src/design.js`) and what the app's theme reads
+> (`app/.../ui/theme/Tokens.kt`). Changing a value here is now a
+> reference-first change: update site → this file → `Tokens.kt`, never the
+> reverse. `npm run verify` and `TokensSyncTest` fail if the three disagree.
 
 ## Reference
 
@@ -41,16 +42,18 @@
 
 | Item | Value |
 |---|---|
-| Presented for review | **2026-10-24** (phase 0-D), 30 states + tokens page |
-| Owner decision | **pending** — no freeze has happened |
-| Corrections received | round 1 open |
-| Freeze commit | — (filled when the owner approves) |
+| Presented for review | **2026-10-24** (phase 0-D), 30 states + tokens page + Compose ramp goldens |
+| Owner decision | **APPROVED with changes**, 2026-10-24 — changes applied, then **frozen** on the owner's "plan approved, merge it" |
+| Corrections received | round 1: (a) Home should show the game itself → `BoardPreview`; (b) tiles were not square → layout bug fixed (tiles now fill the cell) |
+| Stack approved | Vite + Tailwind + Konsta UI (Material theme) + Lucide, as recorded 2026-10-24 |
+| Coverage approved | **30 reference states** = the 27 rows above + restart confirm + reset-stats confirm + Hindi Home, plus the tokens/contrast page |
+| Freeze commit | `e0393be` — the reference state approved (tokens unchanged by the approval commit) |
+| Frozen on | `main` merge commit of phase 0-D (see `docs/phases/00d-ui-reference.md`) |
 
-On approval this table gets the date, the stack, the coverage statement and the
-freeze commit sha, and the decision is logged in `docs/DECISIONS.md`. After
-approval, changing the **design direction** (stack, visual language, palette
-family) re-opens this gate; per-screen fixes update the reference first, then
-the screen — never the reverse.
+The decision is logged in `docs/DECISIONS.md` (2026-10-24). From here on,
+changing the **design direction** (stack, visual language, palette family)
+re-opens this gate; per-screen fixes update the reference first, then the screen
+— never the reverse.
 
 ## Screens × states (every row is a reference page)
 
@@ -60,40 +63,40 @@ skeleton/splash) · **empty** · **error** (storage read/write failure) · **dar
 "Ads" states exist only after Phase 5 ships and appear in the reference as
 *slots*, never as real ad art.
 
-Status: 🎨 = rendered in the reference, awaiting approval · ✅ = approved.
+Status: ✅ = approved by the owner on 2026-10-24 (all 30 states).
 
 | # | Screen / state | What it shows | Reference page | Target composable(s) | Status |
 |---|---|---|---|---|---|
-| 1 | **Home — content (no saved game)** | Big title, one-line subtitle, a **decorative still of the board** (what the game looks like, not a button), primary "New game", secondary "Daily challenge", text links "How to play · Stats · Settings", best score line | `#home-no-save` | `HomeScreen`, `BoardPreview`, `PrimaryButton`, `SecondaryButton`, `TextLinkRow`, `BestScoreLine` | 🎨 |
-| 2 | **Home — content (game in progress)** | Same, with "Continue" as primary (score + highest tile + mode chip) and "New game" demoted to a text action with a confirm dialog | `#home-in-progress` | `HomeScreen`, `ResumeCard`, `ConfirmDialog` | 🎨 |
-| 3 | **Home — daily completed today** | Daily card showing today's score, streak chip, "Played — come back tomorrow" disabled state | `#home-daily-done` | `DailyCard`, `StreakChip` | 🎨 |
-| 4 | **Home — empty/never played** | Best score shown as "—", stats teaser hidden | `#home-empty` | `HomeScreen` (empty variant) | 🎨 |
-| 5 | **Home — storage error** | Inline non-blocking banner: "Couldn't read your saved game" + Retry; New game still works | `#home-storage-error` | `InlineBanner` (error tone) | 🎨 |
-| 6 | **Home — loading** | 1-frame splash: app mark + board skeleton | `#home-loading` | `SplashScreen`, `BoardSkeleton` | 🎨 |
-| 7 | **Game — new game (playing)** | Title row (small), SCORE + BEST boxes (taupe), home + restart icon buttons above the rounded board, 4×4 board, undo + direction-pad toggle below, "swipe to merge" hint that fades after first move | `#game-new` | `GameScreen`, `ScoreBox`×2, `BoardFrame`, `TileGrid`, `IconButtonRow`, `UndoButton` | 🎨 |
-| 8 | **Game — mid-game (playing)** | Same; score ticking, mixed tile values incl. 64/128/256, one merge animating | `#game-mid` | `GameScreen`, `Tile` (animated) | 🎨 |
-| 9 | **Game — paused** | Board dimmed under a bottom sheet: Resume / Restart / Home; auto-shown when the app backgrounds | `#game-paused` | `PauseSheet` | 🎨 |
-| 10 | **Game — dark** | Full dark palette, tile ramp dark variant, same hierarchy | `#game-dark` | `GameScreen` (dark) | 🎨 |
-| 11 | **Game — large font** | 2.0× font scale: score boxes keep their numerals on one line, board keeps square aspect, buttons keep ≥48dp | `#game-large-font` | `GameScreen` (fontScale) | 🎨 |
-| 12 | **Game — storage error** | Banner above the board: "Progress isn't saving on this device" + Retry; play continues | `#game-storage-error` | `InlineBanner` | 🎨 |
-| 13 | **Win (2048 reached)** | Dialog over the board: "You made 2048" + score + best + "Keep playing" (primary) / "New game" (secondary) | `#win` | `WinDialog` | 🎨 |
-| 14 | **Win — dark / large font** | Same dialog on dark; scrollable when text grows | `#win-dark-large` | `WinDialog` | 🎨 |
-| 15 | **Game over** | Dialog over the board: final score, best, "New best" chip if beaten, "Undo last move" (1 free, then rewarded), "New game", "Home" | `#game-over` | `GameOverDialog`, `NewBestChip`, `RewardedUndoButton` | 🎨 |
-| 16 | **Game over — after dismissal (ad slot, Phase 5 only)** | What the user sees *after* closing the dialog: normal Home/board, interstitial only if the cap allows; reference shows the suppressed case by default | `#game-over-dismissed` | `AdSlotPlaceholder` (reference only) | 🎨 |
-| 17 | **Game over — dark / large font** | Dialog variants | `#game-over-dark-large` | `GameOverDialog` | 🎨 |
-| 18 | **How to play** | Numbered rules (slide, merge, one merge per move, 90/10 spawn, score = merge sum, win at 2048 + keep playing, game-over rule), scoring example, undo rules, controls (swipe + pad + arrow keys) | `#how-to-play` | `HowToPlayScreen`, `NumberedRule`, `ExampleRow` | 🎨 |
-| 19 | **How to play — dark / large font** | Scrollable long text; Hindi run for length testing | `#how-to-play-dark-large` | `HowToPlayScreen` | 🎨 |
-| 20 | **Settings — content** | Sections: Play (Sound, Haptics, direction pad), Appearance (Theme System/Light/Dark + Gold locked, Language English/हिन्दी), Progress (Reset stats — destructive confirm), Ads ("Remove ads" purchase row), About (version, Licences, Privacy policy) | `#settings` | `SettingsScreen`, `SettingsRow`, `SwitchRow`, `SegmentedChoice`, `LockedThemeRow`, `PurchaseRow` | 🎨 |
-| 21 | **Settings — ad-free active** | Purchase row replaced by an "Ad-free" state; rewarded entries hidden | `#settings-ad-free` | `SettingsScreen` | 🎨 |
-| 22 | **Settings — purchase unavailable / no ad fill** | Disabled purchase row with reason ("Store unavailable — try later"); rewarded button hidden with a quiet note | `#settings-unavailable` | `SettingsScreen` (error/empty variants) | 🎨 |
-| 23 | **Settings — dark / large font** | Rows grow, no truncation of Hindi labels | `#settings-dark-large` | `SettingsScreen` | 🎨 |
-| 24 | **Stats — empty** | "No games yet", CTA "New game"; best/highest tile as "—" | `#stats-empty` | `StatsScreen` (empty) | 🎨 |
-| 25 | **Stats — populated** | Games played, wins, best score, highest tile, daily streak, best daily score; no charts | `#stats-populated` | `StatsScreen`, `StatTile` | 🎨 |
-| 26 | **Stats — dark / large font** | Grid reflows to one column at 2.0× | `#stats-dark-large` | `StatsScreen` | 🎨 |
-| 27 | **Stats — storage error** | Banner + zeros treated as unknown, not as real zeros | `#stats-storage-error` | `InlineBanner` | 🎨 |
-| + | **Confirm — restart game** | Destructive confirm from the game screen / Home "New game" | `#confirm-restart` | `ConfirmDialog` | 🎨 |
-| + | **Confirm — reset stats** | Spells out exactly what is erased | `#confirm-reset-stats` | `ConfirmDialog` | 🎨 |
-| + | **Home — Hindi** | The same Home screen in Hindi: link row, button widths, tagline length | `#home-hindi` | `HomeScreen` (hi) | 🎨 |
+| 1 | **Home — content (no saved game)** | Big title, one-line subtitle, a **decorative still of the board** (what the game looks like, not a button), primary "New game", secondary "Daily challenge", text links "How to play · Stats · Settings", best score line | `#home-no-save` | `HomeScreen`, `BoardPreview`, `PrimaryButton`, `SecondaryButton`, `TextLinkRow`, `BestScoreLine` | ✅ |
+| 2 | **Home — content (game in progress)** | Same, with "Continue" as primary (score + highest tile + mode chip) and "New game" demoted to a text action with a confirm dialog | `#home-in-progress` | `HomeScreen`, `ResumeCard`, `ConfirmDialog` | ✅ |
+| 3 | **Home — daily completed today** | Daily card showing today's score, streak chip, "Played — come back tomorrow" disabled state | `#home-daily-done` | `DailyCard`, `StreakChip` | ✅ |
+| 4 | **Home — empty/never played** | Best score shown as "—", stats teaser hidden | `#home-empty` | `HomeScreen` (empty variant) | ✅ |
+| 5 | **Home — storage error** | Inline non-blocking banner: "Couldn't read your saved game" + Retry; New game still works | `#home-storage-error` | `InlineBanner` (error tone) | ✅ |
+| 6 | **Home — loading** | 1-frame splash: app mark + board skeleton | `#home-loading` | `SplashScreen`, `BoardSkeleton` | ✅ |
+| 7 | **Game — new game (playing)** | Title row (small), SCORE + BEST boxes (taupe), home + restart icon buttons above the rounded board, 4×4 board, undo + direction-pad toggle below, "swipe to merge" hint that fades after first move | `#game-new` | `GameScreen`, `ScoreBox`×2, `BoardFrame`, `TileGrid`, `IconButtonRow`, `UndoButton` | ✅ |
+| 8 | **Game — mid-game (playing)** | Same; score ticking, mixed tile values incl. 64/128/256, one merge animating | `#game-mid` | `GameScreen`, `Tile` (animated) | ✅ |
+| 9 | **Game — paused** | Board dimmed under a bottom sheet: Resume / Restart / Home; auto-shown when the app backgrounds | `#game-paused` | `PauseSheet` | ✅ |
+| 10 | **Game — dark** | Full dark palette, tile ramp dark variant, same hierarchy | `#game-dark` | `GameScreen` (dark) | ✅ |
+| 11 | **Game — large font** | 2.0× font scale: score boxes keep their numerals on one line, board keeps square aspect, buttons keep ≥48dp | `#game-large-font` | `GameScreen` (fontScale) | ✅ |
+| 12 | **Game — storage error** | Banner above the board: "Progress isn't saving on this device" + Retry; play continues | `#game-storage-error` | `InlineBanner` | ✅ |
+| 13 | **Win (2048 reached)** | Dialog over the board: "You made 2048" + score + best + "Keep playing" (primary) / "New game" (secondary) | `#win` | `WinDialog` | ✅ |
+| 14 | **Win — dark / large font** | Same dialog on dark; scrollable when text grows | `#win-dark-large` | `WinDialog` | ✅ |
+| 15 | **Game over** | Dialog over the board: final score, best, "New best" chip if beaten, "Undo last move" (1 free, then rewarded), "New game", "Home" | `#game-over` | `GameOverDialog`, `NewBestChip`, `RewardedUndoButton` | ✅ |
+| 16 | **Game over — after dismissal (ad slot, Phase 5 only)** | What the user sees *after* closing the dialog: normal Home/board, interstitial only if the cap allows; reference shows the suppressed case by default | `#game-over-dismissed` | `AdSlotPlaceholder` (reference only) | ✅ |
+| 17 | **Game over — dark / large font** | Dialog variants | `#game-over-dark-large` | `GameOverDialog` | ✅ |
+| 18 | **How to play** | Numbered rules (slide, merge, one merge per move, 90/10 spawn, score = merge sum, win at 2048 + keep playing, game-over rule), scoring example, undo rules, controls (swipe + pad + arrow keys) | `#how-to-play` | `HowToPlayScreen`, `NumberedRule`, `ExampleRow` | ✅ |
+| 19 | **How to play — dark / large font** | Scrollable long text; Hindi run for length testing | `#how-to-play-dark-large` | `HowToPlayScreen` | ✅ |
+| 20 | **Settings — content** | Sections: Play (Sound, Haptics, direction pad), Appearance (Theme System/Light/Dark + Gold locked, Language English/हिन्दी), Progress (Reset stats — destructive confirm), Ads ("Remove ads" purchase row), About (version, Licences, Privacy policy) | `#settings` | `SettingsScreen`, `SettingsRow`, `SwitchRow`, `SegmentedChoice`, `LockedThemeRow`, `PurchaseRow` | ✅ |
+| 21 | **Settings — ad-free active** | Purchase row replaced by an "Ad-free" state; rewarded entries hidden | `#settings-ad-free` | `SettingsScreen` | ✅ |
+| 22 | **Settings — purchase unavailable / no ad fill** | Disabled purchase row with reason ("Store unavailable — try later"); rewarded button hidden with a quiet note | `#settings-unavailable` | `SettingsScreen` (error/empty variants) | ✅ |
+| 23 | **Settings — dark / large font** | Rows grow, no truncation of Hindi labels | `#settings-dark-large` | `SettingsScreen` | ✅ |
+| 24 | **Stats — empty** | "No games yet", CTA "New game"; best/highest tile as "—" | `#stats-empty` | `StatsScreen` (empty) | ✅ |
+| 25 | **Stats — populated** | Games played, wins, best score, highest tile, daily streak, best daily score; no charts | `#stats-populated` | `StatsScreen`, `StatTile` | ✅ |
+| 26 | **Stats — dark / large font** | Grid reflows to one column at 2.0× | `#stats-dark-large` | `StatsScreen` | ✅ |
+| 27 | **Stats — storage error** | Banner + zeros treated as unknown, not as real zeros | `#stats-storage-error` | `InlineBanner` | ✅ |
+| + | **Confirm — restart game** | Destructive confirm from the game screen / Home "New game" | `#confirm-restart` | `ConfirmDialog` | ✅ |
+| + | **Confirm — reset stats** | Spells out exactly what is erased | `#confirm-reset-stats` | `ConfirmDialog` | ✅ |
+| + | **Home — Hindi** | The same Home screen in Hindi: link row, button widths, tagline length | `#home-hindi` | `HomeScreen` (hi) | ✅ |
 
 ## Tokens (frozen on approval — the site and the app read these exact values)
 

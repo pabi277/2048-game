@@ -56,6 +56,16 @@
   required provenance line before any app code, and the README states the pin
   without claiming a snapshot that does not exist yet. Reversible on objection;
   no law or invariant is waived.
+- **2026-10-24 — UI reference APPROVED, tokens FROZEN (owner, in chat)** — the
+  owner reviewed all 30 states plus the tokens page and the Compose ramp
+  goldens, gave one round of corrections (Home should show the game; tiles were
+  not square), saw them applied, and approved: *"plan approved you can merge it
+  with main"*. Frozen: the stack (Vite + Tailwind + Konsta + Lucide), the 30
+  states, and every colour / tile-ramp / type / spacing / shape value in
+  `docs/UI-REFERENCE.md`. From now on visual changes go reference → doc →
+  `Tokens.kt` → screen, never the reverse; changing the *design direction*
+  re-opens this gate. Freeze commit `e0393be`.
+
 ## Law waivers (owner-approved exceptions to this repo's `rule.md`)
 
 - None. The 3-week budget is not a waiver (law 3 allows up to 4 weeks).
@@ -231,7 +241,8 @@ samples on 2026-10-24; the dependency graph is the source of truth):
       it with `git var` before the first Phase 0 commit (decision already made).
 - [ ] Confirm `io.github.pabi277.tilefold` as the literal package ID at the first
       commit (permanent once published).
-- [ ] Phase 0-D: owner approves the UI reference site in chat → tokens freeze.
+- [x] Phase 0-D: owner approved the UI reference site in chat (2026-10-24) →
+      tokens frozen; recorded above and in `docs/UI-REFERENCE.md`.
 - [ ] Later GATE items, each in its own phase: live AdMob unit IDs, Play signing
       secrets, tester list, Play submission — never in chat or git.
 - Note: the plan chat created **no** repository, branch, commit or code; this

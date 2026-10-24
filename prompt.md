@@ -71,16 +71,16 @@
   run 40064397149 at `bdd5789`. Artifacts: `app-progress-apk` (10,837,751 B),
   `app-screenshots` (16 PNGs), `quality-gate-reports`. Record:
   `docs/phases/00-bootstrap.md`.
-- **Phase 0-D 🚧 2026-10-24 — built, at the owner's review gate.**
+- **Phase 0-D ✅ 2026-10-24 — UI reference approved, tokens frozen, merged.**
   - 0-D.1 ✅ — disposable Vite + Tailwind + Konsta + Lucide reference under
     `design/reference/`: **30 states** (the 27 doc rows + restart confirm +
     reset-stats confirm + Hindi Home) + a tokens page, plus 32 archived renders
     in `design/reference/screenshots/`. Live preview: `npm run dev` on port 5180.
     CI run 40067703773 green at `f34a181` (app gate + new `ui-reference` job).
-  - 0-D.2 🚧 — round 1 done (owner: **approved with changes**, 2026-10-24):
-    Home gained a decorative board still, and the non-square tile bug was fixed
-    (tiles now fill their cell). Freeze still needs the owner's explicit go.
-  - 0-D.3 partially done — tokens, mapping, contrast record and approval table
+  - 0-D.2 ✅ — round 1 (owner: **approved with changes**): Home gained a
+    decorative board still, the non-square tile bug was fixed (tiles now fill
+    their cell), then the owner approved in chat and authorized the merge.
+  - 0-D.3 ✅ — tokens, mapping, contrast record and approval table
     are in `docs/UI-REFERENCE.md`; the app theme now reads
     `app/.../ui/theme/Tokens.kt` (single token source, `SeedColors.kt` deleted);
     `TokensSyncTest` proves doc ↔ app; screenshot tests are **goldens** in
@@ -93,21 +93,22 @@
   compileSdk 36; gate command `./gradlew check` = debug unit tests + lint +
   detekt + ktlint; reference stack Vite 8.3.5 / Tailwind 4.3.3 / Konsta 5.5.0 /
   lucide-react 1.61.0 (ISC, web only).
-- Next: **finish 0-D** — owner approves the reference in chat (or sends
-  corrections), then tick the approval row, flip the roadmap row to ✅ and log
-  the design decision. **Then** phase 1 — pure-Kotlin engine + seeded tests.
-- Open owner items: approval of the reference (blocks every later UI phase);
-  optional reference screenshot for comparison; live ad units only in phase 5
-  and only after a GATE.
+- **Tokens frozen 2026-10-24** (freeze commit `e0393be`, approved in chat):
+  the values in `docs/UI-REFERENCE.md` = `design/reference/src/design.js` =
+  `app/.../ui/theme/Tokens.kt`, guarded by `npm run verify` + `TokensSyncTest`.
+  Visual changes go reference → doc → `Tokens.kt` → screen, never the reverse.
+- Next: **phase 1 — pure-Kotlin engine + seeded tests** (parts 1.1–1.4).
+- Open owner items: the reference screenshot is no longer needed (the reference
+  is ours and approved); live ad units only in phase 5 and only after a GATE.
 
 ## How to continue
 
 1. Read `docs/ROADMAP.md`, `docs/DECISIONS.md`, `docs/UI-REFERENCE.md` and the
    latest `docs/phases/` record — trust the repo, not memory.
-2. Implement **phase 0**, all its parts, evidence-first, with the reuse map in
-   `docs/RESEARCH.md` as the base.
+2. Implement **phase 1** (pure-Kotlin engine + tests), all its parts,
+   evidence-first, with the reuse map in `docs/RESEARCH.md` as the base.
 3. End with: CI green (incl. the no-device quality gate) + the run's
-   downloadable `app-progress-apk` artifact · `docs/phases/00-bootstrap.md` (say
+   downloadable `app-progress-apk` artifact · `docs/phases/01-engine.md` (say
    what the APK shows) · roadmap row status · this file updated · short report
    (run id, tip sha, APK, what is now visible) · **the next-chat prompt printed
-   in chat** for phase 0-D · stop at the merge gate.
+   in chat** for phase 2 · stop at the merge gate.
