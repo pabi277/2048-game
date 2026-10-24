@@ -22,6 +22,8 @@ style:
     ignoreAnnotated: ["Composable", "Preview"]
   MaxLineLength:
     maxLineLength: 130
+  ReturnCount:
+    max: 6
 
 naming:
   FunctionNaming:
