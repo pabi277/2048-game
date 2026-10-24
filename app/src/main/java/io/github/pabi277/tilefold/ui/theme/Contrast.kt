@@ -12,7 +12,11 @@ import kotlin.math.pow
 @Suppress("MagicNumber")
 internal object Contrast {
     /** Relative luminance of an 8-bit sRGB colour, per WCAG 2.2. */
-    fun relativeLuminance(red: Int, green: Int, blue: Int): Double {
+    fun relativeLuminance(
+        red: Int,
+        green: Int,
+        blue: Int,
+    ): Double {
         fun channel(value: Int): Double {
             val c = value.coerceIn(0, 255) / 255.0
             return if (c <= 0.03928) c / 12.92 else ((c + 0.055) / 1.055).pow(2.4)
@@ -21,14 +25,20 @@ internal object Contrast {
     }
 
     /** Contrast ratio between two relative luminances, from 1.0 to 21.0. */
-    fun contrastRatio(luminanceA: Double, luminanceB: Double): Double {
+    fun contrastRatio(
+        luminanceA: Double,
+        luminanceB: Double,
+    ): Double {
         val lighter = maxOf(luminanceA, luminanceB)
         val darker = minOf(luminanceA, luminanceB)
         return (lighter + 0.05) / (darker + 0.05)
     }
 
     /** Contrast ratio between two 0xAARRGGBB colours (alpha is ignored). */
-    fun contrastRatio(colorA: Long, colorB: Long): Double {
+    fun contrastRatio(
+        colorA: Long,
+        colorB: Long,
+    ): Double {
         fun luminanceOf(color: Long): Double =
             relativeLuminance(
                 red = ((color shr 16) and 0xFF).toInt(),

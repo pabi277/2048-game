@@ -27,11 +27,12 @@ import io.github.pabi277.tilefold.ui.theme.TilefoldTheme
 @Composable
 fun HelloScreen(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .safeDrawingPadding()
-            .padding(horizontal = 24.dp, vertical = 32.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .safeDrawingPadding()
+                .padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -49,9 +50,10 @@ fun HelloScreen(modifier: Modifier = Modifier) {
         Surface(
             shape = MaterialTheme.shapes.medium,
             color = MaterialTheme.colorScheme.secondaryContainer,
-            modifier = Modifier
-                .padding(top = 24.dp)
-                .widthIn(min = 200.dp),
+            modifier =
+                Modifier
+                    .padding(top = 24.dp)
+                    .widthIn(min = 200.dp),
         ) {
             Text(
                 text = stringResource(R.string.hello_phase),
