@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.PathBuilder
+import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.dp
 
 /**
@@ -16,39 +16,25 @@ import androidx.compose.ui.unit.dp
  *
  * Lucide is **ISC**-licensed (Copyright (c) Lucide Contributors). The path data
  * below is the published 24x24 geometry of `lucide-static` 1.61.0, converted
- * mechanically — no glyph was redrawn by hand and no other icon set is mixed in.
- * The notice ships on the licences screen (phase 4) and is logged in
- * `docs/DECISIONS.md`.
+ * mechanically: each `d` attribute is handed to [PathParser] unchanged, so no
+ * glyph was redrawn by hand and no other icon set is mixed in. The notice ships
+ * on the licences screen (phase 4) and is logged in `docs/DECISIONS.md`.
  *
  * Colours are never baked in: every path is stroked black and tinted by
  * `Icon(tint = …)` from the theme's tokens.
  */
 internal object TilefoldIcons {
+
     /** Lucide `house` — Home. */
     val House: ImageVector by lazy {
         strokeIcon(
             name = "house",
-            {
-                moveTo(15f, 21f)
-                lineTo(15f, 13f)
-                arcTo(1f, 1f, 0f, false, false, 14f, 12f)
-                lineTo(10f, 12f)
-                arcTo(1f, 1f, 0f, false, false, 9f, 13f)
-                lineTo(9f, 21f)
-            },
-            {
-                moveTo(3f, 10f)
-                arcTo(2f, 2f, 0f, false, true, 3.709f, 8.472f)
-                lineTo(10.709f, 2.472f)
-                arcTo(2f, 2f, 0f, false, true, 13.291f, 2.472f)
-                lineTo(20.291f, 8.472f)
-                arcTo(2f, 2f, 0f, false, true, 21f, 10f)
-                lineTo(21f, 19f)
-                arcTo(2f, 2f, 0f, false, true, 19f, 21f)
-                lineTo(5f, 21f)
-                arcTo(2f, 2f, 0f, false, true, 3f, 19f)
-                close()
-            },
+            paths =
+                arrayOf(
+                    "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8",
+                    "M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 " +
+                        "0 0 1-2-2z",
+                ),
         )
     }
 
@@ -56,17 +42,11 @@ internal object TilefoldIcons {
     val RotateCcw: ImageVector by lazy {
         strokeIcon(
             name = "rotate-ccw",
-            {
-                moveTo(3f, 12f)
-                arcTo(9f, 9f, 0f, true, false, 12f, 3f)
-                arcTo(9.75f, 9.75f, 0f, false, false, 5.26f, 5.74f)
-                lineTo(3f, 8f)
-            },
-            {
-                moveTo(3f, 3f)
-                lineTo(3f, 8f)
-                lineTo(8f, 8f)
-            },
+            paths =
+                arrayOf(
+                    "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8",
+                    "M3 3v5h5",
+                ),
         )
     }
 
@@ -74,82 +54,59 @@ internal object TilefoldIcons {
     val Undo2: ImageVector by lazy {
         strokeIcon(
             name = "undo-2",
-            {
-                moveTo(9f, 14f)
-                lineTo(4f, 9f)
-                lineTo(9f, 4f)
-            },
-            {
-                moveTo(4f, 9f)
-                lineTo(14.5f, 9f)
-                arcTo(5.5f, 5.5f, 0f, false, true, 20f, 14.5f)
-                arcTo(5.5f, 5.5f, 0f, false, true, 14.5f, 20f)
-                lineTo(11f, 20f)
-            },
+            paths =
+                arrayOf(
+                    "M9 14 4 9l5-5",
+                    "M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11",
+                ),
         )
     }
 
-    /** Lucide `arrow-up` — Up. */
+    /** Lucide `arrow-up` — Pad up / pad toggle. */
     val ArrowUp: ImageVector by lazy {
         strokeIcon(
             name = "arrow-up",
-            {
-                moveTo(5f, 12f)
-                lineTo(12f, 5f)
-                lineTo(19f, 12f)
-            },
-            {
-                moveTo(12f, 19f)
-                lineTo(12f, 5f)
-            },
+            paths =
+                arrayOf(
+                    "m5 12 7-7 7 7",
+                    "M12 19V5",
+                ),
         )
     }
 
-    /** Lucide `arrow-down` — Down. */
+    /** Lucide `arrow-down` — Pad down. */
     val ArrowDown: ImageVector by lazy {
         strokeIcon(
             name = "arrow-down",
-            {
-                moveTo(12f, 5f)
-                lineTo(12f, 19f)
-            },
-            {
-                moveTo(19f, 12f)
-                lineTo(12f, 19f)
-                lineTo(5f, 12f)
-            },
+            paths =
+                arrayOf(
+                    "M12 5v14",
+                    "m19 12-7 7-7-7",
+                ),
         )
     }
 
-    /** Lucide `arrow-left` — Left. */
+    /** Lucide `arrow-left` — Pad left. */
     val ArrowLeft: ImageVector by lazy {
         strokeIcon(
             name = "arrow-left",
-            {
-                moveTo(12f, 19f)
-                lineTo(5f, 12f)
-                lineTo(12f, 5f)
-            },
-            {
-                moveTo(19f, 12f)
-                lineTo(5f, 12f)
-            },
+            paths =
+                arrayOf(
+                    "m12 19-7-7 7-7",
+                    "M19 12H5",
+                ),
         )
     }
 
-    /** Lucide `arrow-right` — Right. */
+    /** Lucide `arrow-right` — Pad right. */
     val ArrowRight: ImageVector by lazy {
         strokeIcon(
             name = "arrow-right",
-            {
-                moveTo(5f, 12f)
-                lineTo(19f, 12f)
-            },
-            {
-                moveTo(12f, 5f)
-                lineTo(19f, 12f)
-                lineTo(12f, 19f)
-            },
+            paths =
+                arrayOf(
+                    "M5 12h14",
+                    "m12 5 7 7-7 7",
+                ),
         )
     }
 
@@ -157,28 +114,34 @@ internal object TilefoldIcons {
     val Play: ImageVector by lazy {
         strokeIcon(
             name = "play",
-            {
-                moveTo(5f, 5f)
-                arcTo(2f, 2f, 0f, false, true, 8.008f, 3.272f)
-                lineTo(20.005f, 10.27f)
-                arcTo(2f, 2f, 0f, false, true, 20.008f, 13.728f)
-                lineTo(8.008f, 20.728f)
-                arcTo(2f, 2f, 0f, false, true, 5f, 19f)
-                close()
-            },
+            paths =
+                arrayOf(
+                    "M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z",
+                ),
+        )
+    }
+
+    /** Lucide `x` — Dismiss. */
+    val X: ImageVector by lazy {
+        strokeIcon(
+            name = "x",
+            paths =
+                arrayOf(
+                    "M18 6 6 18",
+                    "m6 6 12 12",
+                ),
         )
     }
 
     /**
-     * Builds a 24×24 stroke-only vector.
+     * Builds a 24x24 stroke-only vector from SVG path strings.
      *
-     * Path nodes are assembled with [PathBuilder] and handed straight to
-     * [ImageVector.Builder.addPath], so the geometry here is exactly the
-     * geometry extracted from the SVG — no wrapper DSL in between.
+     * [PathParser] turns each `d` attribute into the `PathNode` list [ImageVector.Builder.addPath]
+     * expects, so the geometry here is byte-for-byte the published Lucide geometry.
      */
     private fun strokeIcon(
         name: String,
-        vararg shapes: PathBuilder.() -> Unit,
+        paths: Array<String>,
     ): ImageVector {
         val builder =
             ImageVector.Builder(
@@ -188,9 +151,9 @@ internal object TilefoldIcons {
                 viewportWidth = VIEWPORT,
                 viewportHeight = VIEWPORT,
             )
-        shapes.forEach { shape ->
+        paths.forEach { data ->
             builder.addPath(
-                pathData = PathBuilder().apply(shape).getNodes(),
+                pathData = PathParser().parsePathString(data).toNodes(),
                 stroke = SolidColor(Color.Black),
                 strokeLineWidth = STROKE_WIDTH,
                 strokeLineCap = StrokeCap.Round,
