@@ -7,6 +7,7 @@ import {
   AppBar,
   Banner,
   Board,
+  BoardPreview,
   Card,
   Chip,
   Dialog,
@@ -118,6 +119,13 @@ function HomeScreen({ variant = 'no-save', banner = null }) {
     <Screen>
       {banner ? <div style={{ marginBottom: 12 }}>{banner}</div> : null}
       <Hero dense={Boolean(banner)} />
+      {/* With no card to show, the still of the board is what makes the first
+          screen say "this is a game" without a fake button. */}
+      {!inProgress && !dailyDone ? (
+        <div className="flex justify-center" style={{ marginTop: 24 }}>
+          <BoardPreview />
+        </div>
+      ) : null}
       <div style={{ flex: 1, minHeight: 16 }} />
       {inProgress ? <ResumeCard /> : null}
       {dailyDone ? <DailyCard /> : null}

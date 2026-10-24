@@ -64,7 +64,7 @@ Status: 🎨 = rendered in the reference, awaiting approval · ✅ = approved.
 
 | # | Screen / state | What it shows | Reference page | Target composable(s) | Status |
 |---|---|---|---|---|---|
-| 1 | **Home — content (no saved game)** | Big title, one-line subtitle, primary "New game", secondary "Daily challenge", text links "How to play · Stats · Settings", best score line | `#home-no-save` | `HomeScreen`, `PrimaryButton`, `SecondaryButton`, `TextLinkRow`, `BestScoreLine` | 🎨 |
+| 1 | **Home — content (no saved game)** | Big title, one-line subtitle, a **decorative still of the board** (what the game looks like, not a button), primary "New game", secondary "Daily challenge", text links "How to play · Stats · Settings", best score line | `#home-no-save` | `HomeScreen`, `BoardPreview`, `PrimaryButton`, `SecondaryButton`, `TextLinkRow`, `BestScoreLine` | 🎨 |
 | 2 | **Home — content (game in progress)** | Same, with "Continue" as primary (score + highest tile + mode chip) and "New game" demoted to a text action with a confirm dialog | `#home-in-progress` | `HomeScreen`, `ResumeCard`, `ConfirmDialog` | 🎨 |
 | 3 | **Home — daily completed today** | Daily card showing today's score, streak chip, "Played — come back tomorrow" disabled state | `#home-daily-done` | `DailyCard`, `StreakChip` | 🎨 |
 | 4 | **Home — empty/never played** | Best score shown as "—", stats teaser hidden | `#home-empty` | `HomeScreen` (empty variant) | 🎨 |
@@ -259,6 +259,9 @@ jitter.
       `SegmentedChoice`, `LockedThemeRow`, `PurchaseRow`, `RowGroup`
 - [ ] `InlineBanner` (error tone, Retry action), `ConfirmDialog`, `PauseSheet`,
       `WinDialog`, `GameOverDialog`
+- [ ] `BoardPreview` (decorative non-interactive board still on Home: fixed
+      4×4 sample grid, tile colours from the ramp, numeral size derived from the
+      cell size — must be `contentDescription = null`, not focusable)
 - [ ] `BoardSkeleton` + `Skeleton` (loading), `EmptyState` (stats)
 
 ## Icons (one set, both sides)
@@ -285,6 +288,8 @@ with a 1:1 glyph table — recorded as an agent decision, not a silent swap.
 | Board drawn with CSS grid | Compose layout with per-tile offsets | 60fps on low-end devices, no re-layout per frame |
 | Tile numerals capped at 1.25× / dialog score at 1.25× / in-screen score at 1.5× | same caps applied through `sp` values that stop growing past the cap | 2.0× font must break no board or dialog layout |
 | 1 CSS px = 1 dp | 1 dp everywhere, `sp` for text | keeps the measurements in this file directly usable |
+| Decorative board still on Home | same still, `contentDescription = null`, skipped by TalkBack | decoration is never an accessibility or navigation target |
+| Tiles are square cells filled edge to edge | `Modifier.fillMaxSize()` inside an `aspectRatio(1f)` cell; the numeral is centred and grows only to its cap | a tile that is not square reads as a progress bar, not a tile (found and fixed in 0-D review round 1) |
 
 ## Web → Compose mapping (complete — an unmapped screen is not ready to code)
 
@@ -293,7 +298,7 @@ roles are the only source of colour/space/type in the app.
 
 | Reference page | Compose entry point | Token roles used | Phase |
 |---|---|---|---|
-| `#home-no-save`, `#home-empty`, `#home-hindi` | `HomeScreen` (+ `HomeState.NoGame`) | bg, textPrimary, textSecondary, accent, onAccent, surfaceVariant, minTarget | 4 |
+| `#home-no-save`, `#home-empty`, `#home-hindi` | `HomeScreen` (+ `HomeState.NoGame`, `BoardPreview`) | bg, textPrimary, textSecondary, accent, onAccent, surfaceVariant, boardFrame, emptyCell, tile ramp, minTarget | 4 |
 | `#home-in-progress` | `HomeScreen` (+ `ResumeCard`), `ConfirmDialog` | surface, outlineVariant, accent, chip colours | 4 |
 | `#home-daily-done` | `HomeScreen` (+ `DailyCard`, `Chip` accent) | accent, onAccent, surface, divider | 4 |
 | `#home-storage-error`, `#stats-storage-error` | `HomeScreen` / `StatsScreen` + `InlineBanner` | error, surface, outlineVariant, textSecondary | 4 / 3 |

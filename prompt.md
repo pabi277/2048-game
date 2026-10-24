@@ -77,7 +77,9 @@
     reset-stats confirm + Hindi Home) + a tokens page, plus 32 archived renders
     in `design/reference/screenshots/`. Live preview: `npm run dev` on port 5180.
     CI run 40067703773 green at `f34a181` (app gate + new `ui-reference` job).
-  - 0-D.2 🚧 — review rounds in chat; round 1 open, nothing approved yet.
+  - 0-D.2 🚧 — round 1 done (owner: **approved with changes**, 2026-10-24):
+    Home gained a decorative board still, and the non-square tile bug was fixed
+    (tiles now fill their cell). Freeze still needs the owner's explicit go.
   - 0-D.3 partially done — tokens, mapping, contrast record and approval table
     are in `docs/UI-REFERENCE.md`; the app theme now reads
     `app/.../ui/theme/Tokens.kt` (single token source, `SeedColors.kt` deleted);

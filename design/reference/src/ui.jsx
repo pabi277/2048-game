@@ -514,18 +514,24 @@ export function ScoreBox({ label, value, scaleCap = scoreValueMaxScale }) {
   );
 }
 
-export function Tile({ value, pop = false }) {
+export function Tile({ value, pop = false, fontPx }) {
   const { theme, scale } = useDesign();
   const [bg, fg] = tileFor(value, theme);
   return (
     <div
       className="flex items-center justify-center"
       style={{
+        // Fill the cell: the grid item is square, the tile must be square with
+        // it. Without width/height here the numeral box collapses to text height
+        // and the board renders as flat bars.
+        width: '100%',
+        height: '100%',
+        boxSizing: 'border-box',
         background: bg,
         color: fg,
         borderRadius: radius.tile,
         fontWeight: 700,
-        fontSize: `${tileFontSizeFor(value, scale)}px`,
+        fontSize: `${fontPx ?? tileFontSizeFor(value, scale)}px`,
         lineHeight: 1,
         ...tabular,
         transform: pop ? 'scale(1.06)' : 'none',
@@ -560,9 +566,11 @@ export function Board({ grid, dim = false, popping = null }) {
             <div
               key={key}
               style={{
+                // Grid rows come from the square board + `1fr`, so the cell is
+                // already square; the tile simply fills it.
+                display: 'flex',
                 background: value ? 'transparent' : 'var(--empty)',
                 borderRadius: radius.tile,
-                aspectRatio: '1 / 1',
               }}
             >
               {value ? <Tile value={value} pop={popping === key} /> : null}
@@ -606,6 +614,64 @@ export function DirPad({ enabled = true }) {
         {key(ArrowDown, 'Down')}
         {key(ArrowRight, 'Right')}
       </div>
+    </div>
+  );
+}
+
+/**
+ * A decorative still of the board, shown on Home so the first screen shows what
+ * the game looks like. Non-interactive, aria-hidden; numerals are computed from
+ * the cell size so a small board stays legible.
+ */
+export function BoardPreview({ px = 196 }) {
+  const { theme } = useDesign();
+  const gap = 6;
+  const padding = 8;
+  const cell = (px - padding * 2 - gap * 3) / 4;
+  const grid = [
+    [2, 4, 8, 16],
+    [32, 64, 128, 256],
+    [0, 2, 4, 0],
+    [0, 0, 0, 8],
+  ];
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        width: px,
+        background: 'var(--board)',
+        borderRadius: radius.board,
+        padding,
+        display: 'grid',
+        gridTemplateColumns: `repeat(4, ${cell}px)`,
+        gridTemplateRows: `repeat(4, ${cell}px)`,
+        gap,
+      }}
+    >
+      {grid.flatMap((row, r) =>
+        row.map((value, c) => {
+          const [bg, fg] = value ? tileFor(value, theme) : ['var(--empty)', 'transparent'];
+          return (
+            <div
+              key={`${r}-${c}`}
+              style={{
+                background: bg,
+                color: fg,
+                borderRadius: 5,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 700,
+                fontSize: Math.round(cell * 0.44),
+                lineHeight: 1,
+                ...tabular,
+              }}
+            >
+              {value || ''}
+            </div>
+          );
+        }),
+      )}
     </div>
   );
 }

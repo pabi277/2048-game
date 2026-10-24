@@ -175,6 +175,18 @@
   Only Lucide (ISC) crosses into the app, in phase 2, as adapted `ImageVector`
   paths with attribution.
 
+- **2026-10-24 — Home shows a still of the board (review round 1, owner
+  request)** — the first screen was clean but did not show what the game looks
+  like. Home now carries a **decorative, non-interactive** board still above the
+  buttons (fixed sample grid, ramp colours, numerals sized from the cell). It is
+  not a button and not focusable. Reversible: delete one composable call.
+- **2026-10-24 — Tiles were flat bars; now square (review round 1, owner
+  report)** — the tile composable had no width/height, so the *grid cell* was
+  square and the *tile inside* collapsed to its text height. The tile now fills
+  the cell edge to edge. Token values were unchanged; this was a layout bug in
+  the reference, and the Compose side gets the same rule (`fillMaxSize` inside a
+  square cell) written down before phase 2 draws a tile.
+
 ## Third-party licences (everything shipped, per reuse-first §3)
 
 
