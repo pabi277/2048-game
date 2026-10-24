@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand name stays Latin; product copy is translated. Phase 4 adds the
+         full, reviewed Hindi string set with a parity test. -->
+    <string name="app_name">Tilefold</string>
+
+    <string name="hello_title">Tilefold</string>
+    <string name="hello_tagline">स्लाइड करें। मिलाएँ। सुकून से खेलें।</string>
+    <string name="hello_phase">चरण 0 · बुनियादी बिल्ड</string>
+    <string name="hello_footer">कोई बैनर नहीं · खेल के दौरान कोई विज्ञापन नहीं · ऑफ़लाइन</string>
+</resources>

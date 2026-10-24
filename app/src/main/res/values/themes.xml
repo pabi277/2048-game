@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- A minimal platform theme: all real colour and type come from the
+         Compose theme generated from the seed in ui/theme/. This file only
+         avoids a white flash before first frame. -->
+    <style name="Theme.Tilefold" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/seed_surface</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

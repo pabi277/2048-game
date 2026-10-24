@@ -1,0 +1,23 @@
+# Gradle / Android
+.gradle/
+build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.hprof
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+
+# Secrets and signing material must never be committed
+*.jks
+*.keystore
+*.p12
+keystore.properties
+google-services.json
+
+# Roborazzi screenshot output (reference images are committed, diffs are not)
+app/build/outputs/roborazzi/
