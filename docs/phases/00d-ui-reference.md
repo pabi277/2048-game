@@ -151,8 +151,9 @@ frozen as tokens. No app UI beyond the hello screen exists until this row is ✅
 - `app/src/test/screenshots/*.png` — the goldens (recorded by CI, committed to
   this branch; see "Gate" below).
 - CI: new `ui-reference` job (verify + build, non-gating for the app);
-  goldens enforced in the test job; new `record-screenshots` workflow dispatch
-  (non-`main` only) that re-records and commits goldens deliberately.
+  goldens enforced in the test job; new `record-screenshots` job (non-`main`
+  only) that re-records and commits goldens deliberately when asked by a
+  `[record-goldens]` commit or a dispatch.
 
 ## What the APK shows
 
@@ -189,7 +190,8 @@ run artifacts. Sequence used, visible in the run history:
 
 1. push with verify mode on → the test job fails because
    `app/src/test/screenshots/` is empty (the expected, honest state);
-2. `workflow_dispatch` with `record_screenshots=true` → `recordRoborazziDebug`
+2. a commit whose message carries `[record-goldens]` (or a
+   `workflow_dispatch` with `record_screenshots=true`) → `recordRoborazziDebug`
    writes the five goldens and the job commits them to this branch;
 3. the push from that commit runs the normal lane in verify mode → green.
 

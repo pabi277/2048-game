@@ -219,7 +219,15 @@ jobs:
   # back to the same non-main branch so the images are reviewable in git.
   record-screenshots:
     name: Record screenshot goldens
-    if: github.event_name == 'workflow_dispatch' && inputs.record_screenshots && github.ref != 'refs/heads/main'
+    # Two ways to ask for a re-record, both explicit: a workflow dispatch with
+    # `record_screenshots=true`, or a commit whose message contains
+    # `[record-goldens]` (that is how it is triggered when the API token cannot
+    # dispatch workflows). Never on `main`, never on an ordinary push.
+    if: |
+      github.ref != 'refs/heads/main' && (
+        (github.event_name == 'workflow_dispatch' && inputs.record_screenshots) ||
+        (github.event_name == 'push' && contains(github.event.head_commit.message, '[record-goldens]'))
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 40
     permissions:
@@ -263,7 +271,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add app/src/test/screenshots
-          git commit -m "Record screenshot goldens (workflow_dispatch)"
+          git commit -m "Record screenshot goldens (deliberate re-record)"
           git push origin "HEAD:${{ github.ref_name }}"
 
   # The release lane needs the keystore, which only the owner can add. Until
