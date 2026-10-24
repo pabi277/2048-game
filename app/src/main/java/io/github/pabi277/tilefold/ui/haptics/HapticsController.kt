@@ -4,11 +4,11 @@
 package io.github.pabi277.tilefold.ui.haptics
 
 import android.content.Context
+import android.media.AudioManager
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.media.AudioManager
 import io.github.pabi277.tilefold.domain.Settings
 import io.github.pabi277.tilefold.domain.SoundPolicy
 

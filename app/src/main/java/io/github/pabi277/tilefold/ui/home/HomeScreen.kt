@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -22,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
@@ -142,9 +142,11 @@ internal fun HomeScreen(
                     modifier = Modifier.testTag(HOME_CONTINUE_TAG),
                 )
                 SecondaryButton(
-                    label =
-                        if (state.dailyCompleted) stringResource(R.string.daily_done)
-                        else stringResource(R.string.home_daily_challenge),
+                    label = if (state.dailyCompleted) {
+                        stringResource(R.string.daily_done)
+                    } else {
+                        stringResource(R.string.home_daily_challenge)
+                    },
                     onClick = onDaily,
                     enabled = !state.dailyCompleted,
                     modifier = Modifier.testTag(HOME_DAILY_TAG),
@@ -163,9 +165,11 @@ internal fun HomeScreen(
                     modifier = Modifier.testTag(HOME_NEW_GAME_TAG),
                 )
                 SecondaryButton(
-                    label =
-                        if (state.dailyCompleted) stringResource(R.string.daily_done)
-                        else stringResource(R.string.home_daily_challenge),
+                    label = if (state.dailyCompleted) {
+                        stringResource(R.string.daily_done)
+                    } else {
+                        stringResource(R.string.home_daily_challenge)
+                    },
                     onClick = onDaily,
                     enabled = !state.dailyCompleted,
                     modifier = Modifier.testTag(HOME_DAILY_TAG),
@@ -202,9 +206,11 @@ internal fun HomeScreen(
         Spacer(Modifier.height(16.dp))
 
         // Best line
-        val bestText =
-            if (state.isEmpty) stringResource(R.string.home_no_best)
-            else stringResource(R.string.home_best_line, state.bestScore.toString())
+        val bestText = if (state.isEmpty) {
+            stringResource(R.string.home_no_best)
+        } else {
+            stringResource(R.string.home_best_line, state.bestScore.toString())
+        }
         Text(
             text = bestText,
             style = MaterialTheme.typography.bodySmall,
