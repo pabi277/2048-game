@@ -16,6 +16,7 @@ import io.github.pabi277.tilefold.domain.Game
 import io.github.pabi277.tilefold.domain.GameSnapshot
 import io.github.pabi277.tilefold.domain.GameStatus
 import io.github.pabi277.tilefold.domain.Stats
+import io.github.pabi277.tilefold.ui.components.CONFIRM_DIALOG_TAG
 import io.github.pabi277.tilefold.ui.theme.TilefoldTheme
 import org.junit.Rule
 import org.junit.Test
@@ -125,16 +126,16 @@ class GameDialogTest {
         session.move(io.github.pabi277.tilefold.domain.Direction.DOWN)
 
         // First undo consumes free.
-        assertThat(session.undo()).isTrue()
-        assertThat(session.undoAllowance.used).isEqualTo(1)
+        Truth.assertThat(session.undo()).isTrue()
+        Truth.assertThat(session.undoAllowance.used).isEqualTo(1)
 
         // No more free without rewarded.
         session.move(io.github.pabi277.tilefold.domain.Direction.LEFT)
-        assertThat(session.undo()).isFalse()
+        Truth.assertThat(session.undo()).isFalse()
 
         // Earn rewarded.
-        assertThat(session.earnRewardedUndo()).isTrue()
-        assertThat(session.undo()).isTrue()
+        Truth.assertThat(session.earnRewardedUndo()).isTrue()
+        Truth.assertThat(session.undo()).isTrue()
     }
 
     @Test
