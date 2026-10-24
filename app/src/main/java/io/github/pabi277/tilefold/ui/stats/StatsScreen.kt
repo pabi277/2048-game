@@ -90,7 +90,11 @@ private fun StatsGrid(
 ) {
     val unknown = stringResource(R.string.stats_unknown)
     fun fmt(value: Int): String = if (storageError) unknown else value.toString()
-    fun tileFmt(value: Int): String = if (storageError) unknown else if (value == 0) unknown else value.toString()
+    fun tileFmt(value: Int): String {
+        if (storageError) return unknown
+        if (value == 0) return unknown
+        return value.toString()
+    }
 
     val gamesLabel = stringResource(R.string.stats_games_played)
     val gamesValue = if (stats.gamesPlayed == 0 && !storageError) unknown else fmt(stats.gamesPlayed)

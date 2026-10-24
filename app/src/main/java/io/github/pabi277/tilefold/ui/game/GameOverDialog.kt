@@ -17,13 +17,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import io.github.pabi277.tilefold.R
 import io.github.pabi277.tilefold.ui.components.PrimaryButton
 import io.github.pabi277.tilefold.ui.components.SecondaryButton
 import io.github.pabi277.tilefold.ui.components.TextAction
-import androidx.compose.ui.text.font.FontWeight
 import io.github.pabi277.tilefold.ui.icons.TilefoldIcons
 import io.github.pabi277.tilefold.ui.theme.Corners
 import io.github.pabi277.tilefold.ui.theme.TextCaps
