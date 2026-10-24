@@ -5,6 +5,7 @@ package io.github.pabi277.tilefold.ui.game
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -12,7 +13,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipe
-import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -83,14 +83,15 @@ class GameScreenTest {
     fun `a tap or a tiny drag costs no move`() {
         startGame()
 
-        composeRule.onNodeWithTag(BOARD_TAG).performTouchInput { swipeDown() }
-        composeRule.onNodeWithTag(SCORE_TAG).assertTextEquals("0")
-
+        // A tap is not a gesture.
+        composeRule.onNodeWithTag(BOARD_TAG).performTouchInput { click(center) }
+        // 8px is well under the 24dp swipe threshold, so this is not a swipe.
         composeRule.onNodeWithTag(BOARD_TAG).performTouchInput {
             swipe(start = center, end = center.copy(x = center.x + 8f))
         }
 
         // Still the opening board: nothing moved, so nothing spawned.
+        composeRule.onNodeWithTag(SCORE_TAG).assertTextEquals("0")
         composeRule.onNodeWithTag(tileTag(9)).assertExists()
         composeRule.onNodeWithTag(tileTag(11)).assertExists()
         composeRule.onNodeWithTag(HINT_TAG).assertExists()
@@ -163,11 +164,7 @@ class GameScreenTest {
     private fun TestGame(reducedMotion: Boolean) {
         val session = remember { GameSession(SEED) }
         val actions = remember(session) { session.actions() }
-        GameScreen(
-            state = session.screenState,
-            actions = actions,
-            reducedMotion = reducedMotion,
-        )
+        GameContent(session = session, actions = actions, reducedMotion = reducedMotion)
     }
 
     private companion object {

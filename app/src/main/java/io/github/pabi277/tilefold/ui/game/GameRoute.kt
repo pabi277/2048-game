@@ -57,7 +57,29 @@ fun GameRoute(
 
     BackHandler(enabled = session.paused) { session.resume() }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    GameContent(
+        session = session,
+        actions = actions,
+        reducedMotion = reducedMotion,
+        modifier = modifier.fillMaxSize(),
+    )
+}
+
+/**
+ * The screen plus its pause sheet, without the lifecycle wiring.
+ *
+ * [GameRoute] owns the session and the auto-pause; this is what both the route
+ * and the Robolectric tests draw, so the tests exercise the real overlay instead
+ * of a re-implementation of it.
+ */
+@Composable
+internal fun GameContent(
+    session: GameSession,
+    actions: GameActions,
+    reducedMotion: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier) {
         GameScreen(
             state = session.screenState,
             actions = actions,

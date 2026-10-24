@@ -43,7 +43,7 @@ class BoardSceneTest {
     fun `a slide keeps every tile's identity`() {
         val start = board(0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         val scene = BoardScene.still(start)
-        val before = valuesOf(scene)
+        val beforeKeys = scene.tiles.map { it.key }
 
         val next =
             BoardScene.after(
@@ -52,7 +52,7 @@ class BoardSceneTest {
                 nextBoard = board(2, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
             )
 
-        assertThat(next.tiles.map { it.key }).containsExactlyElementsIn(before.keys)
+        assertThat(next.tiles.map { it.key }).containsExactlyElementsIn(beforeKeys)
         assertThat(valuesOf(next)).containsExactly(0, 2, 1, 4)
         assertThat(next.tiles.first { it.index == 0 }.originIndex).isEqualTo(2)
         assertThat(next.tiles.none { it.spawned }).isTrue()

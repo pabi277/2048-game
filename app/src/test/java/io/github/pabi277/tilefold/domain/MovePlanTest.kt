@@ -73,7 +73,7 @@ class MovePlanTest {
         val up = Moves.plan(start, Direction.UP)!!
         val down = Moves.plan(start, Direction.DOWN)!!
 
-        assertThat(up.slides).containsExactly(TileSlide(4, 0), TileSlide(0, 0), TileSlide(12, 8))
+        assertThat(up.slides).containsExactly(TileSlide(0, 0), TileSlide(4, 0), TileSlide(12, 4))
         assertThat(up.board.toString()).isEqualTo("4,0,0,0/4,0,0,0/0,0,0,0/0,0,0,0")
         assertThat(down.slides).containsExactly(TileSlide(12, 12), TileSlide(4, 8), TileSlide(0, 8))
         assertThat(down.board.toString()).isEqualTo("0,0,0,0/0,0,0,0/4,0,0,0/4,0,0,0")
