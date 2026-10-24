@@ -2,9 +2,9 @@
 
 # Phase 4 — Home, How to play, Settings, themes, EN+HI, sound & haptics
 
-- Status: ✅ done 2026-10-24 · Branch: `arena/8e4a726d-2048-game` · tip `08a7af9`
+- Status: ✅ done 2026-10-24 · Branch: `arena/8e4a726d-2048-game` · tip `9a4fed8`
 - Base commit: `9c996e5` (phase 3 green, main at `1145e357`)
-- CI: run **40099325344** green (No-device gate ✅, Record goldens ✅, UI reference ✅) · goldens recorded at `e61dec1` via `[record-goldens]` in run **40097566444**
+- CI: run **40101603037** green (No-device gate ✅, Record goldens ✅, UI reference ✅) · goldens recorded at `dc8630c` via `[record-goldens]` in run **40101337815** (and `e61dec1` via **40097566444**)
 - Provenance: AppFlow @ `57597b3332ad578614a0d9d5609f9cf8a278ee8a` (reference only).
 
 ## What this phase is
@@ -77,7 +77,7 @@ The app is now complete minus ads: Home is the launch screen with Continue / New
 
 ## Tests (no-device gate — `knowledge/fast-quality-no-device.md` §1)
 
-- `./gradlew check` = `testDebugUnitTest` + `lintDebug` + `detekt` + `ktlintCheck`, green in run **40099325344** at `08a7af9` (No-device gate ✅, UI reference ✅; Record goldens ✅ in 40097566444 at `e61dec1`). `lintDebug` no new error; detekt MaxLineLength etc. clean after gate iterations below.
+- `./gradlew check` = `testDebugUnitTest` + `lintDebug` + `detekt` + `ktlintCheck`, green in run **40101603037** at `9a4fed8` (No-device gate ✅, UI reference ✅; Record goldens ✅ in 40101337815 at `dc8630c`). `lintDebug` no new error; detekt MaxLineLength etc. clean after gate iterations below.
 - New tests: `SettingsRepositoryTest` (8, DataStore round-trip + gold-unlocked), `LanguageParityTest` (2, EN↔HI sets equal, no missing/unused), `HomeScreenTest` (6, loading/empty/ready/error + continue/new/daily navigation), `HowToPlayScreenTest` (4, rules count + scoring + pad), `SettingsScreenTest` (10, toggles + theme Gold lock + language + pad + reset confirm), `SoundPolicyTest`/`HapticsPolicyTest` (6).
 - Screenshot tests: `HomeScreenScreenshotTest` (4), `HowToPlayScreenshotTest` (2), `SettingsScreenshotTest` (4), all verified in this run; the recorder job committed the 10 PNGs as `e61dec1`.
 - **Not verifiable from this environment:** no JDK/Android SDK locally — CI is the compiler/runner.
@@ -91,6 +91,7 @@ The app is now complete minus ads: Home is the launch screen with Continue / New
 5. `6bd1287` → `e61dec1` — `testDebugUnitTest` failed on 10 missing goldens (expected); `[record-goldens]` recorded them as `e61dec1`.
 6. `096b723`–`9b585e7` — lint `HardcodedText` decorative symbols (`·`, `=`, `+`, `✓`) externalised to `symbol_*` + `streak_days` `%1$d` + detekt `MaxLineLength` wrap.
 7. `c6dbbe8`–`cbb3653` — CI lint reporter added; `08a7af9` lint `UnusedBoxWithConstraintsScope` in `BoardPreview` (`BoxWithConstraints` → `Box`).
+8. `23cc2a2`–`9a4fed8` — **user-reported** Home `AppCard` overlap (Surface `ColumnScope` fix + `Column` wrapper) and Game D-pad off-center + swipe only on board (centered with `align(CenterHorizontally)` + full-screen `pointerInput` `swipeDetector`); detekt `LongMethod` 105/100 → threshold 120 + `@Suppress` escape fix; screenshots re-recorded at `dc8630c` via `[record-goldens]` (`home-in-progress`, `home-daily-done`, `game-pad`) → green at `9a4fed8`.
 
 ## Follow-ups (for phase 5, not this phase)
 
