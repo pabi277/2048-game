@@ -143,9 +143,12 @@ class HomeScreenScreenshotTest {
             setLocales(LocaleList.forLanguageTags("hi"))
         }
         composeRule.setContent {
+            val appContext = androidx.test.core.app.ApplicationProvider
+                .getApplicationContext<android.content.Context>()
+            val wrapped = appContext.createConfigurationContext(hiConfig)
             CompositionLocalProvider(
                 LocalConfiguration provides hiConfig,
-                LocalContext provides androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>().createConfigurationContext(hiConfig),
+                LocalContext provides wrapped,
             ) {
                 TilefoldTheme(darkTheme = false) {
                     HomeScreen(

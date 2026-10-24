@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+@file:Suppress("MagicNumber")
 
 package io.github.pabi277.tilefold.ui.haptics
 
