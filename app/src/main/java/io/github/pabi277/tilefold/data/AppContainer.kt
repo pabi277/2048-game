@@ -23,6 +23,7 @@ class AppContainer(
 
     val gameSaveRepository = GameSaveRepository(dataStore)
     val statsRepository = StatsRepository(dataStore)
+    val settingsRepository = SettingsRepository(dataStore)
 
     val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 }

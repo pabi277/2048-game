@@ -145,6 +145,43 @@ internal object TilefoldIcons {
         )
     }
 
+    /** Lucide `chevron-right` — Settings row trail. */
+    val ChevronRight: ImageVector by lazy {
+        strokeIcon(
+            name = "chevron-right",
+            paths = arrayOf("m9 18 6-6-6-6"),
+        )
+    }
+
+    /** Lucide `lock` — Gold locked. */
+    val Lock: ImageVector by lazy {
+        strokeIcon(
+            name = "lock",
+            paths = arrayOf(
+                "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+            ),
+        )
+    }
+
+    /** Lucide `settings` — Settings. */
+    val Settings: ImageVector by lazy {
+        strokeIcon(
+            name = "settings",
+            paths = arrayOf(
+                "M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z",
+                "M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+                "M12 2v2",
+                "M12 20v2",
+                "m5 5 1.5-1.5",
+                "m5 14-1.5-1.5",
+                "M20 12h2",
+                "M2 12h2",
+                "m19 5-1.5 1.5",
+                "m5 19-1.5-1.5",
+            ),
+        )
+    }
+
     /**
      * Builds a 24x24 stroke-only vector from SVG path strings.
      *

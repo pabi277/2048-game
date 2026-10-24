@@ -12,9 +12,12 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import io.github.pabi277.tilefold.domain.ThemeChoice
 
 /**
  * One theme, built only from [Tokens]. There are no per-screen colour or type
@@ -73,6 +76,31 @@ private val DarkColors =
         error = Tokens.Dark.Error,
         onError = Tokens.Dark.OnError,
         scrim = Tokens.Dark.Scrim,
+    )
+
+private val GoldColors =
+    lightColorScheme(
+        primary = Tokens.GoldSeed,
+        onPrimary = Tokens.Light.OnAccent,
+        primaryContainer = Tokens.Light.ScoreBox,
+        onPrimaryContainer = Tokens.Light.ScoreValue,
+        secondary = Tokens.Light.TextSecondary,
+        onSecondary = Tokens.Light.Surface,
+        secondaryContainer = Tokens.Light.SurfaceVariant,
+        onSecondaryContainer = Tokens.Light.TextPrimary,
+        tertiary = Tokens.Light.Success,
+        onTertiary = Tokens.Light.OnSuccess,
+        background = Tokens.Light.Background,
+        onBackground = Tokens.Light.TextPrimary,
+        surface = Tokens.Light.Surface,
+        onSurface = Tokens.Light.TextPrimary,
+        surfaceVariant = Tokens.Light.SurfaceVariant,
+        onSurfaceVariant = Tokens.Light.TextSecondary,
+        outline = Tokens.Light.Divider,
+        outlineVariant = Tokens.Light.OutlineVariant,
+        error = Tokens.Light.Error,
+        onError = Tokens.Light.OnError,
+        scrim = Tokens.Light.Scrim,
     )
 
 /** Type roles from `docs/UI-REFERENCE.md` § Type scale, mapped to M3 roles. */
@@ -161,6 +189,8 @@ internal data class TilefoldPalette(
     val onSuccess: Color,
     val skeleton: Color,
     val skeletonShine: Color,
+    val accent: Color,
+    val onAccent: Color,
 ) {
     /** Value → colours, via the single pure ramp function. */
     fun tile(value: Int): Tokens.TilePair = Tokens.tile(value, dark)
@@ -178,6 +208,8 @@ private val LightPalette =
         onSuccess = Tokens.Light.OnSuccess,
         skeleton = Tokens.Light.Skeleton,
         skeletonShine = Tokens.Light.SkeletonShine,
+        accent = Tokens.Light.Accent,
+        onAccent = Tokens.Light.OnAccent,
     )
 
 private val DarkPalette =
@@ -192,6 +224,24 @@ private val DarkPalette =
         onSuccess = Tokens.Dark.OnSuccess,
         skeleton = Tokens.Dark.Skeleton,
         skeletonShine = Tokens.Dark.SkeletonShine,
+        accent = Tokens.Dark.Accent,
+        onAccent = Tokens.Dark.OnAccent,
+    )
+
+private val GoldPalette =
+    TilefoldPalette(
+        dark = false,
+        boardFrame = Tokens.Light.BoardFrame,
+        emptyCell = Tokens.Light.EmptyCell,
+        scoreBox = Tokens.Light.ScoreBox,
+        scoreLabel = Tokens.Light.ScoreLabel,
+        scoreValue = Tokens.Light.ScoreValue,
+        success = Tokens.Light.Success,
+        onSuccess = Tokens.Light.OnSuccess,
+        skeleton = Tokens.Light.Skeleton,
+        skeletonShine = Tokens.Light.SkeletonShine,
+        accent = Tokens.GoldSeed,
+        onAccent = Tokens.Light.OnAccent,
     )
 
 internal val LocalTilefoldPalette = staticCompositionLocalOf { LightPalette }
@@ -202,14 +252,33 @@ internal object TilefoldThemeDefaults {
         @Composable get() = LocalTilefoldPalette.current
 }
 
+private fun paletteFor(choice: ThemeChoice, systemDark: Boolean): TilefoldPalette =
+    when (choice) {
+        ThemeChoice.LIGHT -> LightPalette
+        ThemeChoice.DARK -> DarkPalette
+        ThemeChoice.GOLD -> GoldPalette
+        ThemeChoice.SYSTEM -> if (systemDark) DarkPalette else LightPalette
+    }
+
+private fun colorsFor(choice: ThemeChoice, systemDark: Boolean) =
+    when (choice) {
+        ThemeChoice.LIGHT -> LightColors
+        ThemeChoice.DARK -> DarkColors
+        ThemeChoice.GOLD -> GoldColors
+        ThemeChoice.SYSTEM -> if (systemDark) DarkColors else LightColors
+    }
+
 @Composable
 fun TilefoldTheme(
+    themeChoice: ThemeChoice = ThemeChoice.SYSTEM,
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    CompositionLocalProvider(LocalTilefoldPalette provides if (darkTheme) DarkPalette else LightPalette) {
+    val palette = paletteFor(themeChoice, darkTheme)
+    val colors = colorsFor(themeChoice, darkTheme)
+    CompositionLocalProvider(LocalTilefoldPalette provides palette) {
         MaterialTheme(
-            colorScheme = if (darkTheme) DarkColors else LightColors,
+            colorScheme = colors,
             typography = TilefoldTypography,
             shapes = TilefoldShapes,
             content = content,

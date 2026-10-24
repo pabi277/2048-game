@@ -4,77 +4,94 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.core.os.LocaleListCompat
+import androidx.appcompat.app.AppCompatDelegate
 import io.github.pabi277.tilefold.data.AppContainer
-import io.github.pabi277.tilefold.domain.DailyChallenge
+import io.github.pabi277.tilefold.domain.Language
 import io.github.pabi277.tilefold.domain.Stats
-import io.github.pabi277.tilefold.ui.game.GameRoute
-import io.github.pabi277.tilefold.ui.stats.StatsScreen
+import io.github.pabi277.tilefold.ui.nav.TilefoldNavHost
 import io.github.pabi277.tilefold.ui.theme.TilefoldTheme
+import kotlinx.coroutines.launch
 
 /**
  * Single activity for the whole app (single-activity + Compose per
  * `knowledge/app-engineering.md` §1).
  *
- * Phase 3 shows the game with win/game-over dialogs, undo allowance, persistence
- * and the stats screen. The APK opens on Classic; tabs expose Daily and Stats
- * until Home navigation arrives in phase 4 (deliberate temporary chrome).
+ * Phase 4 owns Home navigation, How to play, Settings with theme/language
+ * switches, and sound/haptics. The game route still preserves the exact
+ * board/score/RNG persistence proved in phase 3.
  */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         val container = AppContainer(applicationContext)
+        val soundInit = container.settingsRepository.settingsFlow
         setContent {
-            TilefoldTheme {
-                var selected by remember { mutableIntStateOf(0) }
-                Column(Modifier.fillMaxSize()) {
-                    TabRow(selectedTabIndex = selected) {
-                        Tab(selected = selected == 0, onClick = { selected = 0 }, text = { Text("Classic") })
-                        Tab(
-                            selected = selected == 1,
-                            onClick = { selected = 1 },
-                            text = { Text(stringResource(io.github.pabi277.tilefold.R.string.daily_title)) },
-                        )
-                        Tab(
-                            selected = selected == 2,
-                            onClick = { selected = 2 },
-                            text = { Text(stringResource(io.github.pabi277.tilefold.R.string.stats_title)) },
-                        )
-                    }
-                    when (selected) {
-                        0 -> {
-                            GameRoute(container = container, modifier = Modifier.weight(1f))
-                        }
+            val settings by container.settingsRepository.settingsFlow.collectAsState(
+                initial = io.github.pabi277.tilefold.domain.Settings(),
+            )
+            val stats by container.statsRepository.statsFlow.collectAsState(initial = Stats())
+            val savedGame by container.gameSaveRepository.savedGame.collectAsState(initial = null)
+            val scope = rememberCoroutineScope()
 
-                        1 -> {
-                            val today = DailyChallenge.epochDay(System.currentTimeMillis())
-                            GameRoute(
-                                container = container,
-                                seed = DailyChallenge.seedFor(today),
-                                modifier = Modifier.weight(1f),
-                            )
-                        }
+            // Theme: system/light/dark/gold
+            TilefoldTheme(themeChoice = settings.theme) {
+                val hasSaved = savedGame != null
+                val savedScore = savedGame?.score ?: 0
+                val savedHighest = savedGame?.board?.highestTile ?: 0
+                val isDaily = savedGame?.let { false } ?: false // GameMode not stored in SaveCodec yet; treat as classic
+                val storageError = container.gameSaveRepository.loadError
 
-                        else -> {
-                            StatsScreen(
-                                stats = Stats(),
-                                modifier = Modifier.weight(1f),
-                            )
-                        }
+                val versionName =
+                    try {
+                        packageManager.getPackageInfo(packageName, 0).versionName ?: "0.4.0"
+                    } catch (_: Exception) {
+                        "0.4.0"
                     }
-                }
+
+                TilefoldNavHost(
+                    container = container,
+                    settings = settings,
+                    stats = stats,
+                    savedHasGame = hasSaved,
+                    savedScore = savedScore,
+                    savedHighestTile = savedHighest,
+                    isDailyMode = isDaily,
+                    storageError = storageError,
+                    versionName = versionName,
+                    onThemeChanged = { choice ->
+                        scope.launch { container.settingsRepository.setTheme(choice) }
+                    },
+                    onLanguageChanged = { lang ->
+                        scope.launch {
+                            container.settingsRepository.setLanguage(lang)
+                            applyLanguage(lang)
+                        }
+                    },
+                    onSoundChanged = { enabled ->
+                        scope.launch { container.settingsRepository.setSoundEnabled(enabled) }
+                    },
+                    onHapticsChanged = { enabled ->
+                        scope.launch { container.settingsRepository.setHapticsEnabled(enabled) }
+                    },
+                    onDpadChanged = { visible ->
+                        scope.launch { container.settingsRepository.setDpadVisible(visible) }
+                    },
+                )
             }
         }
+    }
+
+    private fun applyLanguage(language: Language) {
+        val tag = when (language) {
+            Language.EN -> "en"
+            Language.HI -> "hi"
+        }
+        val localeList = LocaleListCompat.forLanguageTags(tag)
+        AppCompatDelegate.setApplicationLocales(localeList)
     }
 }

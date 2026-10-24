@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +18,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import io.github.pabi277.tilefold.data.AppContainer
+import io.github.pabi277.tilefold.ui.haptics.HapticsController
+import io.github.pabi277.tilefold.ui.sound.SoundController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -40,11 +43,16 @@ fun GameRoute(
     modifier: Modifier = Modifier,
     seed: Long? = null,
     container: AppContainer? = null,
+    onHome: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val appContainer = container ?: remember { AppContainer(context.applicationContext) }
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
+    val settings by appContainer.settingsRepository.settingsFlow.collectAsState(initial = io.github.pabi277.tilefold.domain.Settings())
+
+    val soundController = remember(context) { SoundController(context.applicationContext) }
+    val hapticsController = remember(context) { HapticsController(context.applicationContext) }
 
     val session = remember(seed, appContainer) {
         val s = GameSession(seed = seed ?: kotlin.random.Random.nextLong())
@@ -57,15 +65,67 @@ fun GameRoute(
         s
     }
     var isRestoring by remember { mutableStateOf(true) }
-    val actions = remember(session) { session.actions() }
+    val actions =
+        remember(session, onHome, settings, soundController, hapticsController) {
+            val base = session.actions()
+            GameActions(
+                onMove = { dir ->
+                    val beforeScore = session.game.score
+                    val moved = session.move(dir)
+                    if (moved) {
+                        val afterScore = session.game.score
+                        if (afterScore > beforeScore) {
+                            soundController.playMerge(settings)
+                            hapticsController.buzzMerge(settings)
+                            if (session.game.status == io.github.pabi277.tilefold.domain.GameStatus.WON) {
+                                soundController.playWin(settings)
+                                hapticsController.buzzWin(settings)
+                            }
+                        } else {
+                            soundController.playTick(settings)
+                        }
+                    }
+                    moved.let {}
+                },
+                onUndo = {
+                    base.onUndo()
+                    soundController.playTick(settings)
+                },
+                onRewardedUndo = base.onRewardedUndo,
+                onKeepPlaying = {
+                    base.onKeepPlaying()
+                    soundController.playTick(settings)
+                },
+                onNewGameFromWin = base.onNewGameFromWin,
+                onNewGameFromGameOver = base.onNewGameFromGameOver,
+                onDismissGameOver = base.onDismissGameOver,
+                onRestart = base.onRestart,
+                onConfirmRestart = base.onConfirmRestart,
+                onDismissRestartConfirm = base.onDismissRestartConfirm,
+                onHome = onHome ?: base.onHome,
+                onTogglePad = {
+                    base.onTogglePad()
+                    soundController.playTick(settings)
+                    scope.launch {
+                        appContainer.settingsRepository.setDpadVisible(session.padVisible)
+                    }
+                },
+                onRetryStorage = base.onRetryStorage,
+            )
+        }
     val reducedMotion = rememberReducedMotion()
     val leaving = session.scene.leaving
 
     LaunchedEffect(appContainer) {
         val restored = appContainer.gameSaveRepository.load()
         val stats = appContainer.statsRepository.load()
+        val sett = appContainer.settingsRepository.load()
         if (appContainer.gameSaveRepository.loadError || appContainer.statsRepository.loadError) {
             session.updateStorageError(true)
+        }
+        // Apply dpad visibility from settings
+        if (sett.dpadVisible != session.padVisible) {
+            session.togglePadIfNeeded(sett.dpadVisible)
         }
         if (restored != null) {
             session.restore(restored, stats)
@@ -105,6 +165,10 @@ fun GameRoute(
             modifier = modifier.fillMaxSize(),
         )
     }
+}
+
+private fun GameSession.togglePadIfNeeded(desired: Boolean) {
+    if (padVisible != desired) togglePad()
 }
 
 /**
