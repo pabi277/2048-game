@@ -10,11 +10,11 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.common.truth.Truth
 import io.github.pabi277.tilefold.domain.Board
 import io.github.pabi277.tilefold.domain.Game
 import io.github.pabi277.tilefold.domain.GameSnapshot
 import io.github.pabi277.tilefold.domain.GameStatus
-import com.google.common.truth.Truth
 import io.github.pabi277.tilefold.domain.Stats
 import io.github.pabi277.tilefold.ui.theme.TilefoldTheme
 import org.junit.Rule
@@ -210,6 +210,5 @@ class GameDialogTest {
         return Game.restore(snapshot)
     }
 
-    private fun assertThat(value: Boolean) =
-        Truth.assertThat(value)
+    private fun assertThat(value: Boolean) = Truth.assertThat(value)
 }
