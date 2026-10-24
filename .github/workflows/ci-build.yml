@@ -103,6 +103,20 @@ jobs:
               | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
           done
 
+      # The screenshot lane is only real if it produced images: fail loudly
+      # instead of uploading an empty artifact and calling it done.
+      - name: Verify screenshot renders were produced
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=$(find app/build -name '*.png' | wc -l)
+          echo "::notice::screenshot PNGs produced: $count"
+          find app/build -name '*.png' | head -20
+          if [ "$count" -lt 1 ]; then
+            echo "::error::No screenshot PNGs were produced by the test task"
+            exit 1
+          fi
+
       - name: Upload progress APK (the downloadable result of this phase)
         uses: actions/upload-artifact@v4
         with:
@@ -137,7 +151,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-screenshots
-          path: app/build/roborazzi/**
+          path: |
+            app/build/roborazzi/**
+            app/build/**/*.png
           if-no-files-found: warn
           retention-days: 30
 
