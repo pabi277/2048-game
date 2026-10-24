@@ -147,12 +147,12 @@
 - **`main` is now the source of truth**: it holds phases 0, 0-D, 1 and 2
   (PR #4 merge commit). The phase-1/2 session branch is finished — do not keep
   working on it or re-merge it.
-- **Phase 3 🚧 2026-10-24 — persistence, game states, undo, stats, daily — in progress on `arena/8e4a726d-2048-game`** (branch cut from `1145e35`).
+- **Phase 3 ✅ 2026-10-24 — persistence, game states, undo, stats, daily — done on `arena/8e4a726d-2048-game` (cut from `1145e35`, tip `9c996e5`, run 40093610003).**
   - 3.1 — DataStore save on every valid move (debounced 250 ms) + on `ON_STOP`, resume on launch through `SaveCodec` with exact board/score/keep-playing/RNG; corrupt-save fallback + `InlineBanner` storage error.
   - 3.2 — win dialog (`You made 2048` + `Keep playing`) and game-over dialog (`Final score`/`Best`/`New best` chip, `Undo last move`, `New game`, `Home`) replacing `releaseWin()` and the `Game over` chip; restart confirm.
   - 3.3 — undo allowance (1 free, undo-after-game-over, rewarded +1 max 3) behind pure `AdPolicy` (host-testable, never calls SDK when it says no; test ad units only).
   - 3.4 — Stats screen (six tiles, empty + storage-error) + Daily Challenge (UTC epoch-day seed, same board for everyone, local streak + best daily score).
-  - Record: `docs/phases/03-save-states.md`; roadmap row 3 → 🚧.
+  - Record: `docs/phases/03-save-states.md`; roadmap row 3 → ✅ (166 host tests, 21 goldens, APK 11.6 MB).
 - Open owner items: the reference screenshot is no longer needed (the reference
   is ours and approved); live ad units only in phase 5 and only after a GATE.
 
@@ -161,16 +161,15 @@
 1. Read `docs/ROADMAP.md`, `docs/DECISIONS.md`, `docs/UI-REFERENCE.md` and the
    latest `docs/phases/` record — trust the repo, not memory.
 2. Cut the new session branch **from `main`** (never work on a finished phase
-   branch, never push `main`), then implement **phase 3** (persistence, game
-   states, undo, stats, daily), all its parts, evidence-first, against
-   `docs/UI-REFERENCE.md` and `design/reference/screenshots/`; the engine in
-   `domain/` is the only rules source (the UI never re-implements a merge), and
-   `GameSession` is already the state holder the store plugs into.
+   branch, never push `main`), then implement **phase 4** (Home, How to play,
+   Settings, themes, EN+HI, sound & haptics), all its parts, evidence-first,
+   against `docs/UI-REFERENCE.md` and `design/reference/screenshots/`; Home owns
+   resume/daily cards and `Best —` line, Settings owns theme/language/sound.
 3. End with: CI green (incl. the no-device quality gate) + the run's
-   downloadable `app-progress-apk` artifact · `docs/phases/03-save-states.md` (say
-   what the APK shows, and record where the Compose screens differ
+   downloadable `app-progress-apk` artifact · `docs/phases/04-home-settings.md`
+   (say what the APK shows, and record where the Compose screens differ
    deliberately from the reference) · roadmap row status · this file updated ·
    short report (run id, tip sha, APK, what is now visible) · **the next-chat
-   prompt printed in chat** for phase 4 · stop at the merge gate (a merge is
+   prompt printed in chat** for phase 5 · stop at the merge gate (a merge is
    only ever done on the owner's explicit command in chat, as happened for
    PR #4).
