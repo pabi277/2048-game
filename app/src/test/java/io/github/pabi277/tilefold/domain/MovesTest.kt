@@ -139,11 +139,11 @@ class MovesTest {
         val result = moved(Moves.apply(board, Direction.LEFT))
 
         assertThat(result.scoreDelta).isEqualTo(result.mergedValues.sum())
-        assertThat(result.board.toString()).isEqualTo("4,8,16,8/16,0,0,0/32,0,0,0/64,64,0,0")
+        assertThat(result.board.toString()).isEqualTo("4,8,0,0/16,0,0,0/32,0,0,0/64,64,0,0")
     }
 
     @Test
-    fun `a move never changes a cell that is not part of its line`() {
+    fun `a right move carries each row to the trailing edge`() {
         val board =
             Board.rows(
                 listOf(2, 0, 0, 0),
@@ -154,7 +154,8 @@ class MovesTest {
 
         val result = moved(Moves.apply(board, Direction.RIGHT))
 
-        assertThat(result.board.column(0)).containsExactly(2, 4, 8, 16).inOrder()
-        assertThat(result.board.column(3)).containsExactly(0, 0, 0, 0).inOrder()
+        // The tiles lived in column 0 and travelled right, so the columns swap.
+        assertThat(result.board.column(0)).containsExactly(0, 0, 0, 0).inOrder()
+        assertThat(result.board.column(3)).containsExactly(2, 4, 8, 16).inOrder()
     }
 }

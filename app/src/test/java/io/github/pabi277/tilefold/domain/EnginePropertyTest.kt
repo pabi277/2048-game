@@ -69,8 +69,8 @@ class EnginePropertyTest {
             Direction.entries.forEach { direction ->
                 val outcome = Moves.apply(board, direction)
                 if (outcome is Moves.Moved) {
+                    // A pure slide moves tiles and scores nothing — still a valid move.
                     assertThat(outcome.scoreDelta).isEqualTo(outcome.mergedValues.sum())
-                    assertThat(outcome.mergedValues).isNotEmpty()
                 }
             }
         }
