@@ -22,7 +22,8 @@ import androidx.compose.ui.unit.sp
  * phase may swap in generated tonal palettes from the same seed without changing
  * a single screen.
  */
-private val LightColors = lightColorScheme(
+private val LightColors =
+    lightColorScheme(
         primary = SeedColors.Seed,
         onPrimary = SeedColors.OnSeed,
         primaryContainer = SeedColors.LightSecondaryContainer,
@@ -42,8 +43,9 @@ private val LightColors = lightColorScheme(
         onError = SeedColors.LightSurface,
     )
 
-private val DarkColors = darkColorScheme(
-        primary = SeedColors.DarkError,
+private val DarkColors =
+    darkColorScheme(
+        primary = SeedColors.DarkPrimary,
         onPrimary = SeedColors.DarkBackground,
         primaryContainer = SeedColors.DarkSecondaryContainer,
         onPrimaryContainer = SeedColors.DarkOnSecondaryContainer,
@@ -63,7 +65,8 @@ private val DarkColors = darkColorScheme(
     )
 
 /** Type roles from `docs/UI-REFERENCE.md` § Type scale, mapped to M3 roles. */
-private val TilefoldTypography = Typography(
+private val TilefoldTypography =
+    Typography(
         displaySmall =
             TextStyle(
                 fontSize = 40.sp,

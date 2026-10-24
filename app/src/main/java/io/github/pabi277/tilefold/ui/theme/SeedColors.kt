@@ -32,6 +32,8 @@ internal object SeedColors {
     val DarkOutline = Color(0xFF43392F)
     val DarkSecondaryContainer = Color(0xFF3A322A)
     val DarkOnSecondaryContainer = Color(0xFFF3ECE2)
+    /** Accent in the dark scheme: the same terracotta, lightened for contrast. */
+    val DarkPrimary = Color(0xFFE08A5E)
     val DarkError = Color(0xFFE08A5E)
 
     /** Text drawn on top of [Seed] (used for buttons and the title accent). */
