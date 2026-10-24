@@ -361,16 +361,18 @@ internal class GameSession(
     private fun handleGameOver() {
         // Stats: gamesPlayed, best, highestTile, wins
         val won = game.board.highestTile >= Game.WINNING_TILE
+        val oldBest = stats.bestScore
         val updated = DailyChallenge.updateStatsOnClassicEnd(stats, game, won)
-        if (mode == GameMode.DAILY && dailyEpochDay != null) {
-            val dailyUpdated = DailyChallenge.updateStatsOnDailyComplete(updated, dailyEpochDay!!, game.score)
-            stats = dailyUpdated
-            onStatsChanged?.invoke(dailyUpdated)
-        } else {
-            stats = updated
-            onStatsChanged?.invoke(updated)
-        }
-        best = maxOf(best, updated.bestScore)
+        val finalUpdated =
+            if (mode == GameMode.DAILY && dailyEpochDay != null) {
+                DailyChallenge.updateStatsOnDailyComplete(updated, dailyEpochDay!!, game.score)
+            } else {
+                updated
+            }
+        isNewBest = finalUpdated.bestScore > oldBest
+        stats = finalUpdated
+        onStatsChanged?.invoke(finalUpdated)
+        best = maxOf(best, finalUpdated.bestScore)
         showGameOverDialog = true
         interstitialState = AdPolicy.onGameOver(interstitialState)
         onInterstitialStateChanged?.invoke(interstitialState)

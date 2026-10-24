@@ -118,6 +118,9 @@ class GameScreenTest {
         composeRule.onNodeWithTag(BEST_TAG).assertTextEquals("4")
 
         composeRule.onNodeWithContentDescription("Restart").performClick()
+        // Phase 3: restart now asks for confirmation.
+        composeRule.onNodeWithText("Restart this game?").assertExists()
+        composeRule.onNodeWithText("Restart").performClick()
 
         composeRule.onNodeWithTag(SCORE_TAG).assertTextEquals("0")
         composeRule.onNodeWithTag(BEST_TAG).assertTextEquals("4")

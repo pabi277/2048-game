@@ -130,7 +130,7 @@ class GameDialogTest {
         Truth.assertThat(session.undoAllowance.used).isEqualTo(1)
 
         // No more free without rewarded.
-        session.move(io.github.pabi277.tilefold.domain.Direction.LEFT)
+        session.move(io.github.pabi277.tilefold.domain.Direction.RIGHT)
         Truth.assertThat(session.undo()).isFalse()
 
         // Earn rewarded.
