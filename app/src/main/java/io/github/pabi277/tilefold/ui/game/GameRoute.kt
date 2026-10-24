@@ -65,7 +65,7 @@ fun GameRoute(
         val restored = appContainer.gameSaveRepository.load()
         val stats = appContainer.statsRepository.load()
         if (appContainer.gameSaveRepository.loadError || appContainer.statsRepository.loadError) {
-            session.setStorageError(true)
+            session.updateStorageError(true)
         }
         if (restored != null) {
             session.restore(restored, stats)

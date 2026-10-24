@@ -156,7 +156,7 @@ class GameDialogTest {
     fun `storage error shows banner`() {
         rule.setContent {
             TilefoldTheme {
-                val session = remember { GameSession(seed = 1L).apply { setStorageError(true) } }
+                val session = remember { GameSession(seed = 1L).apply { updateStorageError(true) } }
                 val actions = session.actions()
                 GameScreen(state = session.screenState, actions = actions, reducedMotion = true)
             }

@@ -284,7 +284,7 @@ internal class GameSession(
         }
     }
 
-    fun setStorageError(value: Boolean) {
+    fun updateStorageError(value: Boolean) {
         storageError = value
     }
 
