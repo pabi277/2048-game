@@ -31,9 +31,10 @@ internal fun SectionLabel(
     text: String,
     modifier: Modifier = Modifier,
 ) {
+    val labelStyle = MaterialTheme.typography.labelSmall
     Text(
         text = text,
-        style = MaterialTheme.typography.labelSmall.copy(letterSpacing = MaterialTheme.typography.labelSmall.letterSpacing),
+        style = labelStyle.copy(letterSpacing = labelStyle.letterSpacing),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier.padding(top = 16.dp, bottom = 8.dp),
     )
@@ -173,14 +174,17 @@ internal fun SegmentedChoice(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    val labelColor = when {
+                        isSelected -> MaterialTheme.colorScheme.onPrimary
+                        enabled -> MaterialTheme.colorScheme.onSurface
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                    }
                     Text(
                         text = opt.label,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color =
-                            if (isSelected) MaterialTheme.colorScheme.onPrimary
-                            else
-                                if (enabled) MaterialTheme.colorScheme.onSurface
-                                else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                        ),
+                        color = labelColor,
                     )
                 }
             }
