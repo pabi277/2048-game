@@ -178,7 +178,12 @@ internal fun SettingsScreen(
                         subtitle = stringResource(R.string.settings_ad_free_sub),
                         enabled = false,
                         first = true,
-                        trail = { Text(text = stringResource(R.string.symbol_check), color = MaterialTheme.colorScheme.tertiary) },
+                        trail = {
+                            Text(
+                                text = stringResource(R.string.symbol_check),
+                                color = MaterialTheme.colorScheme.tertiary,
+                            )
+                        },
                     )
                 }
 
