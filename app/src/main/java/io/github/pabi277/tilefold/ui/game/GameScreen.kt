@@ -109,7 +109,7 @@ internal class GameActions(
  * fixed state renders a fixed picture) and keeps the rules in one place —
  * `domain/`.
  */
-@Suppress(\"LongMethod\")
+@Suppress("LongMethod")
 @Composable
 internal fun GameScreen(
     state: GameScreenState,
