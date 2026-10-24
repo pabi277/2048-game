@@ -289,4 +289,14 @@ class TokensSyncTest {
         assertThat(spacing).contains("tile corner ${Corners.Tile.value.toInt()}dp")
         assertThat(spacing).contains("score box corner ${Corners.ScoreBox.value.toInt()}dp")
     }
+
+    @Test
+    fun `motion durations match the doc`() {
+        val spacing = section("### Spacing, shape, elevation, motion")
+
+        assertThat(spacing).contains("slide ${Durations.SLIDE_MS}ms")
+        assertThat(spacing).contains("merge pop ${Durations.POP_MS}ms")
+        assertThat(spacing).contains("spawn ${Durations.SPAWN_MS}ms")
+        assertThat(spacing).contains("score tick ${Durations.SCORE_MS}ms")
+    }
 }

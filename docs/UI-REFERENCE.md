@@ -242,26 +242,29 @@ jitter.
   pad, Material defaults for dialogs/sheets. **No shadow on tiles.**
 - Touch targets ≥48dp everywhere; icon buttons 48dp; direction-pad keys 56dp.
 - Motion: slide 110ms, merge pop 140ms, spawn 130ms, score tick 220ms; all
-  suppressed by the reduced-motion setting (phase 2 implements it).
+  suppressed by the reduced-motion setting (implemented in phase 2:
+  `ui/game/Motion.kt` + `rememberReducedMotion()`).
 
 ## Component inventory (= the app's Compose checklist)
 
-- [ ] `PrimaryButton` (filled accent, 48dp min height) — Home, dialogs, sheets
-- [ ] `SecondaryButton` (surface-variant fill) — Home, dialogs, sheets
-- [ ] `TextAction` / `TextLinkRow` (quiet accent or muted actions)
-- [ ] `IconButton` (home, restart, undo, settings, help, stats, direction pad)
-- [ ] `ScoreBox` (uppercase label + tabular value on taupe)
-- [ ] `BoardFrame` (rounded, 10dp padded, holds the grid)
-- [ ] `TileGrid` + `Tile` (value → ramp, numeral flip, slide/merge/spawn
+- [x] `PrimaryButton` (filled accent, 48dp min height) — Home, dialogs, sheets
+- [x] `SecondaryButton` (surface-variant fill) — Home, dialogs, sheets
+- [x] `TextAction` / `TextLinkRow` (quiet accent or muted actions)
+- [x] `IconAction` (`ui/components/Buttons.kt`) — home, restart, settings, help,
+      stats, direction pad
+- [x] `ScoreBox` (uppercase label + tabular value on taupe)
+- [x] `BoardFrame` (rounded, 10dp padded, holds the grid)
+- [x] `TileGrid` + `Tile` (value → ramp, numeral flip, slide/merge/spawn
       animations, reduced-motion variant)
-- [ ] `DirectionPad` (4 keys, optional per settings) + pad toggle button
-- [ ] `Chip` (neutral / accent / success / outline) — streak, new best, mode,
-      swipe hint
+- [x] `DirectionPad` (4 keys, optional per settings) + pad toggle button
+- [x] `OutlineChip` (neutral / accent / success / outline) — streak, new best,
+      mode, swipe hint
 - [ ] `ResumeCard`, `DailyCard`, `StatTile`, `Card`, `SectionLabel`
 - [ ] `SettingsRow` (title, subtitle, trail), `ToggleRow`, `Switch`,
       `SegmentedChoice`, `LockedThemeRow`, `PurchaseRow`, `RowGroup`
-- [ ] `InlineBanner` (error tone, Retry action), `ConfirmDialog`, `PauseSheet`,
+- [ ] `InlineBanner` (error tone, Retry action), `ConfirmDialog`,
       `WinDialog`, `GameOverDialog`
+- [x] `PauseSheet` (scrim + bottom sheet, grabber, Resume / Restart / meta)
 - [ ] `BoardPreview` (decorative non-interactive board still on Home: fixed
       4×4 sample grid, tile colours from the ramp, numeral size derived from the
       cell size — must be `contentDescription = null`, not focusable)
@@ -292,6 +295,7 @@ with a 1:1 glyph table — recorded as an agent decision, not a silent swap.
 | Tile numerals capped at 1.25× / dialog score at 1.25× / in-screen score at 1.5× | same caps applied through `sp` values that stop growing past the cap | 2.0× font must break no board or dialog layout |
 | 1 CSS px = 1 dp | 1 dp everywhere, `sp` for text | keeps the measurements in this file directly usable |
 | Decorative board still on Home | same still, `contentDescription = null`, skipped by TalkBack | decoration is never an accessibility or navigation target |
+| A new tile simply appears (no CSS keyframe) | the spawn scales 0.6× → 1.0× over `spawn 130ms`; the tile is never invisible, and reduced motion snaps it | the reference has no spawn animation to copy, so the start scale is fixed here once instead of being improvised per screen |
 | Tiles are square cells filled edge to edge | `Modifier.fillMaxSize()` inside an `aspectRatio(1f)` cell; the numeral is centred and grows only to its cap | a tile that is not square reads as a progress bar, not a tile (found and fixed in 0-D review round 1) |
 
 ## Web → Compose mapping (complete — an unmapped screen is not ready to code)
@@ -326,8 +330,23 @@ come from the Roborazzi lane. Side-by-side review happens in each UI phase's
 record, and a difference is either fixed or listed under
 **deliberate native adaptations** above. "Looks close" in prose is not evidence.
 
-- Phase 2 — Game (`#game-new`, `#game-mid`, `#game-dark`, `#game-large-font`):
-  to fill
+- **Phase 2 — Game** — reference `07-game-new`, `08-game-mid`,
+  `09-game-paused`, `10-game-dark`, `11-game-large-font` vs the goldens
+  `app/src/test/screenshots/game-new`, `game-mid`, `game-paused`, `game-dark`,
+  `game-large-font` (+ `game-pad`, which the reference draws only as a control
+  glyph). Rendered at 411 × 891 dp / xxhdpi, so the app images are 1233 px wide
+  against the reference's 820 px phone frame; everything below is compared in
+  **dp**, not in pixels.
+  | Item | Reference | App | Verdict |
+  |---|---|---|---|
+  | Title row (24sp title, 48dp home + restart) | 24dp / 24dp padding | identical geometry; icons 1.9dp stroke | match |
+  | SCORE / BEST boxes (taupe, 12dp gap, 26sp bold tabular values) | `#game-mid` 8,412 / 12,480 | same values, same box height and corner radius | match |
+  | Board frame + 4×4 ramp (frame padding 10, gap 8, corner 16/8) | full ramp 2…1024 | identical colours from `Tokens.tile()`, identical cell pitch | match |
+  | Undo / hint / pad-toggle row | `Undo` muted when unavailable, darker after a move | `TextAction` muted (`onSurfaceVariant`) vs enabled; hint chip identical | match (state-driven, the reference hard-codes the tone) |
+  | Pause sheet | handle, `Paused`, Resume, Restart, **Home**, meta line | handle, `Paused`, Resume, Restart, meta line | **deliberate**: no Home row — there is no Home screen until phase 4, so the row would be a dead control. The meta line reads the *real* highest tile (1024); the reference's copy hard-codes 512 next to a 1024 tile. |
+  | Dark theme | board frame `#2b2723`, empty cell `#3a352f`, dim scrim 62 % | same tokens | match |
+  | 2.0× font | title and score grow, tile numerals stop at 1.25× | same cap behaviour; on API 34 the platform's non-linear scaling makes 24sp grow 1.5× and 12sp grow 2.0× — the reference has no font scaling at all, so this is the native half of the same rule | match |
+  | Dimmed pause backdrop | board at `opacity 0.45` **and** a 45 % light / 62 % dark scrim over it | both, from `Tokens`/`DIM_ALPHA` — the double dim is the reference's own behaviour, not an accident | match |
 - Phase 3 — Win / Game-over / Stats / dialogs: to fill
 - Phase 4 — Home / How to play / Settings / Hindi: to fill
 

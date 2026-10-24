@@ -190,6 +190,59 @@
   like. Home now carries a **decorative, non-interactive** board still above the
   buttons (fixed sample grid, ramp colours, numerals sized from the cell). It is
   not a button and not focusable. Reversible: delete one composable call.
+- **2026-10-24 — Engine PRNG is `xorshift64*`, state is the save** — the
+  generator is an engine-owned 4-line `xorshift64*` (Marsaglia shifts 12/25/27,
+  Vigna multiplier 2685821657736338717) whose mutable **cursor is the
+  serialisable state**; seed `0` maps to a fixed non-zero state because zero is a
+  fixed point. `Spawner` draws the tile **value first** (`nextInt(10) >= 9` → 4,
+  else 2) **then** the cell, so a stored state always replays the same tile in
+  the same place. Recorded because swapping the algorithm or the draw order
+  silently breaks every saved game and every golden board. Reversible only with
+  a `schemaVersion` bump + a decode test.
+- **2026-10-24 — `save.v1` refuses what it cannot trust** — `schemaVersion` 1,
+  JSON via kotlinx.serialization; `decode` returns `null` (never a partial board)
+  for a future schema, a wrong cell count, a non-power-of-two cell, a negative
+  score/moves or a zero RNG state; unknown keys are ignored and every field has a
+  default so an older payload still loads. The free undo snapshot is nested in
+  the same blob. Any new field bumps the version and adds a decode test.
+- **2026-10-24 — A refused input is free** — a move that changes nothing, and
+  any move while the win dialog is owed or the game is over, returns the *same*
+  `Game` instance: no spawn, no score, no RNG draw. So an accidental swipe can
+  never skip a dialog or consume the next tile.
+- **2026-10-24 — `EnginePreview` is debug-only and undesigned** — the phase-1
+  progress APK needs a visible, playable board, but no screen may pre-empt the
+  frozen reference. The preview therefore uses Material theme defaults only
+  (no token, no hex, no custom type) and is shown behind `BuildConfig.DEBUG`;
+  the release build keeps the phase-0 hello screen. It is deleted when the real
+  game screen arrives (phase 2/3).
+- **2026-10-24 — Lucide crosses into the app in phase 2, attributed** — the nine
+  glyphs the game screen needs (`house`, `rotate-ccw`, `undo-2`, `arrow-up`,
+  `arrow-down`, `arrow-left`, `arrow-right`, `play`, `x`) enter `app/` as
+  Compose `ImageVector`s built from the published `lucide-static` 1.61.0 path
+  strings, handed to `PathParser` unchanged (`ui/icons/TilefoldIcons.kt`). No
+  file under `design/reference/` is copied, and no Material icon is used. Lucide
+  is **ISC**, © Lucide Contributors; the notice ships on the licences screen in
+  phase 4 and is logged in § Third-party licences below.
+- **2026-10-24 — The slide geometry comes from the engine** — `Moves.plan()`
+  returns the resulting board *and* one `TileSlide(from, to)` per occupied cell
+  (a merge produces two slides onto the same destination, survivor first), so
+  the board animates from the rules instead of re-deriving them. `Moves.apply()`
+  is the same computation without the geometry, and a test asserts
+  `plan.board == apply().board` for 800 board/direction pairs. Anything the UI
+  wants to know about a move must be answered by `domain/`, never recomputed in
+  `ui/game/`.
+- **2026-10-24 — The game screen is stateless; the session owns the state** —
+  `GameScreen(state, actions)` draws one `GameScreenState` and reports through
+  one `GameActions`, so a fixed state renders a fixed picture (that is what
+  makes the goldens deterministic) and the Robolectric tests can play the real
+  `GameSession` without a screenshot-only path. `GameRoute` adds the lifecycle
+  behaviour (auto-pause on `ON_STOP`, back-to-resume, absorbed-tile cleanup);
+  `GameContent` is the same board + pause overlay without the lifecycle, used by
+  the tests.
+- **2026-10-24 — Rejected input stays free in the UI too** — `GameSession.move`
+  returns `false` and changes nothing while paused or when the engine reports no
+  change, so a tap, a sub-24dp drag or a swipe into a packed edge spawns no tile
+  and scores nothing (proved by `GameScreenTest`).
 - **2026-10-24 — Tiles were flat bars; now square (review round 1, owner
   report)** — the tile composable had no width/height, so the *grid cell* was
   square and the *tile inside* collapsed to its text height. The tile now fills
@@ -225,9 +278,13 @@ samples on 2026-10-24; the dependency graph is the source of truth):
   playwright-core 1.64.1 (Apache-2.0) + @sparticuz/chromium 153.0.0 (MIT).
   None of these enter the APK; the licence inventory of the shipped app is
   unchanged by this phase.
-- Planned, not yet shipped: AboutLibraries (Apache-2.0, phase 6), Lucide icons
-  adapted as `ImageVector` (ISC, phase 2), Google Mobile Ads SDK and Play
-  Billing Library (proprietary, phase 5, behind a GATE).
+- **Shipped in phase 2 (new licence surface, one item):** the Lucide 1.61.0
+  glyph set used by the game screen, adapted into `ImageVector`
+  (`ui/icons/TilefoldIcons.kt`) — **ISC**, © Lucide Contributors. Nine paths, no
+  package dependency (the geometry is vendored as path data, so Gradle stays
+  unaware of it); the notice ships on the licences screen in phase 4.
+- Planned, not yet shipped: AboutLibraries (Apache-2.0, phase 6), Google Mobile
+  Ads SDK and Play Billing Library (proprietary, phase 5, behind a GATE).
 - Rejected: material-color-utilities (the ramp is hand-approved, not generated —
   revisit only if the palette must be regenerated from a seed), Paparazzi
   (Roborazzi chosen), mockk (hand-written fakes), Hilt/Koin (manual

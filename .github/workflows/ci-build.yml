@@ -96,24 +96,30 @@ jobs:
             head -60 app/build/reports/detekt/detekt.txt \
               | while IFS= read -r line; do echo "::error file=detekt.txt::${line}"; done
           fi
+          # GitHub keeps only about ten annotations per step, so each log's
+          # diagnostics are collapsed into ONE multi-line annotation (newlines
+          # escaped as %0A) instead of dozens that would be dropped. ANSI colour
+          # codes are stripped first: Gradle still colours its Kotlin compiler
+          # output even with --console=plain, and a coloured `e: file:…` line
+          # otherwise never matches a `^e: ` pattern.
           for log in gradle-check.log gradle-assemble.log; do
             [ -f "$log" ] || continue
-            # The lines after "What went wrong" carry the actual cause.
-            grep -nE -A 18 '^\* What went wrong:' "$log" | head -40 \
-              | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
-            grep -nE '^e: |^> Task .* FAILED' "$log" | head -15 \
-              | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
-            # detekt / ktlint findings: <path>.kt:<line>:<col>: <message> [Rule]
-            grep -nE '\.kt:[0-9]+:[0-9]+: ' "$log" | head -40 \
-              | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
-            # Kernel diagnostics: everything after a failed compile task, plus any
-            # line carrying an error, ANSI codes stripped first.
-            sed -r 's/\x1B\[[0-9;]*[mK]//g' "$log" > /tmp/clean.log
-            awk '/Task :app:compile.*FAILED/{flag=1} flag' /tmp/clean.log | head -40 \
-              | while IFS= read -r line; do echo "::error file=${log}::compile ${line}"; done
-            # Last resort: the tail of the log, so a failure is never opaque.
-            tail -40 "$log" \
-              | while IFS= read -r line; do echo "::error file=${log}::tail ${line}"; done
+            sed -r 's/\x1B\[[0-9;]*[mK]//g' "$log" > "/tmp/${log}.clean"
+            clean="/tmp/${log}.clean"
+            excerpt="$(
+              echo "== Kotlin / task errors =="
+              grep -anE '^(e|w): |^> Task .* FAILED|error:|FAILURE:' "$clean" | head -30
+              echo "== What went wrong =="
+              grep -an -A 12 '^\* What went wrong:' "$clean" | head -20
+              echo "== .kt findings =="
+              grep -anE '\.kt:[0-9]+:[0-9]+: ' "$clean" | head -30
+              echo "== tail =="
+              tail -40 "$clean"
+            )"
+            excerpt="${excerpt//'%'/'%25'}"
+            excerpt="${excerpt//$'\r'/''}"
+            excerpt="${excerpt//$'\n'/'%0A'}"
+            echo "::error file=${log}::${excerpt}"
           done
 
       # From phase 0-D the screenshots are goldens: the committed images are the

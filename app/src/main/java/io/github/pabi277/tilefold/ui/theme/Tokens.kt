@@ -226,3 +226,16 @@ internal object TypeScale {
     const val DIALOG_SCORE_MAX_SCALE = 1.25f
     const val IN_SCREEN_SCORE_MAX_SCALE = 1.5f
 }
+
+/**
+ * Motion durations in milliseconds, exactly the values in
+ * `docs/UI-REFERENCE.md` § Spacing, shape, elevation, motion. They are read by
+ * `ui/game/Motion.kt`, which is the only place that decides whether motion is
+ * suppressed (reduced-motion), never *how long* it takes.
+ */
+internal object Durations {
+    const val SLIDE_MS = 110
+    const val POP_MS = 140
+    const val SPAWN_MS = 130
+    const val SCORE_MS = 220
+}

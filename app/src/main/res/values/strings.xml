@@ -2,9 +2,30 @@
 <resources>
     <string name="app_name">Tilefold</string>
 
-    <!-- Hello screen (phase 0). Full copy lands with the approved reference. -->
+    <!-- Hello screen (phase 0 specimen; the Home screen arrives in phase 4). -->
     <string name="hello_title">Tilefold</string>
     <string name="hello_tagline">Slide. Merge. Breathe.</string>
     <string name="hello_phase">Phase 0 · foundation build</string>
     <string name="hello_footer">No banners · No ads during play · Offline</string>
+
+    <!-- Game screen (phase 2). Copy is the approved reference's own wording. -->
+    <string name="game_score">Score</string>
+    <string name="game_best">Best</string>
+    <string name="game_home">Home</string>
+    <string name="game_restart">Restart</string>
+    <string name="game_undo">Undo</string>
+    <string name="game_swipe_hint">Swipe to merge</string>
+    <string name="game_direction_pad">Direction pad</string>
+    <string name="game_over_chip">Game over</string>
+
+    <!-- Pause sheet. -->
+    <string name="pause_title">Paused</string>
+    <string name="pause_resume">Resume</string>
+    <string name="pause_meta">Score %1$s · highest tile %2$s</string>
+
+    <!-- Direction keys: the pad labels and the screen-reader names. -->
+    <string name="direction_up">Up</string>
+    <string name="direction_down">Down</string>
+    <string name="direction_left">Left</string>
+    <string name="direction_right">Right</string>
 </resources>
