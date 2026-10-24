@@ -170,10 +170,47 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-  signed-release:
-    name: Signed release AAB and APK
+  # The release lane needs the keystore, which only the owner can add. Until
+  # those secrets exist this job reports the fact and skips, so a main push is
+  # never red for a missing secret that release work has not reached yet. Once
+  # all four are present the lane runs and still fails hard on any problem.
+  signing-ready:
+    name: Check release signing secrets
     needs: test
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+    steps:
+      - id: check
+        name: Report whether the four signing secrets are present
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=""
+          for name in ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD; do
+            if [[ -z "${!name:-}" ]]; then
+              missing="$missing $name"
+            fi
+          done
+          if [[ -n "$missing" ]]; then
+            echo "::notice::Release signing not configured (missing:$missing) — signed lane skipped; debug progress APK above is the phase result."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "All four signing secrets present."
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  signed-release:
+    name: Signed release AAB and APK
+    needs: [test, signing-ready]
+    if: needs.signing-ready.outputs.configured == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
