@@ -5,6 +5,12 @@
 - Status: ✅ complete 2026-10-24 · **awaiting the owner's merge gate**
 - Date: 2026-10-24 · Branch: `arena/6f3f2907-2048-game`
 - Base commit: `c4c7ab5` (phase 1 merged) · goldens recorded by CI at `08e7467`
+- CI: run [40079825296](https://github.com/pabi277/2048-game/actions/runs/40079825296)
+  green at **`2bfbf3b`** (`No-device gate, debug build, progress APK` ✅,
+  `UI reference tokens match the doc` ✅; the recorder job correctly skipped — a
+  normal push never re-records). Artifacts: **`app-progress-apk` 10,966,802 B**
+  (was 10,891,006 B) · `app-screenshots` 727,584 B (11 goldens, was 5 /
+  253,477 B) · `quality-gate-reports` 76,798 B.
 - Provenance: AppFlow @ `57597b3332ad578614a0d9d5609f9cf8a278ee8a` (reference
   only).
 
@@ -194,7 +200,10 @@ density 3, the reference frame is 820 px for 390 dp, so both are compared in dp)
 ## Tests (no-device gate — `knowledge/fast-quality-no-device.md` §1)
 
 - `./gradlew check` = `testDebugUnitTest` + `lintDebug` + `detekt` +
-  `ktlintCheck`; the golden images are verified, not recorded, in this lane.
+  `ktlintCheck`, green in run 40079825296 at `2bfbf3b`; the golden images are
+  verified, not recorded, in this lane (the recorder job skipped itself on that
+  push, which is the proof). `lintDebug` reports no new error; warnings stay
+  non-fatal until release prep, as recorded.
 - New tests: `MovePlanTest` (8, geometry + plan/apply agreement over 800 pairs),
   `BoardSceneTest` (6, identity, merges, spawns, a scripted game),
   `SwipeAxisTest` (8, threshold, dominant axis, tie, arrow keys),
