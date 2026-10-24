@@ -60,12 +60,31 @@ jobs:
           echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
 
       - name: Host tests, lint, detekt, ktlint
+        shell: bash
         run: |
+          set -o pipefail
           chmod +x ./gradlew
-          ./gradlew --no-daemon --stacktrace check
+          ./gradlew --no-daemon --stacktrace --console=plain check 2>&1 | tee gradle-check.log
 
       - name: Build debug APK
-        run: ./gradlew --no-daemon --stacktrace assembleDebug
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --stacktrace --console=plain assembleDebug 2>&1 | tee gradle-assemble.log
+
+      # Gradle's own failure lines, surfaced as check-run annotations so a
+      # failure is readable from the API without downloading a log bundle.
+      - name: Summarise Gradle failures as annotations
+        if: failure()
+        shell: bash
+        run: |
+          set +e
+          for log in gradle-check.log gradle-assemble.log; do
+            [ -f "$log" ] || continue
+            grep -nE '^(e: |FAILURE:|\* What went wrong:|> Task .* FAILED|Caused by: |Could not |Execution failed)' "$log" \
+              | head -30 \
+              | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
+          done
 
       - name: Upload progress APK (the downloadable result of this phase)
         uses: actions/upload-artifact@v4
@@ -93,6 +112,7 @@ jobs:
             app/build/reports/tests/**
             app/build/reports/lint-results-*.html
             app/build/reports/detekt/**
+            gradle-*.log
           if-no-files-found: warn
           retention-days: 14
 
