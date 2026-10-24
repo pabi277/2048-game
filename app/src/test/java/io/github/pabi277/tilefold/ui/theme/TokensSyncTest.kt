@@ -49,14 +49,18 @@ class TokensSyncTest {
     private fun rows(text: String): List<List<String>> {
         val table = mutableListOf<List<String>>()
         for (line in text.lines()) {
-            if (!line.trimStart().startsWith("|")) continue
-            val inner = line.trim().removePrefix("|").removeSuffix("|")
-            val cells = mutableListOf<String>()
-            for (cell in inner.split('|')) {
-                cells.add(cell.replace("`", "").replace("*", "").trim())
+            val isTableRow = line.trimStart().startsWith("|")
+            if (isTableRow) {
+                val inner = line.trim().removePrefix("|").removeSuffix("|")
+                val cells = mutableListOf<String>()
+                for (cell in inner.split('|')) {
+                    cells.add(cell.replace("`", "").replace("*", "").trim())
+                }
+                val isSeparator = cells.all { it.matches(SEPARATOR) }
+                if (!isSeparator) {
+                    table.add(cells)
+                }
             }
-            if (cells.all { it.matches(SEPARATOR) }) continue
-            table.add(cells)
         }
         return table
     }
@@ -70,12 +74,25 @@ class TokensSyncTest {
     private fun documentedColors(heading: String): Map<String, Color> {
         val colors = mutableMapOf<String, Color>()
         for (cells in rows(section(heading))) {
-            if (cells.size < 3) continue
-            val match = HEX.find(cells[2])
-            if (match == null) continue
-            colors[cells[1]] = hexOf(match.value)
+            if (cells.size >= 3) {
+                val match = HEX.find(cells[2])
+                if (match != null) {
+                    colors[cells[1]] = hexOf(match.value)
+                }
+            }
         }
         return colors
+    }
+
+    /** One ramp row as `key to pair`, or `null` when the row is not a ramp step. */
+    private fun rampEntry(cells: List<String>): Pair<String, Tokens.TilePair>? {
+        if (cells.size < 3) return null
+        val label = cells[0]
+        if (!label.matches(RAMP_LABEL)) return null
+        val background = HEX.find(cells[1]) ?: return null
+        val numeral = HEX.find(cells[2]) ?: return null
+        val key = if (label.startsWith(">")) "super" else label
+        return key to Tokens.TilePair(hexOf(background.value), hexOf(numeral.value))
     }
 
     private fun palette(dark: Boolean): Map<String, Color> {
@@ -170,12 +187,10 @@ class TokensSyncTest {
         for ((heading, dark) in headings) {
             val documented = mutableMapOf<String, Tokens.TilePair>()
             for (cells in rows(section(heading))) {
-                val label = cells.getOrNull(0) ?: continue
-                if (!label.matches(RAMP_LABEL)) continue
-                val key = if (label.startsWith(">")) "super" else label
-                val background = HEX.find(cells[1]) ?: continue
-                val numeral = HEX.find(cells[2]) ?: continue
-                documented[key] = Tokens.TilePair(hexOf(background.value), hexOf(numeral.value))
+                val entry = rampEntry(cells)
+                if (entry != null) {
+                    documented[entry.first] = entry.second
+                }
             }
 
             assertThat(documented.size).isEqualTo(12)
