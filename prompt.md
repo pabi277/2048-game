@@ -3,11 +3,11 @@
 # Tilefold (working name) — continuation prompt
 
 > **Self-contained handoff. Paste this file as the first message of the next
-> chat, then give one command** (e.g. `start phase 0` or a bug report). This
-> repo is self-contained: `rule.md` holds the full rules, `docs/` the plan and
-> decisions, THIS FILE the living state. AppFlow is provenance only — nothing
-> here depends on it. Update this file at the end of every phase, in the same
-> commit as the phase record.
+> chat, then give one command** (e.g. `start phase 3` or a bug report). The next
+> chat works from `main` on a fresh session branch. This repo is self-contained:
+> `rule.md` holds the full rules, `docs/` the plan and decisions, THIS FILE the
+> living state. AppFlow is provenance only — nothing here depends on it. Update
+> this file at the end of every phase, in the same commit as the phase record.
 
 ## Identity (fixed at the exit gate — answered 2026-10-24)
 
@@ -89,10 +89,11 @@
     (`e0393be`), then merged to `main`.
     Gate green in run 40070687033 at `e0d0c95`: `app-progress-apk` 10,849,239 B,
     `app-screenshots` 253,477 B (5 goldens), `quality-gate-reports` 56,093 B.
-- **Phase 1 ✅ 2026-10-24 — pure-Kotlin engine + tests (awaiting the merge
-  gate).** Gate green in run 40076597395 at `20a9648`: `app-progress-apk`
-  10,891,006 B, `app-screenshots` 253,477 B (same 5 goldens), `quality-gate-
-  reports` 66,822 B. Record: `docs/phases/01-engine.md`.
+- **Phase 1 ✅ 2026-10-24 — pure-Kotlin engine + tests — merged to `main` in
+  PR [#4](https://github.com/pabi277/2048-game/pull/4).** Gate green in run
+  40076597395 at `20a9648`: `app-progress-apk` 10,891,006 B, `app-screenshots`
+  253,477 B (same 5 goldens), `quality-gate-reports` 66,822 B. Record:
+  `docs/phases/01-engine.md`.
   - 1.1 ✅ — `domain/Board.kt` (immutable 16 cells), `domain/Moves.kt`
     (`Moved`/`NoMove`, one merge per tile, leading-edge scan), `domain/
     EngineRandom.kt` (`xorshift64*` with the cursor as the saved state +
@@ -107,9 +108,12 @@
     tests, save round-trip and refusal cases.
   - 1.4 ✅ — `ui/EnginePreview.kt`, plain numerals + four arrows, shown only
     behind `BuildConfig.DEBUG`; the release build still opens the hello screen.
-- **Phase 2 ✅ 2026-10-24 — board UI, swipe, motion (awaiting the merge gate).**
-  Record: `docs/phases/02-board-ui.md`. Branch tip after the docs commit; the
-  six goldens were recorded by CI at `08e7467`.
+- **Phase 2 ✅ 2026-10-24 — board UI, swipe, motion — merged to `main` in
+  PR [#4](https://github.com/pabi277/2048-game/pull/4)** on the owner's explicit
+  command, together with phase 1 (which was still at its gate; both records ride
+  that PR). Record: `docs/phases/02-board-ui.md`. Gate green in run 40080008810
+  at `ff99295` (`app-progress-apk` 10,966,802 B); the six goldens were recorded
+  by CI at `08e7467`.
   - 2.1 ✅ — stateless `GameScreen(state, actions)` per the frozen reference:
     title row + home/restart (48dp), taupe SCORE/BEST boxes, rounded square
     board with the value→ramp tiles, Undo · hint chip · pad toggle. `BoardFrame`
@@ -140,11 +144,19 @@
   the values in `docs/UI-REFERENCE.md` = `design/reference/src/design.js` =
   `app/.../ui/theme/Tokens.kt`, guarded by `npm run verify` + `TokensSyncTest`.
   Visual changes go reference → doc → `Tokens.kt` → screen, never the reverse.
+- **`main` is now the source of truth**: it holds phases 0, 0-D, 1 and 2
+  (PR #4 merge commit). The phase-1/2 session branch is finished — do not keep
+  working on it or re-merge it.
 - Next: **phase 3 — persistence, game states, undo, stats, daily** (parts
-  3.1–3.4). The board, the pause sheet and the motion are done; phase 3 adds
-  DataStore save/resume, the win/game-over dialogs (replacing
-  `GameSession.releaseWin()` and the `Game over` chip), the undo allowance with
-  the rewarded ad policy, and the Stats + Daily screens.
+  3.1–3.4), from a **fresh session branch cut from `main`**. The board, the
+  pause sheet and the motion are done; phase 3 adds DataStore save on every
+  valid move + on stop, resume on launch through `SaveCodec`, the corrupt-save
+  fallback with the storage banner, the win/game-over dialogs (replacing
+  `GameSession.releaseWin()` and the `Game over` chip), the undo allowance
+  (1 free, undo after game over, rewarded +1 max 3) behind a host-testable ad
+  `Policy` that never calls an SDK when it says no, and the Stats + Daily
+  screens. `GameSession` is the seam the store plugs into; nothing in `ui/` may
+  re-implement a rule.
 - Open owner items: the reference screenshot is no longer needed (the reference
   is ours and approved); live ad units only in phase 5 and only after a GATE.
 
@@ -152,14 +164,17 @@
 
 1. Read `docs/ROADMAP.md`, `docs/DECISIONS.md`, `docs/UI-REFERENCE.md` and the
    latest `docs/phases/` record — trust the repo, not memory.
-2. Implement **phase 3** (persistence, game states, undo, stats, daily), all its
-   parts, evidence-first, against `docs/UI-REFERENCE.md` and
-   `design/reference/screenshots/`; the engine in `domain/` is the only rules
-   source (the UI never re-implements a merge), and `GameSession` is already the
-   state holder the store plugs into.
+2. Cut the new session branch **from `main`** (never work on a finished phase
+   branch, never push `main`), then implement **phase 3** (persistence, game
+   states, undo, stats, daily), all its parts, evidence-first, against
+   `docs/UI-REFERENCE.md` and `design/reference/screenshots/`; the engine in
+   `domain/` is the only rules source (the UI never re-implements a merge), and
+   `GameSession` is already the state holder the store plugs into.
 3. End with: CI green (incl. the no-device quality gate) + the run's
    downloadable `app-progress-apk` artifact · `docs/phases/03-save-states.md` (say
    what the APK shows, and record where the Compose screens differ
    deliberately from the reference) · roadmap row status · this file updated ·
    short report (run id, tip sha, APK, what is now visible) · **the next-chat
-   prompt printed in chat** for phase 4 · stop at the merge gate.
+   prompt printed in chat** for phase 4 · stop at the merge gate (a merge is
+   only ever done on the owner's explicit command in chat, as happened for
+   PR #4).

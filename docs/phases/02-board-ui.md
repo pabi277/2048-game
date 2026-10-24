@@ -2,7 +2,9 @@
 
 # Phase 2 — Board UI + swipe + animation
 
-- Status: ✅ complete 2026-10-24 · **awaiting the owner's merge gate**
+- Status: ✅ complete 2026-10-24 · **merged to `main` in PR
+  [#4](https://github.com/pabi277/2048-game/pull/4)** on the owner's explicit
+  command (2026-10-24).
 - Date: 2026-10-24 · Branch: `arena/6f3f2907-2048-game`
 - Base commit: `c4c7ab5` (phase 1 merged) · goldens recorded by CI at `08e7467`
 - CI: run [40079825296](https://github.com/pabi277/2048-game/actions/runs/40079825296)

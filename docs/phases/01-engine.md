@@ -2,7 +2,10 @@
 
 # Phase 1 — Pure-Kotlin engine + tests
 
-- Status: ✅ complete 2026-10-24 · **awaiting the owner's merge gate**
+- Status: ✅ complete 2026-10-24 · **merged to `main` in PR
+  [#4](https://github.com/pabi277/2048-game/pull/4)** on the owner's explicit
+  command (2026-10-24). Phase 1's records rode the same PR — it was still at its
+  gate when phase 2 finished.
 - Date: 2026-10-24 · Branch: `arena/6f3f2907-2048-game`
 - CI: run [40076597395](https://github.com/pabi277/2048-game/actions/runs/40076597395)
   green at **`20a9648`** (`No-device gate, debug build, progress APK` ✅,
