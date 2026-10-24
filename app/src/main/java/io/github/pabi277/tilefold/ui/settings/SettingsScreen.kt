@@ -17,8 +17,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +45,7 @@ internal const val SETTINGS_SOUND_TAG = "settings-sound"
 internal const val SETTINGS_HAPTICS_TAG = "settings-haptics"
 internal const val SETTINGS_DPAD_TAG = "settings-dpad"
 
+@Suppress("LongMethod", "LongParameterList")
 @Composable
 internal fun SettingsScreen(
     state: SettingsState,

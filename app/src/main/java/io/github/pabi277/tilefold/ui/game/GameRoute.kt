@@ -38,6 +38,7 @@ import kotlinx.coroutines.launch
  * Persistence: on every valid move debounced ≤250 ms and on `ON_STOP` immediately,
  * resuming on launch through [io.github.pabi277.tilefold.domain.SaveCodec].
  */
+@Suppress("LongMethod", "CyclomaticComplexMethod")
 @Composable
 fun GameRoute(
     modifier: Modifier = Modifier,

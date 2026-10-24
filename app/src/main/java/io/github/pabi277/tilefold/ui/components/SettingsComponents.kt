@@ -65,7 +65,6 @@ internal fun SettingsRow(
     first: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
-    val bg = MaterialTheme.colorScheme.surface
     val titleColor = if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
     val subtitleColor = if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
     Column(modifier = modifier) {

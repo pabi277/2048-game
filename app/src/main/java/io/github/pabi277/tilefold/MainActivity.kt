@@ -29,7 +29,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         val container = AppContainer(applicationContext)
-        val soundInit = container.settingsRepository.settingsFlow
         setContent {
             val settings by container.settingsRepository.settingsFlow.collectAsState(
                 initial = io.github.pabi277.tilefold.domain.Settings(),

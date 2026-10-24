@@ -21,8 +21,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -40,8 +40,6 @@ import io.github.pabi277.tilefold.ui.icons.TilefoldIcons
 import io.github.pabi277.tilefold.ui.theme.Corners
 import io.github.pabi277.tilefold.ui.theme.Dimens
 import io.github.pabi277.tilefold.ui.theme.TilefoldThemeDefaults
-import io.github.pabi277.tilefold.ui.theme.Tokens
-import androidx.compose.foundation.layout.BoxWithConstraints
 
 internal const val HOME_CONTINUE_TAG = "home-continue"
 internal const val HOME_NEW_GAME_TAG = "home-new-game"
@@ -51,6 +49,7 @@ internal const val HOME_STATS_TAG = "home-stats"
 internal const val HOME_SETTINGS_TAG = "home-settings"
 internal const val HOME_BEST_TAG = "home-best"
 
+@Suppress("LongMethod")
 @Composable
 internal fun HomeScreen(
     state: HomeState,
@@ -236,9 +235,10 @@ private fun ResumeCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            val labelStyle = MaterialTheme.typography.labelSmall
             Text(
                 text = stringResource(R.string.home_game_in_progress),
-                style = MaterialTheme.typography.labelSmall.copy(letterSpacing = MaterialTheme.typography.labelSmall.letterSpacing),
+                style = labelStyle.copy(letterSpacing = labelStyle.letterSpacing),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             if (isDaily) {

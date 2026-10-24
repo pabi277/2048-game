@@ -3,12 +3,8 @@
 package io.github.pabi277.tilefold.ui.nav
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,7 +24,8 @@ import io.github.pabi277.tilefold.ui.settings.SettingsState
 import io.github.pabi277.tilefold.ui.stats.StatsScreen
 import kotlinx.coroutines.launch
 
-object Routes {
+@Suppress("MatchingDeclarationName")
+object TilefoldRoutes {
     const val Home = "home"
     const val GameClassic = "game_classic"
     const val GameDaily = "game_daily"
@@ -37,6 +34,7 @@ object Routes {
     const val Settings = "settings"
 }
 
+@Suppress("LongParameterList")
 @Composable
 internal fun TilefoldNavHost(
     container: AppContainer,
@@ -61,10 +59,10 @@ internal fun TilefoldNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = Routes.Home,
+        startDestination = TilefoldRoutes.Home,
         modifier = modifier,
     ) {
-        composable(Routes.Home) {
+        composable(TilefoldRoutes.Home) {
             val today = DailyChallenge.epochDay(System.currentTimeMillis())
             val dailyCompleted = DailyChallenge.isCompletedToday(stats, today)
             val homeState =
@@ -83,41 +81,41 @@ internal fun TilefoldNavHost(
                 )
             HomeScreen(
                 state = homeState,
-                onNewGame = { navController.navigate(Routes.GameClassic) },
-                onContinue = { navController.navigate(Routes.GameClassic) },
-                onDaily = { navController.navigate(Routes.GameDaily) },
-                onHowToPlay = { navController.navigate(Routes.HowToPlay) },
-                onStats = { navController.navigate(Routes.Stats) },
-                onSettings = { navController.navigate(Routes.Settings) },
+                onNewGame = { navController.navigate(TilefoldRoutes.GameClassic) },
+                onContinue = { navController.navigate(TilefoldRoutes.GameClassic) },
+                onDaily = { navController.navigate(TilefoldRoutes.GameDaily) },
+                onHowToPlay = { navController.navigate(TilefoldRoutes.HowToPlay) },
+                onStats = { navController.navigate(TilefoldRoutes.Stats) },
+                onSettings = { navController.navigate(TilefoldRoutes.Settings) },
                 onRetry = {},
             )
         }
 
-        composable(Routes.GameClassic) {
+        composable(TilefoldRoutes.GameClassic) {
             GameRoute(
                 container = container,
-                onHome = { navController.popBackStack(Routes.Home, inclusive = false) },
+                onHome = { navController.popBackStack(TilefoldRoutes.Home, inclusive = false) },
             )
         }
 
-        composable(Routes.GameDaily) {
+        composable(TilefoldRoutes.GameDaily) {
             val today = DailyChallenge.epochDay(System.currentTimeMillis())
             GameRoute(
                 container = container,
                 seed = DailyChallenge.seedFor(today),
-                onHome = { navController.popBackStack(Routes.Home, inclusive = false) },
+                onHome = { navController.popBackStack(TilefoldRoutes.Home, inclusive = false) },
             )
         }
 
-        composable(Routes.HowToPlay) {
+        composable(TilefoldRoutes.HowToPlay) {
             HowToPlayScreen(onBack = { navController.popBackStack() })
         }
 
-        composable(Routes.Stats) {
+        composable(TilefoldRoutes.Stats) {
             StatsScreen(
                 stats = stats,
                 storageError = storageError,
-                onNewGame = { navController.navigate(Routes.GameClassic) },
+                onNewGame = { navController.navigate(TilefoldRoutes.GameClassic) },
             )
         }
 
