@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-@file:Suppress("MatchingDeclarationName")
+@file:Suppress("MatchingDeclarationName", "PropertyName")
 
 package io.github.pabi277.tilefold.ui.nav
 
@@ -25,7 +25,7 @@ import io.github.pabi277.tilefold.ui.settings.SettingsState
 import io.github.pabi277.tilefold.ui.stats.StatsScreen
 import kotlinx.coroutines.launch
 
-@Suppress("MatchingDeclarationName")
+@Suppress("MatchingDeclarationName", "PropertyName")
 object TilefoldRoutes {
     const val Home = "home"
     const val GameClassic = "game_classic"

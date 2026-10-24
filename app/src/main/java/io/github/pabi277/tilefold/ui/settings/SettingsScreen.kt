@@ -76,18 +76,22 @@ internal fun SettingsScreen(
         RowGroup {
             ToggleRow(
                 title = stringResource(R.string.settings_sound),
-                subtitle =
-                    if (state.soundEnabled) stringResource(R.string.settings_sound_on)
-                    else stringResource(R.string.settings_sound_off),
+                subtitle = if (state.soundEnabled) {
+                    stringResource(R.string.settings_sound_on)
+                } else {
+                    stringResource(R.string.settings_sound_off)
+                },
                 checked = state.soundEnabled,
                 onCheckedChange = onSoundChanged,
                 modifier = Modifier.testTag(SETTINGS_SOUND_TAG),
             )
             ToggleRow(
                 title = stringResource(R.string.settings_haptics),
-                subtitle =
-                    if (state.hapticsEnabled) stringResource(R.string.settings_haptics_on)
-                    else stringResource(R.string.settings_haptics_off),
+                subtitle = if (state.hapticsEnabled) {
+                    stringResource(R.string.settings_haptics_on)
+                } else {
+                    stringResource(R.string.settings_haptics_off)
+                },
                 checked = state.hapticsEnabled,
                 onCheckedChange = onHapticsChanged,
                 modifier = Modifier.testTag(SETTINGS_HAPTICS_TAG),
