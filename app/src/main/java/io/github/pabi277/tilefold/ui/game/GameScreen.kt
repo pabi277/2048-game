@@ -121,10 +121,7 @@ internal fun GameScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .safeDrawingPadding()
-                .padding(
-                    horizontal = Dimens.ScreenPaddingHorizontal,
-                    vertical = Dimens.ScreenPaddingVertical,
-                )
+                .padding(horizontal = Dimens.ScreenPaddingHorizontal, vertical = Dimens.ScreenPaddingVertical)
                 .focusRequester(focusRequester)
                 .onPreviewKeyEvent(keyHandler)
                 .focusable(),
