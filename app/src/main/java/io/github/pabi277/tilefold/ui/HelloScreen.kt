@@ -71,18 +71,18 @@ fun HelloScreen(modifier: Modifier = Modifier) {
 
 @Preview(name = "Hello light", showBackground = true)
 @Composable
-private fun HelloScreenLightPreview() {
+internal fun HelloScreenLightPreview() {
     TilefoldTheme(darkTheme = false) { HelloScreen() }
 }
 
 @Preview(name = "Hello dark", showBackground = true)
 @Composable
-private fun HelloScreenDarkPreview() {
+internal fun HelloScreenDarkPreview() {
     TilefoldTheme(darkTheme = true) { HelloScreen() }
 }
 
 @Preview(name = "Hello large font", fontScale = 2.0f, showBackground = true)
 @Composable
-private fun HelloScreenLargeFontPreview() {
+internal fun HelloScreenLargeFontPreview() {
     TilefoldTheme(darkTheme = false) { HelloScreen() }
 }

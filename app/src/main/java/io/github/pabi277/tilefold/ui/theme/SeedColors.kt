@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package io.github.pabi277.tilefold.ui.theme
 
 import androidx.compose.ui.graphics.Color
