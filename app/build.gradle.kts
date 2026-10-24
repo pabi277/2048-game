@@ -61,6 +61,9 @@ android {
 
     buildFeatures {
         compose = true
+        // BuildConfig.DEBUG gates the phase-1 EnginePreview: the debug APK shows
+        // a playable board, the release APK keeps the phase-0 hello screen.
+        buildConfig = true
     }
 
     testOptions {
