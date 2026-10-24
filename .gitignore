@@ -21,3 +21,8 @@ google-services.json
 
 # Roborazzi screenshot output (reference images are committed, diffs are not)
 app/build/outputs/roborazzi/
+
+# UI reference site (design/reference/) — the source and the archived renders are
+# committed; dependencies and build output are not, and none of it ships.
+design/reference/node_modules/
+design/reference/dist/

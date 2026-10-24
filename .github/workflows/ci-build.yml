@@ -170,6 +170,37 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+  # The UI reference site (design/reference/) is a design specification, never
+  # shipped. This job is not part of the app gate; it only proves the frozen
+  # tokens in docs/UI-REFERENCE.md still match the site that renders them, and
+  # that the site builds. No browser, no screenshots, no new app dependency.
+  ui-reference:
+    name: UI reference tokens match the doc
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: design/reference/package-lock.json
+
+      - name: Install reference dependencies
+        working-directory: design/reference
+        run: npm ci --no-audit --no-fund
+
+      - name: Tokens, contrast and screen coverage
+        working-directory: design/reference
+        run: npm run verify
+
+      - name: Reference builds
+        working-directory: design/reference
+        run: npm run build
+
   # The release lane needs the keystore, which only the owner can add. Until
   # those secrets exist this job reports the fact and skips, so a main push is
   # never red for a missing secret that release work has not reached yet. Once
