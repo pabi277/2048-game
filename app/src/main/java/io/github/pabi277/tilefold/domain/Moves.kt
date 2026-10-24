@@ -14,6 +14,10 @@ package io.github.pabi277.tilefold.domain
  *   `4 4 0 0` (not `8 0 0 0`);
  * - a move that changes nothing is [MoveOutcome.NoMove] — the caller must not
  *   spawn a tile for it.
+ *
+ * [plan] is the primitive: it returns the resulting board **and** the source →
+ * destination geometry the board view animates. [apply] is the same computation
+ * without the geometry.
  */
 object Moves {
     /** Result of a valid move: the new board, the score it earns and what merged. */
@@ -30,92 +34,117 @@ object Moves {
         board: Board,
         direction: Direction,
     ): MoveOutcome {
-        val lines = readLines(board, direction)
-        val merged = lines.map { mergeLine(it) }
-
-        val result = buildBoard(merged, direction)
-        if (result == board) return NoMove
-
+        val plan = plan(board, direction) ?: return NoMove
         return Moved(
-            board = result,
-            scoreDelta = merged.sumOf { it.gained },
-            mergedValues = merged.flatMap { it.mergedValues },
+            board = plan.board,
+            scoreDelta = plan.scoreDelta,
+            mergedValues = plan.mergedValues,
         )
     }
 
     /** True when *no* direction changes the board. */
-    fun hasAnyMove(board: Board): Boolean = Direction.entries.any { apply(board, it) != NoMove }
+    fun hasAnyMove(board: Board): Boolean = Direction.entries.any { plan(board, it) != null }
 
-    private data class LineOutcome(
-        val cells: List<Int>,
-        val gained: Int,
+    /**
+     * @return the move's board and tile geometry, or `null` when the direction
+     *         changes nothing (the caller must then never spawn or score).
+     */
+    fun plan(
+        board: Board,
+        direction: Direction,
+    ): MovePlan? {
+        val cells = MutableList(Board.CELLS) { 0 }
+        val slides = mutableListOf<TileSlide>()
+        val mergeDestinations = mutableSetOf<Int>()
+        val mergedValues = mutableListOf<Int>()
+        var gained = 0
+
+        for (indices in lineIndices(direction)) {
+            val line = slideLine(board, indices)
+            indices.forEachIndexed { offset, cellIndex -> cells[cellIndex] = line.values[offset] }
+            slides.addAll(line.slides)
+            mergeDestinations.addAll(line.mergeDestinations)
+            mergedValues.addAll(line.mergedValues)
+            gained += line.gained
+        }
+
+        val result = Board.of(cells)
+        if (result == board) return null
+
+        return MovePlan(
+            direction = direction,
+            board = result,
+            slides = slides,
+            mergeDestinations = mergeDestinations,
+            scoreDelta = gained,
+            mergedValues = mergedValues,
+        )
+    }
+
+    /** One line's worth of results, in movement order (leading edge first). */
+    private class LineResult(
+        val values: List<Int>,
+        val slides: List<TileSlide>,
+        val mergeDestinations: List<Int>,
         val mergedValues: List<Int>,
+        val gained: Int,
     )
 
     /**
-     * Reads the four lines in movement order: the first element of each line is
-     * the leading edge for that direction, so the merge scan below is written
-     * once and used by all four directions.
+     * Reads the four lines as board-index lists in movement order: element 0 of
+     * each list is the leading edge for that direction, so one scan below serves
+     * all four directions.
      */
-    private fun readLines(
-        board: Board,
-        direction: Direction,
-    ): List<List<Int>> =
-        (0 until Board.WIDTH).map { index ->
-            val line =
-                when (direction) {
-                    Direction.LEFT -> board.row(index)
-                    Direction.RIGHT -> board.row(index).reversed()
-                    Direction.UP -> board.column(index)
-                    Direction.DOWN -> board.column(index).reversed()
-                }
-            line
-        }
-
-    /** Puts the merged lines back into a board, undoing the read order above. */
-    private fun buildBoard(
-        merged: List<LineOutcome>,
-        direction: Direction,
-    ): Board {
-        val cells = MutableList(Board.CELLS) { 0 }
-        merged.forEachIndexed { index, line ->
-            val flipped = direction == Direction.RIGHT || direction == Direction.DOWN
-            val ordered = if (flipped) line.cells.reversed() else line.cells
-            ordered.forEachIndexed { offset, value ->
-                when (direction) {
-                    Direction.LEFT, Direction.RIGHT -> cells[index * Board.WIDTH + offset] = value
-                    Direction.UP, Direction.DOWN -> cells[offset * Board.WIDTH + index] = value
-                }
+    private fun lineIndices(direction: Direction): List<List<Int>> =
+        (0 until Board.WIDTH).map { line ->
+            val alongRow = (0 until Board.WIDTH).map { step -> line * Board.WIDTH + step }
+            val alongColumn = (0 until Board.WIDTH).map { step -> step * Board.WIDTH + line }
+            when (direction) {
+                Direction.LEFT -> alongRow
+                Direction.RIGHT -> alongRow.reversed()
+                Direction.UP -> alongColumn
+                Direction.DOWN -> alongColumn.reversed()
             }
         }
-        return Board.of(cells)
-    }
 
-    /** Compact, then merge adjacent equal pairs once, scanning from the leading edge. */
-    private fun mergeLine(line: List<Int>): LineOutcome {
-        val compact = line.filter { it != 0 }
-        val out = mutableListOf<Int>()
+    /** Compacts one line, then merges adjacent equal pairs once, from the leading edge. */
+    private fun slideLine(
+        board: Board,
+        indices: List<Int>,
+    ): LineResult {
+        val occupied = indices.filter { board.values[it] != 0 }
+        val values = MutableList(indices.size) { 0 }
+        val slides = mutableListOf<TileSlide>()
+        val mergeDestinations = mutableListOf<Int>()
         val mergedValues = mutableListOf<Int>()
         var gained = 0
-        var index = 0
-        while (index < compact.size) {
-            val value = compact[index]
-            val partner = compact.getOrNull(index + 1)
-            if (partner == value) {
+        var destination = 0
+        var cursor = 0
+
+        while (cursor < occupied.size) {
+            val from = occupied[cursor]
+            val value = board.values[from]
+            val partner = occupied.getOrNull(cursor + 1)
+            val target = indices[destination]
+
+            if (partner != null && board.values[partner] == value) {
                 val mergedValue = value * 2
-                out.add(mergedValue)
+                slides.add(TileSlide(from, target))
+                slides.add(TileSlide(partner, target))
+                values[destination] = mergedValue
+                mergeDestinations.add(target)
                 mergedValues.add(mergedValue)
                 gained += mergedValue
-                index += 2
+                cursor += 2
             } else {
-                out.add(value)
-                index += 1
+                slides.add(TileSlide(from, target))
+                values[destination] = value
+                cursor += 1
             }
+            destination += 1
         }
-        while (out.size < Board.WIDTH) {
-            out.add(0)
-        }
-        return LineOutcome(out.toList(), gained, mergedValues.toList())
+
+        return LineResult(values, slides, mergeDestinations, mergedValues, gained)
     }
 }
 
