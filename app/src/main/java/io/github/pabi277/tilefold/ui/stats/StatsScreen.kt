@@ -97,7 +97,7 @@ private fun StatsGrid(
     }
 
     val gamesLabel = stringResource(R.string.stats_games_played)
-    val gamesValue = if (stats.gamesPlayed == 0 && !storageError) unknown else fmt(stats.gamesPlayed)
+    val gamesValue = fmt(stats.gamesPlayed)
     val items =
         listOf(
             StatItem(gamesLabel, gamesValue),
