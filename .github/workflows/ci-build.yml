@@ -130,22 +130,19 @@ jobs:
           for report in app/build/reports/lint-results*.xml; do
             [ -f "$report" ] || continue
             echo "lint report $report found"
-            # Extract error severity issues
-            grep -a 'severity="Error"' "$report" | head -60 | while IFS= read -r line; do
+            # Extract error severity issues - full issue line
+            grep -a 'severity="Error"' "$report" | head -20 | while IFS= read -r line; do
               esc="${line//%/%25}"
               esc="${esc//$'\r'/}"
-              echo "::error file=${report}::${esc:0:500}"
+              # Escape newlines for annotation
+              esc="${esc//$'\n'/%0A}"
+              echo "::error file=${report}::${esc}"
             done
-            # Also show full file location tags
-            grep -a '<location' "$report" | head -20 | while IFS= read -r line; do
-              esc="${line//%/%25}"
-              echo "::error file=${report}::${esc:0:500}"
-            done
-            # Fallback: show first error issue block
-            awk '/<issue.*severity="Error"/,/<\/issue>/ {print; if (/<\/issue>/) exit}' "$report" | head -80 | while IFS= read -r line; do
+            # Show location lines with context
+            grep -B2 -a 'severity="Error"' "$report" | head -40 | while IFS= read -r line; do
               esc="${line//%/%25}"
               esc="${esc//$'\r'/}"
-              echo "::error file=${report}::${esc:0:500}"
+              echo "::error file=${report}::${esc}"
             done
           done
           for report in app/build/reports/lint-results*.txt; do
