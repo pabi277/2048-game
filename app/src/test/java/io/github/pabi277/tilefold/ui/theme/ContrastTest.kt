@@ -6,10 +6,11 @@ import org.junit.Test
 
 /**
  * Host test (no device) for the palette maths and for the readability of the
- * *provisional* tokens in `docs/UI-REFERENCE.md`.
+ * frozen tokens in `docs/UI-REFERENCE.md`.
  *
  * If a token changes during phase 0-D review, these assertions re-run in CI and
- * fail before an unreadable combination reaches a screenshot.
+ * fail before an unreadable combination reaches a screenshot. `TokensSyncTest`
+ * proves the values themselves equal the doc; this file proves the maths.
  */
 class ContrastTest {
     private fun luminanceOf(color: Color): Double =
@@ -33,8 +34,8 @@ class ContrastTest {
 
     @Test
     fun `contrast is symmetric and never below one`() {
-        val forward = ratio(SeedColors.Seed, SeedColors.OnSeed)
-        val backward = ratio(SeedColors.OnSeed, SeedColors.Seed)
+        val forward = ratio(Tokens.Seed, Tokens.Light.OnAccent)
+        val backward = ratio(Tokens.Light.OnAccent, Tokens.Seed)
 
         assertThat(forward).isWithin(1e-9).of(backward)
         assertThat(forward).isAtLeast(1.0)
@@ -42,19 +43,19 @@ class ContrastTest {
 
     @Test
     fun `identical colours have a ratio of one`() {
-        assertThat(ratio(SeedColors.Seed, SeedColors.Seed)).isWithin(1e-9).of(1.0)
+        assertThat(ratio(Tokens.Seed, Tokens.Seed)).isWithin(1e-9).of(1.0)
     }
 
     @Test
-    fun `seed button text is readable in the light scheme`() {
+    fun `button text is readable on the accent`() {
         // WCAG AA for normal text is 4.5:1.
-        assertThat(ratio(SeedColors.Seed, SeedColors.OnSeed)).isAtLeast(4.5)
+        assertThat(ratio(Tokens.Seed, Tokens.Light.OnAccent)).isAtLeast(4.5)
     }
 
     @Test
     fun `body text is readable on both backgrounds`() {
-        val light = ratio(SeedColors.LightOnSurface, SeedColors.LightBackground)
-        val dark = ratio(SeedColors.DarkOnSurface, SeedColors.DarkBackground)
+        val light = ratio(Tokens.Light.TextPrimary, Tokens.Light.Background)
+        val dark = ratio(Tokens.Dark.TextPrimary, Tokens.Dark.Background)
 
         assertThat(light).isAtLeast(4.5)
         assertThat(dark).isAtLeast(4.5)
@@ -62,8 +63,8 @@ class ContrastTest {
 
     @Test
     fun `secondary text is readable on both backgrounds`() {
-        val light = ratio(SeedColors.LightOnSurfaceVariant, SeedColors.LightBackground)
-        val dark = ratio(SeedColors.DarkOnSurfaceVariant, SeedColors.DarkBackground)
+        val light = ratio(Tokens.Light.TextSecondary, Tokens.Light.Background)
+        val dark = ratio(Tokens.Dark.TextSecondary, Tokens.Dark.Background)
 
         assertThat(light).isAtLeast(4.5)
         assertThat(dark).isAtLeast(4.5)

@@ -1,0 +1,25 @@
+/* SPDX-License-Identifier: MIT */
+@import 'tailwindcss';
+/* Konsta brings the Material component layer (buttons, switches, segmented
+   controls, chips) — the same shapes Material 3 gives Compose. */
+@import 'konsta/react/theme.css';
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto', 'Noto Sans Devanagari', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: #100e0c;
+  color: #ece4d8;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Konsta's components inherit our token variables from the frame root; the
+   chip/segmented internals only need the text colour to follow. */
+.k-color-brand-primary {
+  --k-color-brand-primary: var(--accent);
+}

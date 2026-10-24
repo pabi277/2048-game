@@ -56,6 +56,16 @@
   required provenance line before any app code, and the README states the pin
   without claiming a snapshot that does not exist yet. Reversible on objection;
   no law or invariant is waived.
+- **2026-10-24 — UI reference APPROVED, tokens FROZEN (owner, in chat)** — the
+  owner reviewed all 30 states plus the tokens page and the Compose ramp
+  goldens, gave one round of corrections (Home should show the game; tiles were
+  not square), saw them applied, and approved: *"plan approved you can merge it
+  with main"*. Frozen: the stack (Vite + Tailwind + Konsta + Lucide), the 30
+  states, and every colour / tile-ramp / type / spacing / shape value in
+  `docs/UI-REFERENCE.md`. From now on visual changes go reference → doc →
+  `Tokens.kt` → screen, never the reverse; changing the *design direction*
+  re-opens this gate. Freeze commit `e0393be`.
+
 ## Law waivers (owner-approved exceptions to this repo's `rule.md`)
 
 - None. The 3-week budget is not a waiver (law 3 allows up to 4 weeks).
@@ -141,7 +151,54 @@
   channels. Recorded so nobody reintroduces bit-fiddling (evidence: run
   40063585285 reported 1.0 for every pair).
 
+- **2026-10-24 — The reference is the spec, enforced by two checks** — the same
+  values live in three places (`design/reference/src/design.js`, the tables in
+  `docs/UI-REFERENCE.md`, `app/.../ui/theme/Tokens.kt`). Rather than trust
+  discipline, `npm run verify` (CI job `ui-reference`) compares site ↔ doc and
+  `TokensSyncTest` compares doc ↔ app, both including the contrast floors
+  (numerals ≥3.0:1, body ≥4.5:1) and a "no raw colour literal in a screen file"
+  rule. Reversible only by removing a guard, which the review would catch.
+- **2026-10-24 — Palette corrections made before the reference was built** —
+  the proposed ramp had white numerals on tiles 32 and 64 (2.25:1 and 2.90:1)
+  and a near-white numeral on 1024 (2.58:1). They now carry `#5A3318` (4.86:1,
+  3.77:1) and `#2C241C` (5.63:1). The "cream → peach/orange → red-orange → gold
+  with the numeral flipping dark → white" intent is unchanged; only the flip
+  points moved so no numeral is unreadable.
+- **2026-10-24 — Numeral growth caps** — tile numerals scale to 1.25×, in-screen
+  score values to 1.5×, score values inside dialogs to 1.25×; all other text
+  scales fully with the Android font setting. Reason: at 2.0× a five-digit score
+  broke across two lines mid-number in the first render. Recorded as a deliberate
+  native adaptation, reversible if the owner prefers full scaling plus wrapping.
+- **2026-10-24 — 1 CSS px in the reference = 1 dp in the app** — the review
+  surface is 390 dp wide, the same width the screenshot tests render at, so the
+  doc's measurements are directly usable in Compose.
+- **2026-10-24 — Goldens are recorded on purpose, from CI** — the screenshot
+  lane now verifies against committed goldens (`app/src/test/screenshots/`), and
+  a visual diff fails `testDebugUnitTest`. Because this environment cannot
+  download run artifacts, the goldens are bootstrapped by a `workflow_dispatch`
+  job (`record_screenshots=true`, non-`main` branches only) that runs
+  `recordRoborazziDebug` and commits the images back to the same branch. Local
+  equivalent: `./gradlew recordRoborazziDebug`. Never automatic on a push.
+- **2026-10-24 — Reference-site stack stays web-only** — Vite/Tailwind/Konsta/
+  React/fontsource are dependencies of `design/reference/` alone; nothing in
+  `app/` or the APK depends on Node, and the reference is excluded from Gradle.
+  Only Lucide (ISC) crosses into the app, in phase 2, as adapted `ImageVector`
+  paths with attribution.
+
+- **2026-10-24 — Home shows a still of the board (review round 1, owner
+  request)** — the first screen was clean but did not show what the game looks
+  like. Home now carries a **decorative, non-interactive** board still above the
+  buttons (fixed sample grid, ramp colours, numerals sized from the cell). It is
+  not a button and not focusable. Reversible: delete one composable call.
+- **2026-10-24 — Tiles were flat bars; now square (review round 1, owner
+  report)** — the tile composable had no width/height, so the *grid cell* was
+  square and the *tile inside* collapsed to its text height. The tile now fills
+  the cell edge to edge. Token values were unchanged; this was a layout bug in
+  the reference, and the Compose side gets the same rule (`fillMaxSize` inside a
+  square cell) written down before phase 2 draws a tile.
+
 ## Third-party licences (everything shipped, per reuse-first §3)
+
 
 Pinned and shipped in phase 0 (versions read from the artefacts / maintained
 samples on 2026-10-24; the dependency graph is the source of truth):
@@ -160,12 +217,23 @@ samples on 2026-10-24; the dependency graph is the source of truth):
 - ktlint-gradle 14.2.0 (MIT) + ktlint engine 1.8.0 (MIT) — DEPEND (CI only)
 - Android Gradle Plugin 8.13.0, Gradle 8.14.3 — Apache-2.0 — DEPEND (build only)
 - Roboto — Apache-2.0 — DEPEND (Android system font, nothing bundled)
+- Reference site only, **never shipped** (phase 0-D, `design/reference/`):
+  Vite 8.3.5 + @vitejs/plugin-react 6.1.2 (MIT), Tailwind 4.3.3 +
+  @tailwindcss/vite (MIT), Konsta UI 5.5.0 (MIT), React/react-dom 19.3.1 (MIT),
+  **lucide-react 1.61.0 (ISC)**, @fontsource/roboto 5.3.0 and
+  @fontsource/noto-sans-devanagari 5.3.0 (OFL-1.1); dev-only tooling
+  playwright-core 1.64.1 (Apache-2.0) + @sparticuz/chromium 153.0.0 (MIT).
+  None of these enter the APK; the licence inventory of the shipped app is
+  unchanged by this phase.
 - Planned, not yet shipped: AboutLibraries (Apache-2.0, phase 6), Lucide icons
   adapted as `ImageVector` (ISC, phase 2), Google Mobile Ads SDK and Play
   Billing Library (proprietary, phase 5, behind a GATE).
-- Rejected for this phase: material-color-utilities (not needed while the palette
-  is a proposal), Paparazzi (Roborazzi chosen), mockk (hand-written fakes),
-  Hilt/Koin (manual `AppContainer`).
+- Rejected: material-color-utilities (the ramp is hand-approved, not generated —
+  revisit only if the palette must be regenerated from a seed), Paparazzi
+  (Roborazzi chosen), mockk (hand-written fakes), Hilt/Koin (manual
+  `AppContainer`), Storybook/Histoire and Percy/Chromatic/BackstopJS for the
+  reference site (0-D reuse scan: a disposable phone-frame page needs none of
+  them — see `docs/phases/00d-ui-reference.md` § Reused).
 
 ## Open (not plan-chat questions — later gates or factual reads)
 
@@ -173,7 +241,8 @@ samples on 2026-10-24; the dependency graph is the source of truth):
       it with `git var` before the first Phase 0 commit (decision already made).
 - [ ] Confirm `io.github.pabi277.tilefold` as the literal package ID at the first
       commit (permanent once published).
-- [ ] Phase 0-D: owner approves the UI reference site in chat → tokens freeze.
+- [x] Phase 0-D: owner approved the UI reference site in chat (2026-10-24) →
+      tokens frozen; recorded above and in `docs/UI-REFERENCE.md`.
 - [ ] Later GATE items, each in its own phase: live AdMob unit IDs, Play signing
       secrets, tester list, Play submission — never in chat or git.
 - Note: the plan chat created **no** repository, branch, commit or code; this
