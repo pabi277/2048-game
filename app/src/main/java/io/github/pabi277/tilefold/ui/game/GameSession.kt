@@ -84,7 +84,10 @@ internal class GameSession(
     var showRestartConfirm: Boolean by mutableStateOf(false)
         private set
 
-    var isNewBest: Boolean by mutableStateOf(false)
+    var isNewBest: Boolean by mutableStateOf(
+        (initialGame?.status == GameStatus.GAME_OVER || initialGame?.status == GameStatus.WON) &&
+            (initialGame.score > (initialStats?.bestScore ?: 0)),
+    )
         private set
 
     var interstitialState: AdPolicy.InterstitialState by mutableStateOf(AdPolicy.InterstitialState())
