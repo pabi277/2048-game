@@ -38,12 +38,15 @@ class TokensSyncTest {
         return rest.substring(0, end)
     }
 
-    private fun rows(text: String): List<List<String>> =
-        text.lines()
+    private fun rows(text: String): List<List<String>> {
+        val cellsOf: (String) -> List<String> = { line ->
+            line.trim().trim('|').split('|').map { cell -> cell.replace("`", "").replace("*", "").trim() }
+        }
+        return text.lines()
             .filter { it.trimStart().startsWith("|") }
-            .map { line ->
-                line.trim().trim('|').split('|').map { cell -> cell.replace("`", "").replace("*", "").trim() }
-            }.filterNot { cells -> cells.all { it.matches(Regex(":?-{2,}:?")) } }
+            .map(cellsOf)
+            .filterNot { cells -> cells.all { it.matches(Regex(":?-{2,}:?")) } }
+    }
 
     private fun hexOf(value: String): Color {
         val hex = value.substringAfter('#').take(6)
@@ -236,7 +239,7 @@ class TokensSyncTest {
         assertThat(spacing).contains("tile gap ${Dimens.TileGap.value.toInt()}dp")
         assertThat(spacing).contains("${Dimens.MinTarget.value.toInt()}dp")
         assertThat(spacing).contains("max width ${Dimens.DialogMaxWidth.value.toInt()}dp")
-        assertThat(TypeScale.TileNumeralMaxScale).isEqualTo(1.25f)
-        assertThat(TypeScale.InScreenScoreMaxScale).isEqualTo(1.5f)
+        assertThat(TypeScale.TILE_NUMERAL_MAX_SCALE).isEqualTo(1.25f)
+        assertThat(TypeScale.IN_SCREEN_SCORE_MAX_SCALE).isEqualTo(1.5f)
     }
 }

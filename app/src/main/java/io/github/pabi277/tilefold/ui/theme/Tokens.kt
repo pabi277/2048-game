@@ -222,7 +222,7 @@ internal object TypeScale {
      * Numeral growth caps, so a 2.0× font scale never breaks the board or a
      * dialog (deliberate native adaptation, recorded in `docs/UI-REFERENCE.md`).
      */
-    const val TileNumeralMaxScale = 1.25f
-    const val DialogScoreMaxScale = 1.25f
-    const val InScreenScoreMaxScale = 1.5f
+    const val TILE_NUMERAL_MAX_SCALE = 1.25f
+    const val DIALOG_SCORE_MAX_SCALE = 1.25f
+    const val IN_SCREEN_SCORE_MAX_SCALE = 1.5f
 }
