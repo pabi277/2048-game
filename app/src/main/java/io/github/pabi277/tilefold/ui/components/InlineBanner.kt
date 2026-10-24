@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
 import io.github.pabi277.tilefold.R
 import io.github.pabi277.tilefold.ui.icons.TilefoldIcons
 import io.github.pabi277.tilefold.ui.theme.Corners
@@ -64,7 +65,7 @@ internal fun InlineBanner(
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
                 text = message,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold),
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                 color = MaterialTheme.colorScheme.error,
             )
             if (detail != null) {

@@ -92,9 +92,11 @@ private fun StatsGrid(
     fun fmt(value: Int): String = if (storageError) unknown else value.toString()
     fun tileFmt(value: Int): String = if (storageError) unknown else if (value == 0) unknown else value.toString()
 
+    val gamesLabel = stringResource(R.string.stats_games_played)
+    val gamesValue = if (stats.gamesPlayed == 0 && !storageError) unknown else fmt(stats.gamesPlayed)
     val items =
         listOf(
-            StatItem(stringResource(R.string.stats_games_played), if (stats.gamesPlayed == 0 && !storageError) unknown else fmt(stats.gamesPlayed)),
+            StatItem(gamesLabel, gamesValue),
             StatItem(stringResource(R.string.stats_wins), fmt(stats.wins)),
             StatItem(stringResource(R.string.stats_best_score), fmt(stats.bestScore)),
             StatItem(stringResource(R.string.stats_highest_tile), tileFmt(stats.highestTile)),
