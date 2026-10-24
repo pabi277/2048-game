@@ -79,6 +79,13 @@ jobs:
         shell: bash
         run: |
           set +e
+          # ktlint findings (main and test source sets).
+          if [ -d app/build/reports/ktlint ]; then
+            find app/build/reports/ktlint -name '*.txt' | while IFS= read -r report; do
+              head -20 "$report" \
+                | while IFS= read -r line; do echo "::error file=${report}::${line}"; done
+            done
+          fi
           # detekt prints a summary only; its findings live in the text report.
           if [ -f app/build/reports/detekt/detekt.txt ]; then
             head -60 app/build/reports/detekt/detekt.txt \
