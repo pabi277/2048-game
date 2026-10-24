@@ -199,12 +199,12 @@ private fun AnimatedTile(
             Modifier
                 .offset(x = x.value.dp, y = y.value.dp)
                 .size(cell)
+                .testTag(if (tile.leaving) "board-leaving-${tile.key}" else tileTag(tile.index))
                 .graphicsLayer {
                     scaleX = scale.value
                     scaleY = scale.value
                     alpha = fade.value
-                }
-                .testTag(if (tile.leaving) "board-leaving-${tile.key}" else tileTag(tile.index)),
+                },
     ) {
         TileFace(value = tile.value)
     }

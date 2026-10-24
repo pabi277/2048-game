@@ -29,6 +29,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
@@ -107,6 +108,12 @@ internal fun GameScreen(
             label = "score",
         )
     val textPrimary = MaterialTheme.colorScheme.onBackground
+    // The lambda is held in a val so the modifier chain below stays a plain
+    // chain of calls — a trailing lambda inside a chain is what ktlint's
+    // `chain-method-continuation` rule rejects.
+    val keyHandler: (KeyEvent) -> Boolean = { event ->
+        handleKey(event.type, event.key, actions.onMove)
+    }
 
     Column(
         modifier =
@@ -119,7 +126,7 @@ internal fun GameScreen(
                     vertical = Dimens.ScreenPaddingVertical,
                 )
                 .focusRequester(focusRequester)
-                .onPreviewKeyEvent { event -> handleKey(event.type, event.key, actions.onMove) }
+                .onPreviewKeyEvent(keyHandler)
                 .focusable(),
     ) {
         TitleRow(onHome = actions.onHome, onRestart = actions.onRestart, tint = textPrimary)

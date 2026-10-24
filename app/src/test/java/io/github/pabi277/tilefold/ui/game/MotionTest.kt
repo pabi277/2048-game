@@ -14,11 +14,11 @@ import java.util.Locale
 class MotionTest {
     @Test
     fun `the durations are the frozen tokens`() {
-        assertThat(Motion.slide(reduced = false)).isEqualTo(Durations.Slide)
-        assertThat(Motion.pop(reduced = false)).isEqualTo(Durations.Pop)
-        assertThat(Motion.spawn(reduced = false)).isEqualTo(Durations.Spawn)
-        assertThat(Motion.score(reduced = false)).isEqualTo(Durations.Score)
-        assertThat(listOf(Durations.Slide, Durations.Pop, Durations.Spawn, Durations.Score))
+        assertThat(Motion.slide(reduced = false)).isEqualTo(Durations.SLIDE_MS)
+        assertThat(Motion.pop(reduced = false)).isEqualTo(Durations.POP_MS)
+        assertThat(Motion.spawn(reduced = false)).isEqualTo(Durations.SPAWN_MS)
+        assertThat(Motion.score(reduced = false)).isEqualTo(Durations.SCORE_MS)
+        assertThat(listOf(Durations.SLIDE_MS, Durations.POP_MS, Durations.SPAWN_MS, Durations.SCORE_MS))
             .containsExactly(110, 140, 130, 220)
             .inOrder()
     }

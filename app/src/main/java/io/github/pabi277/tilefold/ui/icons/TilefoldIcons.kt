@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
  * `Icon(tint = …)` from the theme's tokens.
  */
 internal object TilefoldIcons {
-
     /** Lucide `house` — Home. */
     val House: ImageVector by lazy {
         strokeIcon(

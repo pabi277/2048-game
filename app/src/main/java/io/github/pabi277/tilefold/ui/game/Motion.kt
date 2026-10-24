@@ -11,11 +11,11 @@ import io.github.pabi277.tilefold.ui.theme.Durations
  * Phase 4 adds an in-app "reduce motion" setting that feeds the same flag.
  */
 internal object Motion {
-    fun slide(reduced: Boolean): Int = if (reduced) 0 else Durations.Slide
+    fun slide(reduced: Boolean): Int = if (reduced) 0 else Durations.SLIDE_MS
 
-    fun pop(reduced: Boolean): Int = if (reduced) 0 else Durations.Pop
+    fun pop(reduced: Boolean): Int = if (reduced) 0 else Durations.POP_MS
 
-    fun spawn(reduced: Boolean): Int = if (reduced) 0 else Durations.Spawn
+    fun spawn(reduced: Boolean): Int = if (reduced) 0 else Durations.SPAWN_MS
 
-    fun score(reduced: Boolean): Int = if (reduced) 0 else Durations.Score
+    fun score(reduced: Boolean): Int = if (reduced) 0 else Durations.SCORE_MS
 }

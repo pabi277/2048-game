@@ -234,8 +234,8 @@ internal object TypeScale {
  * suppressed (reduced-motion), never *how long* it takes.
  */
 internal object Durations {
-    const val Slide = 110
-    const val Pop = 140
-    const val Spawn = 130
-    const val Score = 220
+    const val SLIDE_MS = 110
+    const val POP_MS = 140
+    const val SPAWN_MS = 130
+    const val SCORE_MS = 220
 }
