@@ -2,9 +2,9 @@
 
 package io.github.pabi277.tilefold.ui.game
 
-import com.google.common.truth.Truth.assertThat
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import com.google.common.truth.Truth.assertThat
 import io.github.pabi277.tilefold.domain.Direction
 import org.junit.Test
 

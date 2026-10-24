@@ -5,10 +5,10 @@ package io.github.pabi277.tilefold.ui.game
 import com.google.common.truth.Truth.assertThat
 import io.github.pabi277.tilefold.domain.Board
 import io.github.pabi277.tilefold.domain.Direction
+import io.github.pabi277.tilefold.domain.EngineRandom
 import io.github.pabi277.tilefold.domain.Game
 import io.github.pabi277.tilefold.domain.GameSnapshot
 import io.github.pabi277.tilefold.domain.MovePlan
-import io.github.pabi277.tilefold.domain.EngineRandom
 import io.github.pabi277.tilefold.domain.Moves
 import org.junit.Test
 
@@ -23,8 +23,7 @@ import org.junit.Test
 class BoardSceneTest {
     private fun board(vararg values: Int): Board = Board.of(values.toList())
 
-    private fun valuesOf(scene: BoardScene): Map<Int, Int> =
-        scene.tiles.associate { it.index to it.value }
+    private fun valuesOf(scene: BoardScene): Map<Int, Int> = scene.tiles.associate { it.index to it.value }
 
     private fun plan(
         start: Board,
@@ -113,11 +112,12 @@ class BoardSceneTest {
             game = next
             moves += 1
 
-            assertThat(valuesOf(scene)).isEqualTo(
-                next.board.values.mapIndexedNotNull { index, value ->
-                    if (value == 0) null else index to value
-                }.toMap(),
-            )
+            val expected =
+                next.board.values
+                    .mapIndexedNotNull { index, value ->
+                        if (value == 0) null else index to value
+                    }.toMap()
+            assertThat(valuesOf(scene)).isEqualTo(expected)
             // Leaving tiles are always a copy of something that merged.
             assertThat(scene.leaving).hasSize(plan.mergeDestinations.size)
             assertThat(scene.tiles.count { it.merged }).isEqualTo(plan.mergeDestinations.size)
