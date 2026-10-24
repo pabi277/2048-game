@@ -178,9 +178,10 @@ class GameDialogTest {
         return game.move(io.github.pabi277.tilefold.domain.Direction.LEFT)
     }
 
+    @Suppress("UnusedParameter")
     private fun gameOverGame(
         score: Int,
-        bestScore: Int,
+        @Suppress("UnusedParameter") bestScore: Int,
     ): Game {
         val board =
             Board.rows(
