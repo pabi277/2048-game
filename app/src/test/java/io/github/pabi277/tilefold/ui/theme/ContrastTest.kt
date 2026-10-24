@@ -12,16 +12,24 @@ import org.junit.Test
  * fail before an unreadable combination reaches a screenshot.
  */
 class ContrastTest {
+    private fun luminanceOf(
+        color: Color,
+    ): Double = Contrast.relativeLuminance(color.red.toDouble(), color.green.toDouble(), color.blue.toDouble())
+
     private fun ratio(
         foreground: Color,
         background: Color,
-    ): Double = Contrast.contrastRatio(foreground.value.toLong(), background.value.toLong())
+    ): Double = Contrast.contrastRatio(luminanceOf(foreground), luminanceOf(background))
 
     @Test
     fun `black on white is the maximum ratio`() {
-        val ratio = Contrast.contrastRatio(0xFF000000, 0xFFFFFFFF)
+        assertThat(ratio(Color.Black, Color.White)).isWithin(0.01).of(21.0)
+    }
 
-        assertThat(ratio).isWithin(0.01).of(21.0)
+    @Test
+    fun `a known wcag pair matches the published ratio`() {
+        // #767676 on white is the canonical 4.54:1 example from WCAG material.
+        assertThat(ratio(Color(0xFF767676), Color.White)).isWithin(0.05).of(4.54)
     }
 
     @Test
