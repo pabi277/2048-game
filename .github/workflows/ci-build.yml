@@ -106,9 +106,11 @@ jobs:
             # detekt / ktlint findings: <path>.kt:<line>:<col>: <message> [Rule]
             grep -nE '\.kt:[0-9]+:[0-9]+: ' "$log" | head -40 \
               | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
-            # Compiler diagnostics, with or without colour codes / prefixes.
-            grep -nE '(^|[[:space:]])e: |error:|error;' "$log" | head -20 \
-              | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
+            # Kernel diagnostics: everything after a failed compile task, plus any
+            # line carrying an error, ANSI codes stripped first.
+            sed -r 's/\x1B\[[0-9;]*[mK]//g' "$log" > /tmp/clean.log
+            awk '/Task :app:compile.*FAILED/{flag=1} flag' /tmp/clean.log | head -40 \
+              | while IFS= read -r line; do echo "::error file=${log}::compile ${line}"; done
             # Last resort: the tail of the log, so a failure is never opaque.
             tail -40 "$log" \
               | while IFS= read -r line; do echo "::error file=${log}::tail ${line}"; done

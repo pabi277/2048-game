@@ -146,8 +146,11 @@ internal val TilefoldShapes =
         extraLarge = RoundedCornerShape(Corners.Dialog),
     )
 
-/** Everything the M3 scheme has no slot for: tile ramp, board, scores, chips. */
-data class TilefoldPalette(
+/**
+ * Everything the M3 scheme has no slot for: tile ramp, board, scores, chips.
+ * Internal, like [Tokens]: a public class may not expose an internal type.
+ */
+internal data class TilefoldPalette(
     val dark: Boolean,
     val boardFrame: Color,
     val emptyCell: Color,
@@ -191,10 +194,10 @@ private val DarkPalette =
         skeletonShine = Tokens.Dark.SkeletonShine,
     )
 
-val LocalTilefoldPalette = staticCompositionLocalOf { LightPalette }
+internal val LocalTilefoldPalette = staticCompositionLocalOf { LightPalette }
 
-/** Shorthand for the current palette, e.g. `TilefoldTheme.palette.tile(128)`. */
-object TilefoldThemeDefaults {
+/** Shorthand for the current palette, e.g. `TilefoldThemeDefaults.palette.tile(128)`. */
+internal object TilefoldThemeDefaults {
     val palette: TilefoldPalette
         @Composable get() = LocalTilefoldPalette.current
 }
