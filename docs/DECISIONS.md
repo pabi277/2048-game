@@ -190,6 +190,31 @@
   like. Home now carries a **decorative, non-interactive** board still above the
   buttons (fixed sample grid, ramp colours, numerals sized from the cell). It is
   not a button and not focusable. Reversible: delete one composable call.
+- **2026-10-24 — Engine PRNG is `xorshift64*`, state is the save** — the
+  generator is an engine-owned 4-line `xorshift64*` (Marsaglia shifts 12/25/27,
+  Vigna multiplier 2685821657736338717) whose mutable **cursor is the
+  serialisable state**; seed `0` maps to a fixed non-zero state because zero is a
+  fixed point. `Spawner` draws the tile **value first** (`nextInt(10) >= 9` → 4,
+  else 2) **then** the cell, so a stored state always replays the same tile in
+  the same place. Recorded because swapping the algorithm or the draw order
+  silently breaks every saved game and every golden board. Reversible only with
+  a `schemaVersion` bump + a decode test.
+- **2026-10-24 — `save.v1` refuses what it cannot trust** — `schemaVersion` 1,
+  JSON via kotlinx.serialization; `decode` returns `null` (never a partial board)
+  for a future schema, a wrong cell count, a non-power-of-two cell, a negative
+  score/moves or a zero RNG state; unknown keys are ignored and every field has a
+  default so an older payload still loads. The free undo snapshot is nested in
+  the same blob. Any new field bumps the version and adds a decode test.
+- **2026-10-24 — A refused input is free** — a move that changes nothing, and
+  any move while the win dialog is owed or the game is over, returns the *same*
+  `Game` instance: no spawn, no score, no RNG draw. So an accidental swipe can
+  never skip a dialog or consume the next tile.
+- **2026-10-24 — `EnginePreview` is debug-only and undesigned** — the phase-1
+  progress APK needs a visible, playable board, but no screen may pre-empt the
+  frozen reference. The preview therefore uses Material theme defaults only
+  (no token, no hex, no custom type) and is shown behind `BuildConfig.DEBUG`;
+  the release build keeps the phase-0 hello screen. It is deleted when the real
+  game screen arrives (phase 2/3).
 - **2026-10-24 — Tiles were flat bars; now square (review round 1, owner
   report)** — the tile composable had no width/height, so the *grid cell* was
   square and the *tile inside* collapsed to its text height. The tile now fills

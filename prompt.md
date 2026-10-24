@@ -85,9 +85,28 @@
     `app/.../ui/theme/Tokens.kt` (single token source, `SeedColors.kt` deleted);
     `TokensSyncTest` proves doc ↔ app; screenshot tests are **goldens** in
     `app/src/test/screenshots/` verified by `testDebugUnitTest` (a visual diff
-    fails the build). Freeze itself waits for the owner's explicit approval.
+    fails the build). Tokens approved + frozen in chat on 2026-10-24
+    (`e0393be`), then merged to `main`.
     Gate green in run 40070687033 at `e0d0c95`: `app-progress-apk` 10,849,239 B,
     `app-screenshots` 253,477 B (5 goldens), `quality-gate-reports` 56,093 B.
+- **Phase 1 ✅ 2026-10-24 — pure-Kotlin engine + tests (awaiting the merge
+  gate).** Gate green in run 40076597395 at `20a9648`: `app-progress-apk`
+  10,891,006 B, `app-screenshots` 253,477 B (same 5 goldens), `quality-gate-
+  reports` 66,822 B. Record: `docs/phases/01-engine.md`.
+  - 1.1 ✅ — `domain/Board.kt` (immutable 16 cells), `domain/Moves.kt`
+    (`Moved`/`NoMove`, one merge per tile, leading-edge scan), `domain/
+    EngineRandom.kt` (`xorshift64*` with the cursor as the saved state +
+    `Spawner`: value first, then cell).
+  - 1.2 ✅ — `domain/Game.kt`: score = merged sum, win at 2048 + keep playing,
+    game over = full + no equal orthogonal neighbour, one-snapshot undo
+    (board + score + RNG), refused input is free (same instance, no draw).
+  - 1.3 ✅ — `domain/SaveCodec.kt` (`schemaVersion` 1, defensive
+    `decode → null`, nested undo); 66 new host tests: per-direction merge
+    cases, 90/10 spawn over 20,000 spawns, **golden replays** (seed
+    `20261024` + `LLUURDDLR`, seed `7` + `UDUDLRLR`), 300-board property
+    tests, save round-trip and refusal cases.
+  - 1.4 ✅ — `ui/EnginePreview.kt`, plain numerals + four arrows, shown only
+    behind `BuildConfig.DEBUG`; the release build still opens the hello screen.
 - Facts read back from the repo/CI (not memory): AGP 8.13.0, Kotlin 2.2.20,
   Gradle 8.14.3, Compose BOM 2025.09.01, minSdk 24 / targetSdk 36 /
   compileSdk 36; gate command `./gradlew check` = debug unit tests + lint +
@@ -97,7 +116,8 @@
   the values in `docs/UI-REFERENCE.md` = `design/reference/src/design.js` =
   `app/.../ui/theme/Tokens.kt`, guarded by `npm run verify` + `TokensSyncTest`.
   Visual changes go reference → doc → `Tokens.kt` → screen, never the reverse.
-- Next: **phase 1 — pure-Kotlin engine + seeded tests** (parts 1.1–1.4).
+- Next: **phase 2 — board UI + swipe + animation** (parts 2.1–2.3), built from
+  the frozen reference; the engine is consumed, never re-implemented.
 - Open owner items: the reference screenshot is no longer needed (the reference
   is ours and approved); live ad units only in phase 5 and only after a GATE.
 
@@ -105,10 +125,13 @@
 
 1. Read `docs/ROADMAP.md`, `docs/DECISIONS.md`, `docs/UI-REFERENCE.md` and the
    latest `docs/phases/` record — trust the repo, not memory.
-2. Implement **phase 1** (pure-Kotlin engine + tests), all its parts,
-   evidence-first, with the reuse map in `docs/RESEARCH.md` as the base.
+2. Implement **phase 2** (board UI + swipe + animation), all its parts,
+   evidence-first, against `docs/UI-REFERENCE.md` and
+   `design/reference/screenshots/`; the engine in `domain/` is the only rules
+   source (the UI never re-implements a merge).
 3. End with: CI green (incl. the no-device quality gate) + the run's
-   downloadable `app-progress-apk` artifact · `docs/phases/01-engine.md` (say
-   what the APK shows) · roadmap row status · this file updated · short report
-   (run id, tip sha, APK, what is now visible) · **the next-chat prompt printed
-   in chat** for phase 2 · stop at the merge gate.
+   downloadable `app-progress-apk` artifact · `docs/phases/02-board-ui.md` (say
+   what the APK shows, and record where the Compose screens differ
+   deliberately from the reference) · roadmap row status · this file updated ·
+   short report (run id, tip sha, APK, what is now visible) · **the next-chat
+   prompt printed in chat** for phase 3 · stop at the merge gate.
