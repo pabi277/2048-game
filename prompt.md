@@ -65,23 +65,24 @@
 
 ## State (update at every phase end)
 
-- **Plan chat completed 2026-10-24.** Plan approved; repository creation
-  authorized. The plan documents are committed to this branch (docs-only commit;
-  read its sha with `git log -- docs/ROADMAP.md`). **No app code, no CI, no
-  playbook snapshot yet** — those are phase 0.
-- Phase 0 📋 not started · CI: none · APK: none · next step runs in a **new
-  chat** and begins by committing the playbook snapshot (`templates/` +
-  `knowledge/`) and the provenance line **before** any app code; the plan docs
-  are already in place.
-- Next: **phase 0 — Bootstrap + hello** — parts 0.1 snapshot + plan docs +
-  LICENSE + README + `rule.md` + `prompt.md` · 0.2 Gradle skeleton + hello
-  screen + one unit test + one screenshot test + lint · 0.3 CI + version pins +
-  licence log
-- Then **phase 0-D — UI reference site + tokens freeze** (owner approves in
-  chat; no UI code before that)
-- Open owner items: exit-gate answers (plan approval · repo visibility + licence
-  · git author identity · working name + package ID); the reference screenshot
-  for Phase 0-D; live ad units much later.
+- **Phase 0 ✅ 2026-10-24** — snapshot `2a55172`, skeleton `89970a1`, CI green in
+  run 40064397149 at `bdd5789`. Artifacts: `app-progress-apk` (10,837,751 B),
+  `app-screenshots` (16 PNGs), `quality-gate-reports`. APK shows one cream
+  "Tilefold" screen from the seed theme — no board yet. Record:
+  `docs/phases/00-bootstrap.md`.
+- Facts read back from the repo/CI (not memory): AGP 8.13.0, Kotlin 2.2.20,
+  Gradle 8.14.3, Compose BOM 2025.09.01, minSdk 24 / targetSdk 36 /
+  compileSdk 36; gate command `./gradlew check` = debug unit tests + lint +
+  detekt + ktlint.
+- Next: **phase 0-D — UI reference site + tokens freeze** — parts 0-D.1 build
+  the phone-shaped Vite+Tailwind+Konsta+Lucide prototype for all 27 screen/state
+  rows · 0-D.2 owner review rounds in chat · 0-D.3 freeze tokens + web→Compose
+  mapping, point the app theme at the frozen seed, switch screenshot tests to
+  goldens.
+- Then phase 1 — pure-Kotlin engine + seeded tests.
+- Open owner items: the reference screenshot for 0-D (optional — the brief is
+  enough to draft, better with it); approval of the reference in chat; live ad
+  units only in phase 5 and only after a GATE.
 
 ## How to continue
 
