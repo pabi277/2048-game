@@ -67,9 +67,10 @@ class GameDialogTest {
 
         rule.setContent {
             TilefoldTheme {
+                val stats = io.github.pabi277.tilefold.domain.Stats(bestScore = 2000)
                 val session =
                     remember {
-                        GameSession(seed = 1L, initialGame = overGame, initialStats = io.github.pabi277.tilefold.domain.Stats(bestScore = 2000))
+                        GameSession(seed = 1L, initialGame = overGame, initialStats = stats)
                     }
                 GameContent(session = session, actions = session.actions(), reducedMotion = true)
             }
@@ -135,7 +136,8 @@ class GameDialogTest {
         rule.setContent {
             TilefoldTheme {
                 val session = remember { GameSession(seed = 20261024L) }
-                GameScreen(state = session.screenState.copy(showRestartConfirm = true), actions = session.actions(), reducedMotion = true)
+                val state = session.screenState.copy(showRestartConfirm = true)
+                GameScreen(state = state, actions = session.actions(), reducedMotion = true)
             }
         }
 
@@ -163,7 +165,15 @@ class GameDialogTest {
                 listOf(0, 0, 0, 0),
                 listOf(0, 0, 0, 0),
             )
-        val snapshot = GameSnapshot(board, score = 0, randomState = 42L, reached2048 = false, keepPlaying = false, moves = 0)
+        val snapshot =
+            GameSnapshot(
+                board,
+                score = 0,
+                randomState = 42L,
+                reached2048 = false,
+                keepPlaying = false,
+                moves = 0,
+            )
         val game = Game.restore(snapshot)
         return game.move(io.github.pabi277.tilefold.domain.Direction.LEFT)
     }
@@ -179,7 +189,15 @@ class GameDialogTest {
                 listOf(2, 4, 2, 4),
                 listOf(4, 2, 4, 2),
             )
-        val snapshot = GameSnapshot(board, score = score, randomState = 42L, reached2048 = false, keepPlaying = false, moves = 5)
+        val snapshot =
+            GameSnapshot(
+                board,
+                score = score,
+                randomState = 42L,
+                reached2048 = false,
+                keepPlaying = false,
+                moves = 5,
+            )
         return Game.restore(snapshot)
     }
 

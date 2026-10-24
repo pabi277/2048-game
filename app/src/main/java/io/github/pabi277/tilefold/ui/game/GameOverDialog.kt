@@ -24,6 +24,7 @@ import io.github.pabi277.tilefold.ui.components.PrimaryButton
 import io.github.pabi277.tilefold.ui.components.SecondaryButton
 import io.github.pabi277.tilefold.ui.components.TextAction
 import io.github.pabi277.tilefold.ui.icons.TilefoldIcons
+import androidx.compose.ui.text.font.FontWeight
 import io.github.pabi277.tilefold.ui.theme.Corners
 import io.github.pabi277.tilefold.ui.theme.TextCaps
 import io.github.pabi277.tilefold.ui.theme.TilefoldThemeDefaults
@@ -141,7 +142,7 @@ internal fun NewBestChip(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = stringResource(R.string.game_new_best),
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold),
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
             color = palette.onSuccess,
         )
     }

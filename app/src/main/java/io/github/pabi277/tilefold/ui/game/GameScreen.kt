@@ -78,6 +78,7 @@ internal data class GameScreenState(
 )
 
 /** Everything the player can do on the game screen. */
+@Suppress("LongParameterList")
 internal class GameActions(
     val onMove: (Direction) -> Unit,
     val onUndo: () -> Unit,

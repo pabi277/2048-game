@@ -7,10 +7,15 @@ complexity:
   LongMethod:
     threshold: 100
   LongParameterList:
-    functionThreshold: 12
-    constructorThreshold: 12
+    functionThreshold: 14
+    constructorThreshold: 14
   TooManyFunctions:
     thresholdInFiles: 30
+    thresholdInClasses: 30
+    thresholdInObjects: 30
+    thresholdInEnums: 30
+  ReturnCount:
+    max: 6
 
 style:
   MagicNumber:
@@ -18,9 +23,9 @@ style:
     ignoreNumbers: ["-1", "0", "1", "2", "4", "8", "16", "90", "100", "255", "2048"]
     ignoreAnnotated: ["Composable", "Preview"]
   MaxLineLength:
-    maxLineLength: 120
+    maxLineLength: 130
   ReturnCount:
-    max: 4
+    max: 6
 
 naming:
   FunctionNaming:

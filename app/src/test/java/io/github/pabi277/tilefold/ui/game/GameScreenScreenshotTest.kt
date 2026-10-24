@@ -296,7 +296,7 @@ class GameScreenScreenshotTest {
                     scene = BoardScene.still(board),
                     score = score,
                     best = best,
-                    status = if (winDialog) GameStatus.WON else if (gameOverDialog) GameStatus.GAME_OVER else GameStatus.PLAYING,
+                    status = gameStatus(winDialog, gameOverDialog),
                     canUndo = true,
                     hintVisible = false,
                     padVisible = false,
@@ -310,6 +310,13 @@ class GameScreenScreenshotTest {
             reducedMotion = true,
         )
     }
+
+    private fun gameStatus(winDialog: Boolean, gameOverDialog: Boolean): GameStatus =
+        when {
+            winDialog -> GameStatus.WON
+            gameOverDialog -> GameStatus.GAME_OVER
+            else -> GameStatus.PLAYING
+        }
 
     private companion object {
         /** A screenshot cannot press anything; the actions exist only to satisfy the screen. */

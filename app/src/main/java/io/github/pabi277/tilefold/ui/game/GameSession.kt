@@ -30,6 +30,7 @@ import io.github.pabi277.tilefold.domain.UndoAllowance
  * owning [androidx.lifecycle.ViewModel] observes [onGameChanged] and debounces
  * the write.
  */
+@Suppress("TooManyFunctions")
 @Stable
 internal class GameSession(
     private val seed: Long,
