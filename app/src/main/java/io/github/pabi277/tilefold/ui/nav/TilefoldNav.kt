@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+@file:Suppress("MatchingDeclarationName")
 
 package io.github.pabi277.tilefold.ui.nav
 
@@ -54,7 +55,6 @@ internal fun TilefoldNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     NavHost(
@@ -119,7 +119,7 @@ internal fun TilefoldNavHost(
             )
         }
 
-        composable(Routes.Settings) {
+        composable(TilefoldRoutes.Settings) {
             val goldUnlocked = stats.highestTile >= 2048 || stats.wins > 0 || stats.bestScore >= 2048
             val settingsState =
                 SettingsState(

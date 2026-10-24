@@ -18,6 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import io.github.pabi277.tilefold.data.AppContainer
+import io.github.pabi277.tilefold.domain.Settings
 import io.github.pabi277.tilefold.ui.haptics.HapticsController
 import io.github.pabi277.tilefold.ui.sound.SoundController
 import kotlinx.coroutines.delay
@@ -50,7 +51,9 @@ fun GameRoute(
     val appContainer = container ?: remember { AppContainer(context.applicationContext) }
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
-    val settings by appContainer.settingsRepository.settingsFlow.collectAsState(initial = io.github.pabi277.tilefold.domain.Settings())
+    val settings by appContainer.settingsRepository.settingsFlow.collectAsState(
+        initial = Settings(),
+    )
 
     val soundController = remember(context) { SoundController(context.applicationContext) }
     val hapticsController = remember(context) { HapticsController(context.applicationContext) }
