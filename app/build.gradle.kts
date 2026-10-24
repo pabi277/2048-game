@@ -100,6 +100,17 @@ detekt {
     parallel = true
 }
 
+// Findings go to a text report as well as HTML, so CI can annotate exact
+// file:line positions without a log download.
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    reports {
+        txt.required.set(true)
+        txt.outputLocation.set(file("build/reports/detekt/detekt.txt"))
+        html.required.set(true)
+        sarif.required.set(true)
+    }
+}
+
 ktlint {
     android.set(true)
     version.set(libs.versions.ktlintEngine.get())

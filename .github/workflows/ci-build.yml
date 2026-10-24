@@ -79,6 +79,11 @@ jobs:
         shell: bash
         run: |
           set +e
+          # detekt prints a summary only; its findings live in the text report.
+          if [ -f app/build/reports/detekt/detekt.txt ]; then
+            head -60 app/build/reports/detekt/detekt.txt \
+              | while IFS= read -r line; do echo "::error file=detekt.txt::${line}"; done
+          fi
           for log in gradle-check.log gradle-assemble.log; do
             [ -f "$log" ] || continue
             # The lines after "What went wrong" carry the actual cause.
