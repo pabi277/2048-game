@@ -9,7 +9,19 @@
   [40067703773](https://github.com/pabi277/2048-game/actions/runs/40067703773)
   green at `f34a181` — app no-device gate **and** the new
   `ui-reference tokens match the doc` job.
-- CI (tokens freeze + goldens, parts 0-D.3): run [FILL] at `[FILL]`.
+- CI (tokens + goldens, part 0-D.3): run
+  [40070687033](https://github.com/pabi277/2048-game/actions/runs/40070687033)
+  green at `e0d0c95`. Artifacts: **`app-progress-apk` 10,849,239 B**,
+  `app-screenshots` 253,477 B (the 5 goldens + compare output), `quality-gate-reports`
+  56,093 B. Goldens recorded by the `Record screenshot goldens` job in run
+  [40070266477](https://github.com/pabi277/2048-game/actions/runs/40070266477)
+  (commit `e1d5a09`).
+- The bootstrap needed four guard-fix rounds (ktlint chain formatting, detekt
+  loop jumps / return count / compound condition, then a Kotlin visibility error
+  where the public palette class exposed the internal token type). Each round's
+  failure is readable from the check-run annotations, which is why the workflow
+  now also dumps the compiler section and a log tail — a fix for the next chat,
+  not only for this one.
 
 ## What this phase is
 
@@ -169,13 +181,14 @@ app does not paint a tile before phase 2.
 ## Tests (no-device gate — `knowledge/fast-quality-no-device.md` §1)
 
 - `./gradlew check` = `testDebugUnitTest` + `lintDebug` + `detekt` +
-  `ktlintCheck`, green in [FILL run].
+  `ktlintCheck`, green in run 40070687033 at `e0d0c95`.
 - Unit: `ContrastTest` (7) + `TokensSyncTest` (7) — values, ramp coverage
   2…2048 + `super`, contrast floors 3.0:1 (numerals) and 4.5:1 (body), type
   roles, numeral caps, and the doc's spacing numbers.
-- Screenshot: 5 goldens (hello light/dark/2.0×, tile ramp light/dark). Verify
-  mode: a visual difference fails the test. First run without goldens failed on
-  purpose — see "Gate".
+- Screenshot: 5 goldens (hello light/dark/2.0×, tile ramp light/dark), verified
+  in Roborazzi verify mode at 411×891dp/xxhdpi: a visual difference fails the
+  test. The goldens were recorded by CI (`e1d5a09`) and pulled back through a git
+  commit, since run artifacts are not downloadable here.
 - Reference: `npm run verify` green (tokens ↔ doc, contrast, 30 states, no raw
   colours in screens) and `npm run build` green, in run 40067703773.
 - **Not verifiable from this environment:** artifact bytes (the blob host
@@ -200,8 +213,8 @@ and reviewing the new images — never by deleting the test.
 
 ## Owner review (0-D.2)
 
-- [ ] Every screen/state presented in chat — done 2026-10-24 (gallery + per-state
-      renders + tokens page).
+- [x] Every screen/state presented in chat — 2026-10-24 (gallery + per-state
+      renders + tokens page + the Compose ramp goldens).
 - [ ] Owner corrections applied — round 1 open.
 - [ ] **Owner approves explicitly in chat** — pending. Until these boxes are
       ticked, tokens are "proposed-frozen" (machine-checked) but **not

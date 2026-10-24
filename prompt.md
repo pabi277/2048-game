@@ -84,6 +84,8 @@
     `TokensSyncTest` proves doc ↔ app; screenshot tests are **goldens** in
     `app/src/test/screenshots/` verified by `testDebugUnitTest` (a visual diff
     fails the build). Freeze itself waits for the owner's explicit approval.
+    Gate green in run 40070687033 at `e0d0c95`: `app-progress-apk` 10,849,239 B,
+    `app-screenshots` 253,477 B (5 goldens), `quality-gate-reports` 56,093 B.
 - Facts read back from the repo/CI (not memory): AGP 8.13.0, Kotlin 2.2.20,
   Gradle 8.14.3, Compose BOM 2025.09.01, minSdk 24 / targetSdk 36 /
   compileSdk 36; gate command `./gradlew check` = debug unit tests + lint +
