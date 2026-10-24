@@ -60,11 +60,7 @@ object SaveCodec {
         }
 
         private fun toSnapshot(): GameSnapshot? {
-            if (board.size != Board.CELLS) return null
-            if (score < 0 || moves < 0) return null
-            // A zero generator state is degenerate for xorshift: refuse, never loop.
-            if (randomState == 0L) return null
-            if (!board.all { it == 0 || Board.isTileValue(it) }) return null
+            if (isImpossible()) return null
             val cells = Board.of(board)
             return GameSnapshot(
                 board = cells,
@@ -75,6 +71,19 @@ object SaveCodec {
                 keepPlaying = keepPlaying,
                 moves = moves,
             )
+        }
+
+        /**
+         * Every way a payload can be internally impossible, in one place — a
+         * half-board or a dead generator is refused, never repaired.
+         */
+        private fun isImpossible(): Boolean {
+            val wrongSize = board.size != Board.CELLS
+            val badCounters = score < 0 || moves < 0
+            // A zero generator state is degenerate for xorshift: refuse, never loop.
+            val deadGenerator = randomState == 0L
+            val badCells = board.any { it != 0 && !Board.isTileValue(it) }
+            return wrongSize || badCounters || deadGenerator || badCells
         }
 
         companion object {

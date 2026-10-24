@@ -92,16 +92,19 @@ class EnginePropertyTest {
     @Test
     fun `a moved board has no gaps towards the leading edge`() {
         boards(BOARD_COUNT).forEach { board ->
-            Direction.entries.forEach { direction ->
-                val outcome = Moves.apply(board, direction)
-                if (outcome is Moves.Moved) {
-                    linesOf(outcome.board, direction).forEach { line ->
-                        val firstEmpty = line.indexOf(0)
-                        if (firstEmpty >= 0) {
-                            assertThat(line.drop(firstEmpty).all { it == 0 }).isTrue()
-                        }
-                    }
-                }
+            Direction.entries.forEach { direction -> assertNoGaps(board, direction) }
+        }
+    }
+
+    private fun assertNoGaps(
+        board: Board,
+        direction: Direction,
+    ) {
+        val outcome = Moves.apply(board, direction) as? Moves.Moved ?: return
+        linesOf(outcome.board, direction).forEach { line ->
+            val firstEmpty = line.indexOf(0)
+            if (firstEmpty >= 0) {
+                assertThat(line.drop(firstEmpty).all { it == 0 }).isTrue()
             }
         }
     }
