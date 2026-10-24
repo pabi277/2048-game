@@ -16,6 +16,36 @@ npm ci          # installs Vite, Tailwind, Konsta, Lucide, fonts
 npm run dev     # http://localhost:5180
 ```
 
+Behind an HTTPS preview proxy (the sandbox preview), ask for proxied HMR:
+
+```bash
+TILEFOLD_PREVIEW=1 npm run dev
+```
+
+### On the phone, from Termux (no laptop needed)
+
+The reference is a plain Vite app, so it runs on the device itself. Android
+arm64 builds exist for every native piece (esbuild, rollup, Tailwind's oxide),
+so nothing needs a desktop.
+
+```bash
+pkg update && pkg install nodejs-lts git
+git clone -b arena/8c6acb31-2048-game https://github.com/pabi277/2048-game.git
+cd 2048-game/design/reference
+npm ci                 # a few minutes on a phone; one-off
+npm run dev            # leave this running
+```
+
+Then open `http://localhost:5180` in Chrome (or `termux-open-url
+http://localhost:5180`). States: `#/game-mid`, `#/settings`, … · gallery:
+`http://localhost:5180/?gallery=1` · tokens: `http://localhost:5180/#/tokens`.
+
+To re-record the archived PNGs on the phone instead of a browser:
+
+```bash
+npm run shots          # needs the dev server running; writes ./screenshots
+```
+
 - Every state has its own URL: `#/home-no-save`, `#/game-mid`, `#/settings`,
   `#/game-large-font`, … Use ← / → to walk them in order.
 - `/?gallery=1` shows all 30 states on one sheet (the review overview).
