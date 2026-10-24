@@ -41,7 +41,9 @@
   per job, shipped licences logged in `docs/DECISIONS.md`.
 - **UI from the approved reference**: no UI coding before Phase 0-D is approved
   and tokens are frozen in `docs/UI-REFERENCE.md`; copy screens, screenshot-
-  compare, record deliberate native adaptations only.
+  compare, record deliberate native adaptations only. The reference lives in
+  `design/reference/` (disposable, never shipped); its tokens are the app's
+  tokens, guarded by `npm run verify` and `TokensSyncTest`.
 
 ## Decisions that must never be re-asked (full log: `docs/DECISIONS.md`)
 
@@ -67,22 +69,32 @@
 
 - **Phase 0 ✅ 2026-10-24** — snapshot `2a55172`, skeleton `89970a1`, CI green in
   run 40064397149 at `bdd5789`. Artifacts: `app-progress-apk` (10,837,751 B),
-  `app-screenshots` (16 PNGs), `quality-gate-reports`. APK shows one cream
-  "Tilefold" screen from the seed theme — no board yet. Record:
+  `app-screenshots` (16 PNGs), `quality-gate-reports`. Record:
   `docs/phases/00-bootstrap.md`.
+- **Phase 0-D 🚧 2026-10-24 — built, at the owner's review gate.**
+  - 0-D.1 ✅ — disposable Vite + Tailwind + Konsta + Lucide reference under
+    `design/reference/`: **30 states** (the 27 doc rows + restart confirm +
+    reset-stats confirm + Hindi Home) + a tokens page, plus 32 archived renders
+    in `design/reference/screenshots/`. Live preview: `npm run dev` on port 5180.
+    CI run 40067703773 green at `f34a181` (app gate + new `ui-reference` job).
+  - 0-D.2 🚧 — review rounds in chat; round 1 open, nothing approved yet.
+  - 0-D.3 partially done — tokens, mapping, contrast record and approval table
+    are in `docs/UI-REFERENCE.md`; the app theme now reads
+    `app/.../ui/theme/Tokens.kt` (single token source, `SeedColors.kt` deleted);
+    `TokensSyncTest` proves doc ↔ app; screenshot tests are **goldens** in
+    `app/src/test/screenshots/` verified by `testDebugUnitTest` (a visual diff
+    fails the build). Freeze itself waits for the owner's explicit approval.
 - Facts read back from the repo/CI (not memory): AGP 8.13.0, Kotlin 2.2.20,
   Gradle 8.14.3, Compose BOM 2025.09.01, minSdk 24 / targetSdk 36 /
   compileSdk 36; gate command `./gradlew check` = debug unit tests + lint +
-  detekt + ktlint.
-- Next: **phase 0-D — UI reference site + tokens freeze** — parts 0-D.1 build
-  the phone-shaped Vite+Tailwind+Konsta+Lucide prototype for all 27 screen/state
-  rows · 0-D.2 owner review rounds in chat · 0-D.3 freeze tokens + web→Compose
-  mapping, point the app theme at the frozen seed, switch screenshot tests to
-  goldens.
-- Then phase 1 — pure-Kotlin engine + seeded tests.
-- Open owner items: the reference screenshot for 0-D (optional — the brief is
-  enough to draft, better with it); approval of the reference in chat; live ad
-  units only in phase 5 and only after a GATE.
+  detekt + ktlint; reference stack Vite 8.3.5 / Tailwind 4.3.3 / Konsta 5.5.0 /
+  lucide-react 1.61.0 (ISC, web only).
+- Next: **finish 0-D** — owner approves the reference in chat (or sends
+  corrections), then tick the approval row, flip the roadmap row to ✅ and log
+  the design decision. **Then** phase 1 — pure-Kotlin engine + seeded tests.
+- Open owner items: approval of the reference (blocks every later UI phase);
+  optional reference screenshot for comparison; live ad units only in phase 5
+  and only after a GATE.
 
 ## How to continue
 

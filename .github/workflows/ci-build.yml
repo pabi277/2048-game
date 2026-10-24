@@ -18,6 +18,11 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      record_screenshots:
+        description: 'Re-record the screenshot goldens and commit them to this branch'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -103,18 +108,24 @@ jobs:
               | while IFS= read -r line; do echo "::error file=${log}::${line}"; done
           done
 
-      # The screenshot lane is only real if it produced images: fail loudly
-      # instead of uploading an empty artifact and calling it done.
-      - name: Verify screenshot renders were produced
+      # From phase 0-D the screenshots are goldens: the committed images are the
+      # UI contract and `testDebugUnitTest` fails on a visual diff. Only the
+      # images that exist in the tree (or the diffs of a failing run) can be
+      # uploaded, so assert the contract is really in place.
+      - name: Verify screenshot goldens exist
         shell: bash
         run: |
           set -euo pipefail
-          count=$(find app/build -name '*.png' | wc -l)
-          echo "::notice::screenshot PNGs produced: $count"
-          find app/build -name '*.png' | head -20
-          if [ "$count" -lt 1 ]; then
-            echo "::error::No screenshot PNGs were produced by the test task"
+          goldens=$(find app/src/test/screenshots -name '*.png' | wc -l)
+          echo "::notice::committed screenshot goldens: $goldens"
+          find app/src/test/screenshots -name '*.png' | sort
+          if [ "$goldens" -lt 1 ]; then
+            echo "::error::No screenshot goldens in app/src/test/screenshots — the UI contract is missing"
             exit 1
+          fi
+          if [ -d app/build/roborazzi ]; then
+            echo "::notice::diff/actual images from this run:"
+            find app/build/roborazzi -name '*.png' | head -20
           fi
 
       - name: Upload progress APK (the downloadable result of this phase)
@@ -146,12 +157,13 @@ jobs:
           print(f"annotated {count} failing tests")
           PYEOF
 
-      - name: Upload screenshot renders (no-device UI evidence)
+      - name: Upload screenshots (goldens, plus diffs of a failing run)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-screenshots
           path: |
+            app/src/test/screenshots/**
             app/build/roborazzi/**
             app/build/**/*.png
           if-no-files-found: warn
@@ -200,6 +212,59 @@ jobs:
       - name: Reference builds
         working-directory: design/reference
         run: npm run build
+
+  # Deliberate golden re-recording (workflow_dispatch only). A visual change is
+  # approved by recording the new goldens and reviewing them — never by
+  # deleting the test, and never automatically on a push. The commit is made
+  # back to the same non-main branch so the images are reviewable in git.
+  record-screenshots:
+    name: Record screenshot goldens
+    if: github.event_name == 'workflow_dispatch' && inputs.record_screenshots && github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Verify Android SDK and accept licences
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          if [ -x "$SDK/cmdline-tools/latest/bin/sdkmanager" ]; then
+            yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          fi
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+
+      - name: Record goldens
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --no-daemon --stacktrace --console=plain recordRoborazziDebug
+
+      - name: Commit any changed goldens to this branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --porcelain app/src/test/screenshots)" ]; then
+            echo "::notice::goldens already match — nothing to record"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/src/test/screenshots
+          git commit -m "Record screenshot goldens (workflow_dispatch)"
+          git push origin "HEAD:${{ github.ref_name }}"
 
   # The release lane needs the keystore, which only the owner can add. Until
   # those secrets exist this job reports the fact and skips, so a main push is
