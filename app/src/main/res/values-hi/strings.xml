@@ -8,4 +8,28 @@
     <string name="hello_tagline">स्लाइड करें। मिलाएँ। सुकून से खेलें।</string>
     <string name="hello_phase">चरण 0 · बुनियादी बिल्ड</string>
     <string name="hello_footer">कोई बैनर नहीं · खेल के दौरान कोई विज्ञापन नहीं · ऑफ़लाइन</string>
+
+    <!-- Game screen (phase 2). Copy is the approved reference's own Hindi
+         wording (`design/reference/src/strings.js`); the four direction labels
+         are the screen-reader names of the pad keys, which the reference draws
+         as icons only. -->
+    <string name="game_score">स्कोर</string>
+    <string name="game_best">सर्वश्रेष्ठ</string>
+    <string name="game_home">होम</string>
+    <string name="game_restart">फिर से शुरू</string>
+    <string name="game_undo">पूर्ववत</string>
+    <string name="game_swipe_hint">मिलाने के लिए स्वाइप करें</string>
+    <string name="game_direction_pad">दिशा पैड</string>
+    <string name="game_over_chip">खेल समाप्त</string>
+
+    <!-- Pause sheet. -->
+    <string name="pause_title">रुका हुआ</string>
+    <string name="pause_resume">जारी रखें</string>
+    <string name="pause_meta">स्कोर %1$s · सबसे ऊँची टाइल %2$s</string>
+
+    <!-- Direction keys: the pad labels and the screen-reader names. -->
+    <string name="direction_up">ऊपर</string>
+    <string name="direction_down">नीचे</string>
+    <string name="direction_left">बाएँ</string>
+    <string name="direction_right">दाएँ</string>
 </resources>

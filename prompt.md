@@ -107,6 +107,30 @@
     tests, save round-trip and refusal cases.
   - 1.4 ✅ — `ui/EnginePreview.kt`, plain numerals + four arrows, shown only
     behind `BuildConfig.DEBUG`; the release build still opens the hello screen.
+- **Phase 2 ✅ 2026-10-24 — board UI, swipe, motion (awaiting the merge gate).**
+  Record: `docs/phases/02-board-ui.md`. Branch tip after the docs commit; the
+  six goldens were recorded by CI at `08e7467`.
+  - 2.1 ✅ — stateless `GameScreen(state, actions)` per the frozen reference:
+    title row + home/restart (48dp), taupe SCORE/BEST boxes, rounded square
+    board with the value→ramp tiles, Undo · hint chip · pad toggle. `BoardFrame`
+    positions tiles by `xOf/yOf(index, cell)`, keyed by identity; one engine→
+    picture mapper (`BoardScene.still/after`). `GameRoute` (lifecycle + back) and
+    `GameContent` (board + pause overlay) split so tests draw the real overlay.
+    `MainActivity` shows `GameRoute()`; `EnginePreview` + 4 tests deleted.
+  - 2.2 ✅ — pure `SwipeAxis` (24dp threshold, dominant axis, tie → horizontal)
+    fed by `detectDragGestures`; 56dp `DirectionPad`; arrow keys through one
+    `FocusRequester` + `onPreviewKeyEvent`. An invalid move returns the same
+    `Game` and changes nothing (no spawn, no score).
+  - 2.3 ✅ — slide/pop/spawn/fade/score-tick from `Durations`
+    (110/140/130/220ms, asserted by `TokensSyncTest`), reduced-motion snaps,
+    pause sheet + auto-pause on `ON_STOP`, back-to-resume; six goldens
+    (`game-new`, `game-mid`, `game-dark`, `game-large-font`, `game-paused`,
+    `game-pad`) → 11 PNGs total.
+  - Engine addendum inside `domain/`: `Moves.plan()` returns the move geometry
+    (`MovePlan`, one `TileSlide` per occupied cell, survivor first);
+    `plan.board == apply().board` proved over 800 board/direction pairs.
+  - Tests: **128 host tests** in 17 files (was 85). Hindi copy for the whole
+    game screen added in parity (20 keys EN/HI).
 - Facts read back from the repo/CI (not memory): AGP 8.13.0, Kotlin 2.2.20,
   Gradle 8.14.3, Compose BOM 2025.09.01, minSdk 24 / targetSdk 36 /
   compileSdk 36; gate command `./gradlew check` = debug unit tests + lint +
@@ -116,8 +140,11 @@
   the values in `docs/UI-REFERENCE.md` = `design/reference/src/design.js` =
   `app/.../ui/theme/Tokens.kt`, guarded by `npm run verify` + `TokensSyncTest`.
   Visual changes go reference → doc → `Tokens.kt` → screen, never the reverse.
-- Next: **phase 2 — board UI + swipe + animation** (parts 2.1–2.3), built from
-  the frozen reference; the engine is consumed, never re-implemented.
+- Next: **phase 3 — persistence, game states, undo, stats, daily** (parts
+  3.1–3.4). The board, the pause sheet and the motion are done; phase 3 adds
+  DataStore save/resume, the win/game-over dialogs (replacing
+  `GameSession.releaseWin()` and the `Game over` chip), the undo allowance with
+  the rewarded ad policy, and the Stats + Daily screens.
 - Open owner items: the reference screenshot is no longer needed (the reference
   is ours and approved); live ad units only in phase 5 and only after a GATE.
 
@@ -125,13 +152,14 @@
 
 1. Read `docs/ROADMAP.md`, `docs/DECISIONS.md`, `docs/UI-REFERENCE.md` and the
    latest `docs/phases/` record — trust the repo, not memory.
-2. Implement **phase 2** (board UI + swipe + animation), all its parts,
-   evidence-first, against `docs/UI-REFERENCE.md` and
+2. Implement **phase 3** (persistence, game states, undo, stats, daily), all its
+   parts, evidence-first, against `docs/UI-REFERENCE.md` and
    `design/reference/screenshots/`; the engine in `domain/` is the only rules
-   source (the UI never re-implements a merge).
+   source (the UI never re-implements a merge), and `GameSession` is already the
+   state holder the store plugs into.
 3. End with: CI green (incl. the no-device quality gate) + the run's
-   downloadable `app-progress-apk` artifact · `docs/phases/02-board-ui.md` (say
+   downloadable `app-progress-apk` artifact · `docs/phases/03-save-states.md` (say
    what the APK shows, and record where the Compose screens differ
    deliberately from the reference) · roadmap row status · this file updated ·
    short report (run id, tip sha, APK, what is now visible) · **the next-chat
-   prompt printed in chat** for phase 3 · stop at the merge gate.
+   prompt printed in chat** for phase 4 · stop at the merge gate.
