@@ -123,27 +123,7 @@ internal fun GameScreen(
                 .focusable(),
     ) {
         TitleRow(onHome = actions.onHome, onRestart = actions.onRestart, tint = textPrimary)
-
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(Dimens.ScoreGap),
-        ) {
-            ScoreBox(
-                label = stringResource(R.string.game_score),
-                value = animatedScore,
-                tag = SCORE_TAG,
-                modifier = Modifier.weight(1f),
-            )
-            ScoreBox(
-                label = stringResource(R.string.game_best),
-                value = state.best,
-                tag = BEST_TAG,
-                modifier = Modifier.weight(1f),
-            )
-        }
+        ScoreRow(score = animatedScore, best = state.best)
 
         BoardFrame(
             scene = state.scene,
@@ -169,6 +149,34 @@ internal fun GameScreen(
             )
         }
         Spacer(Modifier.height(Dimens.SameRowGap))
+    }
+}
+
+/** SCORE and BEST, side by side, 12dp apart (the reference's score gap). */
+@Composable
+private fun ScoreRow(
+    score: Int,
+    best: Int,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(Dimens.ScoreGap),
+    ) {
+        ScoreBox(
+            label = stringResource(R.string.game_score),
+            value = score,
+            tag = SCORE_TAG,
+            modifier = Modifier.weight(1f),
+        )
+        ScoreBox(
+            label = stringResource(R.string.game_best),
+            value = best,
+            tag = BEST_TAG,
+            modifier = Modifier.weight(1f),
+        )
     }
 }
 

@@ -71,50 +71,66 @@ internal fun PauseSheet(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(),
         ) {
-            Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 32.dp)) {
-                Box(
-                    modifier =
-                        Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .size(width = 40.dp, height = 4.dp)
-                            .background(MaterialTheme.colorScheme.outline, RoundedCornerShape(2.dp)),
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.pause_title),
-                    style =
-                        MaterialTheme.typography.headlineSmall.copy(
-                            fontSize = TypeScale.DialogTitle,
-                            lineHeight = TypeScale.DialogTitleLine,
-                        ),
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Spacer(Modifier.height(16.dp))
-                PrimaryButton(
-                    label = stringResource(R.string.pause_resume),
-                    onClick = onResume,
-                    icon = TilefoldIcons.Play,
-                )
-                Spacer(Modifier.height(8.dp))
-                SecondaryButton(
-                    label = stringResource(R.string.game_restart),
-                    onClick = onRestart,
-                    icon = TilefoldIcons.RotateCcw,
-                )
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text =
-                        stringResource(
-                            R.string.pause_meta,
-                            ScoreFormat.of(score),
-                            highestTile.toString(),
-                        ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+            SheetContent(
+                score = score,
+                highestTile = highestTile,
+                onResume = onResume,
+                onRestart = onRestart,
+            )
         }
+    }
+}
+
+/** The sheet's body: handle, title, Resume, Restart and the quiet score line. */
+@Composable
+private fun SheetContent(
+    score: Int,
+    highestTile: Int,
+    onResume: () -> Unit,
+    onRestart: () -> Unit,
+) {
+    Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 32.dp)) {
+        Box(
+            modifier =
+                Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .size(width = 40.dp, height = 4.dp)
+                    .background(MaterialTheme.colorScheme.outline, RoundedCornerShape(2.dp)),
+        )
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.pause_title),
+            style =
+                MaterialTheme.typography.headlineSmall.copy(
+                    fontSize = TypeScale.DialogTitle,
+                    lineHeight = TypeScale.DialogTitleLine,
+                ),
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Spacer(Modifier.height(16.dp))
+        PrimaryButton(
+            label = stringResource(R.string.pause_resume),
+            onClick = onResume,
+            icon = TilefoldIcons.Play,
+        )
+        Spacer(Modifier.height(8.dp))
+        SecondaryButton(
+            label = stringResource(R.string.game_restart),
+            onClick = onRestart,
+            icon = TilefoldIcons.RotateCcw,
+        )
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text =
+                stringResource(
+                    R.string.pause_meta,
+                    ScoreFormat.of(score),
+                    highestTile.toString(),
+                ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
