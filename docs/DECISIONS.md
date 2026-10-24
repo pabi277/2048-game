@@ -141,6 +141,12 @@
   channels. Recorded so nobody reintroduces bit-fiddling (evidence: run
   40063585285 reported 1.0 for every pair).
 
+- **2026-10-24 — The release lane skips while signing secrets are absent** — a
+  `signing-ready` job reports which of the four keystore secrets are missing and
+  the signed job is skipped, so a `main` push is never red for a secret release
+  work has not reached yet. Once all four exist the lane runs and still fails
+  hard. Owner action: add the keystore secrets before the first release build.
+
 ## Third-party licences (everything shipped, per reuse-first §3)
 
 Pinned and shipped in phase 0 (versions read from the artefacts / maintained

@@ -3,8 +3,11 @@
 # Phase 00 — bootstrap + hello
 
 - Status: ✅ · Date: 2026-10-24 · Branch: `arena/52619694-2048-game`
-- CI: run [40064397149](https://github.com/pabi277/2048-game/actions/runs/40064397149)
-  green at head sha `bdd578901bd7b56beb2012e2aba10f1b2399f6f3`
+- **Merged:** PR #2 → `main` on 2026-10-24, merge commit `0b6bf95`; `main`'s own
+  run [40066219422](https://github.com/pabi277/2048-game/actions/runs/40066219422)
+  green (release lane skipped — no keystore secrets yet, reported as a notice)
+- CI: run [40064514094](https://github.com/pabi277/2048-game/actions/runs/40064514094)
+  green at head sha `f343ff3e336f56e2cdbfe2811acc65f26eb7f02a`
   · Provenance: AppFlow @ `57597b3332ad578614a0d9d5609f9cf8a278ee8a` (reference only)
 - **APK:** artifact `app-progress-apk` from run 40064397149 (10,837,751 B) —
   *shows: a single cream "Tilefold" screen with the tagline "Slide. Merge.

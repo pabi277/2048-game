@@ -65,8 +65,9 @@
 
 ## State (update at every phase end)
 
-- **Phase 0 ✅ 2026-10-24** — snapshot `2a55172`, skeleton `89970a1`, CI green in
-  run 40064397149 at `bdd5789`. Artifacts: `app-progress-apk` (10,837,751 B),
+- **Phase 0 ✅ 2026-10-24, merged to `main`** (PR #2, merge `0b6bf95`; `main` run
+  40066219422 green) — snapshot `2a55172`, skeleton `89970a1`, CI green in
+  run 40064514094 at `f343ff3`. Artifacts: `app-progress-apk` (10,837,751 B),
   `app-screenshots` (16 PNGs), `quality-gate-reports`. APK shows one cream
   "Tilefold" screen from the seed theme — no board yet. Record:
   `docs/phases/00-bootstrap.md`.
