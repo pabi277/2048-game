@@ -142,20 +142,30 @@ private fun ExampleRow() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        listOf(8 to 8, 16 to 0).forEachIndexed { idx, (valueA, _) ->
+        listOf(8 to 8, 16 to 0).forEachIndexed { idx, (_, _) ->
             if (idx == 1) {
-                Text(text = "=", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    text = "=",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
                 TileBox(value = 16, palette = palette)
                 Text(
                     text = "+16",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                    ),
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(start = 4.dp),
                 )
                 return@forEachIndexed
             }
             TileBox(value = 8, palette = palette)
-            Text(text = "+", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = "+",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             TileBox(value = 8, palette = palette)
         }
     }
