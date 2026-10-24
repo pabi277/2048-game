@@ -127,22 +127,34 @@ jobs:
         shell: bash
         run: |
           set +e
-          for report in app/build/reports/lint-results*.xml app/build/reports/lint-results*.txt; do
+          for report in app/build/reports/lint-results*.xml; do
             [ -f "$report" ] || continue
-            echo "::error file=${report}::lint report ${report}:"
-            head -200 "$report" | while IFS= read -r line; do
+            echo "lint report $report found"
+            # Extract error severity issues
+            grep -a 'severity="Error"' "$report" | head -60 | while IFS= read -r line; do
               esc="${line//%/%25}"
               esc="${esc//$'\r'/}"
-              echo "::error file=${report}::${esc}"
+              echo "::error file=${report}::${esc:0:500}"
+            done
+            # Also show full file location tags
+            grep -a '<location' "$report" | head -20 | while IFS= read -r line; do
+              esc="${line//%/%25}"
+              echo "::error file=${report}::${esc:0:500}"
+            done
+            # Fallback: show first error issue block
+            awk '/<issue.*severity="Error"/,/<\/issue>/ {print; if (/<\/issue>/) exit}' "$report" | head -80 | while IFS= read -r line; do
+              esc="${line//%/%25}"
+              esc="${esc//$'\r'/}"
+              echo "::error file=${report}::${esc:0:500}"
             done
           done
-          # Also plain lint text if xml missing
-          if [ -f app/build/intermediates/lint/debug/lintDebug.xml ]; then
-            head -100 app/build/intermediates/lint/debug/lintDebug.xml | while IFS= read -r line; do
+          for report in app/build/reports/lint-results*.txt; do
+            [ -f "$report" ] || continue
+            head -100 "$report" | while IFS= read -r line; do
               esc="${line//%/%25}"
-              echo "::error file=lintDebug.xml::${esc}"
+              echo "::error file=${report}::${esc:0:500}"
             done
-          fi
+          done
 
       # From phase 0-D the screenshots are goldens: the committed images are the
       # UI contract and `testDebugUnitTest` fails on a visual diff. Only the
