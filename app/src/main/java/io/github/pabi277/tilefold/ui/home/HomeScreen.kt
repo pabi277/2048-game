@@ -6,7 +6,6 @@ package io.github.pabi277.tilefold.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -330,17 +329,15 @@ internal fun BoardPreview(
     val px = 196.dp
     val gap = 6.dp
     val padding = 8.dp
-    BoxWithConstraints(
+    Box(
         modifier =
             modifier
                 .clip(RoundedCornerShape(Corners.Board))
                 .background(palette.boardFrame)
                 .padding(padding),
     ) {
-        val maxWidthPx = px
-        // Use fixed size box
         Column(
-            modifier = Modifier.width(maxWidthPx),
+            modifier = Modifier.width(px),
             verticalArrangement = Arrangement.spacedBy(gap),
         ) {
             grid.forEach { row ->
