@@ -146,13 +146,13 @@ private fun ExampleRow() {
         listOf(8 to 8, 16 to 0).forEachIndexed { idx, (_, _) ->
             if (idx == 1) {
                 Text(
-                    text = "=",
+                    text = stringResource(R.string.symbol_equals),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 TileBox(value = 16, palette = palette)
                 Text(
-                    text = "+16",
+                    text = stringResource(R.string.symbol_plus_score),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.SemiBold,
                     ),
@@ -163,7 +163,7 @@ private fun ExampleRow() {
             }
             TileBox(value = 8, palette = palette)
             Text(
-                text = "+",
+                text = stringResource(R.string.symbol_plus),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

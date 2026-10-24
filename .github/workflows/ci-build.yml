@@ -122,6 +122,28 @@ jobs:
             echo "::error file=${log}::${excerpt}"
           done
 
+      - name: Summarise lint results as annotations
+        if: failure()
+        shell: bash
+        run: |
+          set +e
+          for report in app/build/reports/lint-results*.xml app/build/reports/lint-results*.txt; do
+            [ -f "$report" ] || continue
+            echo "::error file=${report}::lint report ${report}:"
+            head -200 "$report" | while IFS= read -r line; do
+              esc="${line//%/%25}"
+              esc="${esc//$'\r'/}"
+              echo "::error file=${report}::${esc}"
+            done
+          done
+          # Also plain lint text if xml missing
+          if [ -f app/build/intermediates/lint/debug/lintDebug.xml ]; then
+            head -100 app/build/intermediates/lint/debug/lintDebug.xml | while IFS= read -r line; do
+              esc="${line//%/%25}"
+              echo "::error file=lintDebug.xml::${esc}"
+            done
+          fi
+
       # From phase 0-D the screenshots are goldens: the committed images are the
       # UI contract and `testDebugUnitTest` fails on a visual diff. Only the
       # images that exist in the tree (or the diffs of a failing run) can be

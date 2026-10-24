@@ -57,7 +57,7 @@
     <!-- Daily (phase 3). -->
     <string name="daily_title">Daily challenge</string>
     <string name="daily_done">Played — come back tomorrow</string>
-    <string name="streak_days">%d-day streak</string>
+    <string name="streak_days">%1$d-day streak</string>
 
     <!-- Pause sheet. -->
     <string name="pause_title">Paused</string>
@@ -143,4 +143,11 @@
     <string name="settings_version">Version %1$s</string>
     <string name="settings_licences">Licences</string>
     <string name="settings_privacy">Privacy policy</string>
+
+    <!-- Decorative symbols (not translated, but must be resources for lint). -->
+    <string name="symbol_dot">·</string>
+    <string name="symbol_equals">=</string>
+    <string name="symbol_plus">+</string>
+    <string name="symbol_check">✓</string>
+    <string name="symbol_plus_score">+16</string>
 </resources>

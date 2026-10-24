@@ -189,7 +189,7 @@ internal fun HomeScreen(
                 modifier = Modifier.testTag(HOME_HOW_TO_PLAY_TAG),
             )
             Text(
-                text = "·",
+                text = stringResource(R.string.symbol_dot),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 4.dp),
             )
@@ -199,7 +199,7 @@ internal fun HomeScreen(
                 modifier = Modifier.testTag(HOME_STATS_TAG),
             )
             Text(
-                text = "·",
+                text = stringResource(R.string.symbol_dot),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 4.dp),
             )

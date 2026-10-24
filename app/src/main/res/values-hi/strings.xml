@@ -51,7 +51,7 @@
 
     <string name="daily_title">रोज़ाना चुनौती</string>
     <string name="daily_done">खेल लिया — कल फिर आएँ</string>
-    <string name="streak_days">%d दिन की लय</string>
+    <string name="streak_days">%1$d दिन की लय</string>
 
     <string name="pause_title">रुका हुआ</string>
     <string name="pause_resume">जारी रखें</string>
@@ -132,4 +132,10 @@
     <string name="settings_version">संस्करण %1$s</string>
     <string name="settings_licences">लाइसेंस</string>
     <string name="settings_privacy">गोपनीयता नीति</string>
+
+    <string name="symbol_dot">·</string>
+    <string name="symbol_equals">=</string>
+    <string name="symbol_plus">+</string>
+    <string name="symbol_check">✓</string>
+    <string name="symbol_plus_score">+16</string>
 </resources>
