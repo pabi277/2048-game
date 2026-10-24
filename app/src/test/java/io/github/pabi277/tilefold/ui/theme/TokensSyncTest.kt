@@ -86,11 +86,12 @@ class TokensSyncTest {
 
     /** One ramp row as `key to pair`, or `null` when the row is not a ramp step. */
     private fun rampEntry(cells: List<String>): Pair<String, Tokens.TilePair>? {
-        if (cells.size < 3) return null
-        val label = cells[0]
-        if (!label.matches(RAMP_LABEL)) return null
-        val background = HEX.find(cells[1]) ?: return null
-        val numeral = HEX.find(cells[2]) ?: return null
+        val label = cells.getOrNull(0)
+        val background = cells.getOrNull(1)?.let { HEX.find(it) }
+        val numeral = cells.getOrNull(2)?.let { HEX.find(it) }
+        if (label == null || background == null || numeral == null || !label.matches(RAMP_LABEL)) {
+            return null
+        }
         val key = if (label.startsWith(">")) "super" else label
         return key to Tokens.TilePair(hexOf(background.value), hexOf(numeral.value))
     }
