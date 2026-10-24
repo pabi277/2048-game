@@ -89,9 +89,8 @@ class TokensSyncTest {
         val label = cells.getOrNull(0)
         val background = cells.getOrNull(1)?.let { HEX.find(it) }
         val numeral = cells.getOrNull(2)?.let { HEX.find(it) }
-        if (label == null || background == null || numeral == null || !label.matches(RAMP_LABEL)) {
-            return null
-        }
+        val isRampLabel = label != null && label.matches(RAMP_LABEL)
+        if (!isRampLabel || background == null || numeral == null) return null
         val key = if (label.startsWith(">")) "super" else label
         return key to Tokens.TilePair(hexOf(background.value), hexOf(numeral.value))
     }
