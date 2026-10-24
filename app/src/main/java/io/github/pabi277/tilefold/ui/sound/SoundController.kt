@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 @file:Suppress("MagicNumber")
 
+package io.github.pabi277.tilefold.ui.sound
+
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioFormat

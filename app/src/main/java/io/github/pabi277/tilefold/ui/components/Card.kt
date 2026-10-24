@@ -3,8 +3,6 @@
 package io.github.pabi277.tilefold.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,7 +18,7 @@ import io.github.pabi277.tilefold.ui.theme.Corners
 @Composable
 internal fun AppCard(
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit,
+    content: @Composable () -> Unit,
 ) {
     Surface(
         shape = RoundedCornerShape(Corners.Card),
