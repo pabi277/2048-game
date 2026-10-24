@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import io.github.pabi277.tilefold.R
 import io.github.pabi277.tilefold.ui.icons.TilefoldIcons
 import io.github.pabi277.tilefold.ui.theme.Corners
@@ -46,11 +46,7 @@ internal fun InlineBanner(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(Corners.Banner))
                 .background(MaterialTheme.colorScheme.surface)
-                .border(
-                    1.dp,
-                    MaterialTheme.colorScheme.error.copy(alpha = 0.45f),
-                    RoundedCornerShape(Corners.Banner),
-                )
+                .border(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.45f), RoundedCornerShape(Corners.Banner))
                 .padding(horizontal = 12.dp, vertical = 12.dp)
                 .testTag(BANNER_TAG),
         verticalAlignment = Alignment.CenterVertically,

@@ -52,7 +52,10 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     when (selected) {
-                        0 -> GameRoute(container = container, modifier = Modifier.weight(1f))
+                        0 -> {
+                            GameRoute(container = container, modifier = Modifier.weight(1f))
+                        }
+
                         1 -> {
                             val today = DailyChallenge.epochDay(System.currentTimeMillis())
                             GameRoute(
@@ -61,10 +64,13 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.weight(1f),
                             )
                         }
-                        else -> StatsScreen(
-                            stats = io.github.pabi277.tilefold.domain.Stats(),
-                            modifier = Modifier.weight(1f),
-                        )
+
+                        else -> {
+                            StatsScreen(
+                                stats = io.github.pabi277.tilefold.domain.Stats(),
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
                     }
                 }
             }
