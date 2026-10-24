@@ -69,14 +69,20 @@ internal fun SettingsRow(
     val subtitleColor = if (destructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
     Column(modifier = modifier) {
         if (!first) {
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant,
+                thickness = 1.dp,
+            )
         }
         Row(
             modifier =
                 Modifier.fillMaxWidth()
                     .heightIn(min = Dimens.MinTarget)
                     .clip(RoundedCornerShape(0.dp))
-                    .clickable(enabled = enabled && onClick != null, onClick = { onClick?.invoke() })
+                    .clickable(
+                        enabled = enabled && onClick != null,
+                        onClick = { onClick?.invoke() },
+                    )
                     .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),

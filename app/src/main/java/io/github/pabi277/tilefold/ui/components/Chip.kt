@@ -30,12 +30,21 @@ internal fun AppChip(
 ) {
     val (container, content) =
         when (tone) {
-            ChipTone.Accent -> MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.onPrimary
-            ChipTone.Success -> MaterialTheme.colorScheme.tertiary to MaterialTheme.colorScheme.onTertiary
-            ChipTone.Outline ->
+            ChipTone.Accent -> {
+                MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.onPrimary
+            }
+
+            ChipTone.Success -> {
+                MaterialTheme.colorScheme.tertiary to MaterialTheme.colorScheme.onTertiary
+            }
+
+            ChipTone.Outline -> {
                 MaterialTheme.colorScheme.surface to MaterialTheme.colorScheme.onSurfaceVariant
-            ChipTone.Neutral ->
+            }
+
+            ChipTone.Neutral -> {
                 MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
+            }
         }
     Surface(
         shape = RoundedCornerShape(50),

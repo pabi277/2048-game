@@ -4,11 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.core.os.LocaleListCompat
-import androidx.appcompat.app.AppCompatDelegate
 import io.github.pabi277.tilefold.data.AppContainer
 import io.github.pabi277.tilefold.domain.Language
 import io.github.pabi277.tilefold.domain.Stats
@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 val hasSaved = savedGame != null
                 val savedScore = savedGame?.score ?: 0
                 val savedHighest = savedGame?.board?.highestTile ?: 0
-                val isDaily = savedGame?.let { false } ?: false // GameMode not stored in SaveCodec yet; treat as classic
+                val isDaily = false // GameMode not stored yet; treat as classic
                 val storageError = container.gameSaveRepository.loadError
 
                 val versionName =
